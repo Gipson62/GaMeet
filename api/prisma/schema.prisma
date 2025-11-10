@@ -1,0 +1,228 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Photo {
+  id          Int           @id @default(autoincrement())
+  URL         String
+  events      Event_Photo[]
+  gamesBanner Game[]        @relation("GameBanner")
+  gamesGrid   Game[]        @relation("GameGrid")
+  gamesLogo   Game[]        @relation("GameLogo")
+  reviews     Review[]
+}
+
+model User {
+  id            Int           @id @default(autoincrement())
+  photo_id      Int?
+  pseudo        String        @db.VarChar(64)
+  birth_date    DateTime?     @db.Date
+  creation_date DateTime?     @default(now()) @db.Timestamp(6)
+  email         String        @unique @db.VarChar(64)
+  password      String        @db.VarChar(25)
+  is_admin      Boolean?      @default(false)
+  bio           String?
+  photo         photo?        @relation(fields: [photo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  event         event[]
+  participant   participant[]
+  review        review[]
+
+  @@index([email], map: "idx_user_email")
+}
+
+model Game {
+  id          Int          @id @default(autoincrement())
+  bannerId    Int?
+  logoId      Int?
+  gridId      Int?
+  name        String
+  description String?
+  releaseDate DateTime?
+  publisher   String?
+  studio      String?
+  platforms   String?
+  isApproved  Boolean      @default(false)
+  events      Event_Game[]
+  banner      Photo?       @relation("GameBanner", fields: [bannerId], references: [id])
+  grid        Photo?       @relation("GameGrid", fields: [gridId], references: [id])
+  logo        Photo?       @relation("GameLogo", fields: [logoId], references: [id])
+  tags        Game_Tag[]
+}
+
+model Tag {
+  name  String     @id
+  games Game_Tag[]
+}
+
+model Game_Tag {
+  gameId  Int
+  tagName String
+  game    Game   @relation(fields: [gameId], references: [id])
+  tag     Tag    @relation(fields: [tagName], references: [name])
+
+  @@id([gameId, tagName])
+}
+
+model Event {
+  id            Int           @id @default(autoincrement())
+  name          String
+  scheduledDate DateTime
+  creationDate  DateTime      @default(now())
+  description   String?
+  location      String?
+  maxCapacity   Int?
+  authorId      Int?
+  games         Event_Game[]
+  photos        Event_Photo[]
+  participants  Participant[]
+  reviews       Review[]
+}
+
+model Event_Game {
+  gameId  Int
+  eventId Int
+  event   Event @relation(fields: [eventId], references: [id])
+  game    Game  @relation(fields: [gameId], references: [id])
+
+  @@id([gameId, eventId])
+}
+
+model Event_Photo {
+  eventId Int
+  photoId Int
+  event   Event @relation(fields: [eventId], references: [id])
+  photo   Photo @relation(fields: [photoId], references: [id])
+
+  @@id([eventId, photoId])
+}
+
+model Participant {
+  eventId Int
+  userId  Int
+  event   Event @relation(fields: [eventId], references: [id])
+
+  @@id([eventId, userId])
+}
+
+model Review {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  eventId     Int
+  photoId     Int?
+  note        Int?
+  description String?
+  createdAt   DateTime @default(now())
+  event       Event    @relation(fields: [eventId], references: [id])
+  photo       Photo?   @relation(fields: [photoId], references: [id])
+}
+
+model event {
+  id             Int           @id @default(autoincrement())
+  name           String        @db.VarChar(64)
+  scheduled_date DateTime      @db.Timestamp(6)
+  creation_date  DateTime?     @default(now()) @db.Timestamp(6)
+  description    String?
+  location       String?
+  max_capacity   Int?
+  author         Int?
+  User           User?         @relation(fields: [author], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  event_game     event_game[]
+  event_photo    event_photo[]
+  participant    participant[]
+  review         review[]
+
+  @@index([scheduled_date], map: "idx_event_date")
+}
+
+model event_game {
+  game_id  Int
+  event_id Int
+  event    event @relation(fields: [event_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  game     game  @relation(fields: [game_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([game_id, event_id])
+}
+
+model event_photo {
+  event_id Int
+  photo_id Int
+  event    event @relation(fields: [event_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  photo    photo @relation(fields: [photo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([event_id, photo_id])
+}
+
+model game {
+  id                          Int          @id @default(autoincrement())
+  banner_id                   Int?
+  logo_id                     Int?
+  grid_id                     Int?
+  name                        String       @db.VarChar(64)
+  description                 String?
+  release_date                DateTime?    @db.Date
+  publisher                   String?      @db.VarChar(64)
+  studio                      String?      @db.VarChar(64)
+  platforms                   String?
+  is_approved                 Boolean?     @default(false)
+  event_game                  event_game[]
+  photo_game_banner_idTophoto photo?       @relation("game_banner_idTophoto", fields: [banner_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  photo_game_grid_idTophoto   photo?       @relation("game_grid_idTophoto", fields: [grid_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  photo_game_logo_idTophoto   photo?       @relation("game_logo_idTophoto", fields: [logo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  game_tag                    game_tag[]
+}
+
+model game_tag {
+  game_id  Int
+  tag_name String @db.VarChar(32)
+  game     game   @relation(fields: [game_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tag      tag    @relation(fields: [tag_name], references: [name], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([game_id, tag_name])
+}
+
+model participant {
+  event_id Int
+  user_id  Int
+  event    event @relation(fields: [event_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  User     User  @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([event_id, user_id])
+}
+
+model photo {
+  id                         Int           @id @default(autoincrement())
+  url                        String
+  User                       User[]
+  event_photo                event_photo[]
+  game_game_banner_idTophoto game[]        @relation("game_banner_idTophoto")
+  game_game_grid_idTophoto   game[]        @relation("game_grid_idTophoto")
+  game_game_logo_idTophoto   game[]        @relation("game_logo_idTophoto")
+  review                     review[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model review {
+  id          Int       @id @default(autoincrement())
+  user_id     Int?
+  event_id    Int?
+  photo_id    Int?
+  note        Int?
+  description String?
+  created_at  DateTime? @default(now()) @db.Timestamp(6)
+  event       event?    @relation(fields: [event_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  photo       photo?    @relation(fields: [photo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  User        User?     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([event_id], map: "idx_review_event")
+  @@index([user_id], map: "idx_review_user")
+}
+
+model tag {
+  name     String     @id @db.VarChar(32)
+  game_tag game_tag[]
+}

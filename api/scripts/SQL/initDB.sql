@@ -1,6 +1,16 @@
 -- =====================================================
 -- DATABASE: Game Events Platform
 -- =====================================================
+DROP TABLE IF EXISTS Participant CASCADE;
+DROP TABLE IF EXISTS Event_Photo CASCADE;
+DROP TABLE IF EXISTS Event_Game CASCADE;
+DROP TABLE IF EXISTS Event CASCADE;
+DROP TABLE IF EXISTS Game_Tag CASCADE;
+DROP TABLE IF EXISTS Tag CASCADE;
+DROP TABLE IF EXISTS Game CASCADE;
+DROP TABLE IF EXISTS "User" CASCADE;
+DROP TABLE IF EXISTS Photo CASCADE;
+DROP TABLE IF EXISTS Review CASCADE;
 
 -- === TABLE: Photo ===
 CREATE TABLE Photo (
