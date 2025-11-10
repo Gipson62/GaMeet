@@ -1,0 +1,36 @@
+{
+  "name": "gameet-api",
+  "version": "0.0.1",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Gipson62/GaMeet.git"
+  },
+  "keywords": [
+    "cool"
+  ],
+  "author": "Gipson62",
+  "contributors": [
+    "Roipopof",
+    "Leo Schoofs"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Gipson62/GaMeet/issues"
+  },
+  "homepage": "https://github.com/Gipson62/GaMeet#readme",
+  "description": "",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "internal-ip": "^8.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.2",
+    "prisma": "^6.19.0",
+    "swagger": "^0.0.1"
+  }
+}
