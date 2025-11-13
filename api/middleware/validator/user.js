@@ -3,7 +3,7 @@ import vine from '@vinejs/vine';
 const registerSchema = vine.object({
     pseudo: vine.string().trim().maxLength(64),
     email: vine.string().email().trim().maxLength(64),
-    password: vine.string().minLength(8).maxLength(25),
+    password: vine.string().minLength(8).maxLength(255),
     birth_date: vine.date().optional(),
     bio: vine.string().trim().maxLength(255),
     is_admin: vine.boolean().optional(),

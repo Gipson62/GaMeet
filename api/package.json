@@ -27,6 +27,7 @@
   "homepage": "https://github.com/Gipson62/GaMeet#readme",
   "description": "",
   "dependencies": {
+    "2": "^3.0.0",
     "@prisma/client": "^6.19.0",
     "@vinejs/vine": "^4.1.0",
     "argon2": "^0.44.0",

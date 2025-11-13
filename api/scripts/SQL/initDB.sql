@@ -26,7 +26,7 @@ CREATE TABLE "User" (
                         birth_date DATE,
                         creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                         email VARCHAR(64) UNIQUE NOT NULL,
-                        password VARCHAR(25) NOT NULL,
+                        password VARCHAR(255) NOT NULL,
                         is_admin BOOLEAN DEFAULT FALSE,
                         bio TEXT
 );
@@ -73,20 +73,20 @@ CREATE TABLE Event (
 -- === TABLE: Event_Game (Many-to-Many) ===
 CREATE TABLE Event_Game (
                             game_id INTEGER REFERENCES Game(id),
-                            event_id INTEGER REFERENCES Event(id),
+                            event_id INTEGER REFERENCES Event(id)ON DELETE CASCADE,
                             PRIMARY KEY (game_id, event_id)
 );
 
 -- === TABLE: Event_Photo (Many-to-Many) ===
 CREATE TABLE Event_Photo (
-                             event_id INTEGER REFERENCES Event(id),
+                             event_id INTEGER REFERENCES Event(id)ON DELETE CASCADE,
                              photo_id INTEGER REFERENCES Photo(id),
                              PRIMARY KEY (event_id, photo_id)
 );
 
 -- === TABLE: Participant (Many-to-Many between User & Event) ===
 CREATE TABLE Participant (
-                             event_id INTEGER REFERENCES Event(id),
+                             event_id INTEGER REFERENCES Event(id)ON DELETE CASCADE,
                              user_id INTEGER REFERENCES "User"(id),
                              PRIMARY KEY (event_id, user_id)
 );
@@ -95,7 +95,7 @@ CREATE TABLE Participant (
 CREATE TABLE Review (
                         id SERIAL PRIMARY KEY,
                         user_id INTEGER REFERENCES "User"(id),
-                        event_id INTEGER REFERENCES Event(id),
+                        event_id INTEGER REFERENCES Event(id)ON DELETE CASCADE,
                         photo_id INTEGER REFERENCES Photo(id),
                         note INTEGER CHECK (note >= 0 AND note <= 10),
                         description TEXT,
@@ -110,3 +110,40 @@ CREATE INDEX idx_user_email ON "User"(email);
 CREATE INDEX idx_event_date ON Event(scheduled_date);
 CREATE INDEX idx_review_user ON Review(user_id);
 CREATE INDEX idx_review_event ON Review(event_id);
+-- USERS
+INSERT INTO "User" (pseudo, email, password, is_admin)
+VALUES
+('Alice', 'alice@example.com', 'password123', true),
+('Bob', 'bob@example.com', 'password123', false);
+
+-- GAMES
+INSERT INTO game (name, description, is_approved)
+VALUES
+('Super Game', 'Un jeu test pour les events', true),
+('Mega Game', 'Un autre jeu pour tester', true);
+
+-- PHOTOS
+INSERT INTO photo (url)
+VALUES
+('https://picsum.photos/200/300?random=1'),
+('https://picsum.photos/200/300?random=2');
+
+-- EVENTS (sans jeux ni photos pour commencer)
+INSERT INTO event (name, scheduled_date, location, author)
+VALUES
+('Tournoi Alice', '2025-12-20 18:00:00', 'Paris', 1),
+('Soirée Bob', '2025-12-25 20:00:00', 'Lyon', 2);
+
+-- ASSOCIER LES JEUX AUX EVENTS
+INSERT INTO event_game (event_id, game_id)
+VALUES
+(1, 1),
+(1, 2),
+(2, 1);
+
+-- ASSOCIER LES PHOTOS AUX EVENTS
+INSERT INTO event_photo (event_id, photo_id)
+VALUES
+(1, 1),
+(1, 2),
+(2, 1);

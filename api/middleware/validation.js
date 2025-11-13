@@ -1,4 +1,5 @@
 import * as userValidator from './validator/user.js';
+import * as eventValidator from './validator/event.js';
 
 export const userValidatorMiddleware = {
     login: async (req, res, next) => {
@@ -20,6 +21,33 @@ export const userValidatorMiddleware = {
     update: async (req, res, next) => {
         try {
             req.val = await userValidator.update.validate(req.body);
+            next();
+        } catch (e) {
+            res.status(400).send(e.message);
+        }
+    }
+};
+
+export const eventValidatorMiddleware = {
+    create: async (req, res, next) => {
+        try {
+            req.val = await eventValidator.create.validate(req.body);
+            next();
+        } catch (e) {
+            res.status(400).send(e.message);
+        }
+    },
+    update: async (req, res, next) => {
+        try {
+            req.val = await eventValidator.update.validate(req.body);
+            next();
+        } catch (e) {
+            res.status(400).send(e.message);
+        }
+    },
+    idParam: async (req, res, next) => {
+        try {
+            req.ParamVal = await eventValidator.idParam.validate(req.params);
             next();
         } catch (e) {
             res.status(400).send(e.message);

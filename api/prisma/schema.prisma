@@ -7,16 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Photo {
-  id          Int           @id @default(autoincrement())
-  URL         String
-  events      Event_Photo[]
-  gamesBanner Game[]        @relation("GameBanner")
-  gamesGrid   Game[]        @relation("GameGrid")
-  gamesLogo   Game[]        @relation("GameLogo")
-  reviews     Review[]
-}
-
 model User {
   id            Int           @id @default(autoincrement())
   photo_id      Int?
@@ -33,92 +23,6 @@ model User {
   review        review[]
 
   @@index([email], map: "idx_user_email")
-}
-
-model Game {
-  id          Int          @id @default(autoincrement())
-  bannerId    Int?
-  logoId      Int?
-  gridId      Int?
-  name        String
-  description String?
-  releaseDate DateTime?
-  publisher   String?
-  studio      String?
-  platforms   String?
-  isApproved  Boolean      @default(false)
-  events      Event_Game[]
-  banner      Photo?       @relation("GameBanner", fields: [bannerId], references: [id])
-  grid        Photo?       @relation("GameGrid", fields: [gridId], references: [id])
-  logo        Photo?       @relation("GameLogo", fields: [logoId], references: [id])
-  tags        Game_Tag[]
-}
-
-model Tag {
-  name  String     @id
-  games Game_Tag[]
-}
-
-model Game_Tag {
-  gameId  Int
-  tagName String
-  game    Game   @relation(fields: [gameId], references: [id])
-  tag     Tag    @relation(fields: [tagName], references: [name])
-
-  @@id([gameId, tagName])
-}
-
-model Event {
-  id            Int           @id @default(autoincrement())
-  name          String
-  scheduledDate DateTime
-  creationDate  DateTime      @default(now())
-  description   String?
-  location      String?
-  maxCapacity   Int?
-  authorId      Int?
-  games         Event_Game[]
-  photos        Event_Photo[]
-  participants  Participant[]
-  reviews       Review[]
-}
-
-model Event_Game {
-  gameId  Int
-  eventId Int
-  event   Event @relation(fields: [eventId], references: [id])
-  game    Game  @relation(fields: [gameId], references: [id])
-
-  @@id([gameId, eventId])
-}
-
-model Event_Photo {
-  eventId Int
-  photoId Int
-  event   Event @relation(fields: [eventId], references: [id])
-  photo   Photo @relation(fields: [photoId], references: [id])
-
-  @@id([eventId, photoId])
-}
-
-model Participant {
-  eventId Int
-  userId  Int
-  event   Event @relation(fields: [eventId], references: [id])
-
-  @@id([eventId, userId])
-}
-
-model Review {
-  id          Int      @id @default(autoincrement())
-  userId      Int
-  eventId     Int
-  photoId     Int?
-  note        Int?
-  description String?
-  createdAt   DateTime @default(now())
-  event       Event    @relation(fields: [eventId], references: [id])
-  photo       Photo?   @relation(fields: [photoId], references: [id])
 }
 
 model event {
@@ -142,7 +46,7 @@ model event {
 model event_game {
   game_id  Int
   event_id Int
-  event    event @relation(fields: [event_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  event    event @relation(fields: [event_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   game     game  @relation(fields: [game_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([game_id, event_id])
@@ -151,7 +55,7 @@ model event_game {
 model event_photo {
   event_id Int
   photo_id Int
-  event    event @relation(fields: [event_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  event    event @relation(fields: [event_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   photo    photo @relation(fields: [photo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([event_id, photo_id])
@@ -188,7 +92,7 @@ model game_tag {
 model participant {
   event_id Int
   user_id  Int
-  event    event @relation(fields: [event_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  event    event @relation(fields: [event_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   User     User  @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([event_id, user_id])
@@ -214,7 +118,7 @@ model review {
   note        Int?
   description String?
   created_at  DateTime? @default(now()) @db.Timestamp(6)
-  event       event?    @relation(fields: [event_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  event       event?    @relation(fields: [event_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   photo       photo?    @relation(fields: [photo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   User        User?     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
