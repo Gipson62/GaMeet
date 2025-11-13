@@ -24,7 +24,7 @@ model User {
   birth_date    DateTime?     @db.Date
   creation_date DateTime?     @default(now()) @db.Timestamp(6)
   email         String        @unique @db.VarChar(64)
-  password      String        @db.VarChar(25)
+  password      String        @db.VarChar(255)
   is_admin      Boolean?      @default(false)
   bio           String?
   photo         photo?        @relation(fields: [photo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
