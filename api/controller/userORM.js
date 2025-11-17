@@ -2,14 +2,19 @@ import prisma from '../database/databaseORM.js'
 import { hash, compare } from '../util/index.js'
 import  { sign } from '../util/jwt.js'
 
-export const getUserById = async (req, res) => {
+export const getUser = async (req, res) => {
     try {
         const user = await prisma.user.findUnique({
             where: {
-                id: req.user.id
+                id : req.val.id
+            },
+            include: {
+                photo: true,
+                event: true,
+                participant: true,
+                review: true
             }
         })
-
         if (user) {
             res.send(user)
         } else {
@@ -20,25 +25,41 @@ export const getUserById = async (req, res) => {
         res.sendStatus(500)
     }
 }
+export const getAllUsers = async (req, res) => {
+    try {
+        const users = await prisma.user.findMany({
+            include: {
+                photo: true,
+                event: true,
+                participant: true,
+                review: true
+            }
+        });
+
+        res.send(users);
+    } catch (err) {
+        console.error(err);
+        res.sendStatus(500);
+    }
+};
 
 export const addUser = async (req, res) => {
     try {
-        const { pseudo, email, password, birth_date, bio, is_admin, photo_id } = req.val
+        const { pseudo, email, password, birth_date, bio, photo_id } = req.val
 
         // Vérifie si l’email existe déjà
         const existing = await prisma.user.findUnique({ where: { email } })
-
         if (existing) return res.status(409).send({ message: 'Email déjà utilisé' })
 
         const {id} = await prisma.user.create({
             data: {
                 pseudo,
                 email,
-                password: await hash(password),
-                birth_date: birth_date ? new Date(birth_date) : null,
-                bio: bio ?? null,
-                is_admin: is_admin ?? false,
-                photo_id: photo_id ?? null
+                birth_date,
+                bio,
+                is_admin: false,
+                photo_id,
+                password: await hash(password)
             },
             select: {
                 id: true
@@ -54,41 +75,14 @@ export const addUser = async (req, res) => {
 
 export const updateUser = async (req, res) => {
     try {
-        const { id } = req.user;
-
-        if (!id) {
-            return res.status(400).send('Missing user ID');
-        }
-
-        const updateData = { ...req.val};
-
-        if (updateData.password) {
-            updateData.password = await hash(updateData.password);
-        }
-        if (updateData.birth_date) {
-            updateData.birth_date = new Date(updateData.birth_date);
-        }
+        const {id, pseudo, birth_date, bio, photo_id } = req.val;
         await prisma.user.update({
-            where: { id },
-            data: updateData
-        })
-
-        res.sendStatus(204)
-    } catch (e) {
-        console.error(e)
-        res.sendStatus(500)
-    }
-}
-
-export const deleteUser = async (req, res) => {
-    try {
-        const id = req.user?.id;
-
-        if (!id) {
-            return res.status(400).send('Missing user ID');
-        }
-
-        await prisma.user.delete({
+            data: {
+                pseudo,
+                birth_date,
+                bio,
+                photo_id
+            },
             where: {
                 id
             }
@@ -99,6 +93,22 @@ export const deleteUser = async (req, res) => {
         res.sendStatus(500)
     }
 }
+
+export const deleteUser = async (req, res) => {
+    try {
+        const {id} = req.val;
+        await prisma.user.delete({
+            where: {
+                id
+            }
+        });
+
+        res.sendStatus(204);
+    } catch (err) {
+        console.error(err);
+        res.sendStatus(500);
+    }
+};
 
 export const loginUser = async (req, res) => {
     try {
@@ -139,4 +149,9 @@ export const loginUser = async (req, res) => {
         console.error(err)
         res.sendStatus(500)
     }
+
+
+
 }
+
+
