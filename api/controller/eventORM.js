@@ -22,10 +22,9 @@ export const getAllEvents = async (req, res) => {
 }
 export const getEventById = async (req, res) => {
     try {
-        const { id } = req.ParamVal;
         const event = await prisma.event.findUnique({
             where: {
-                id
+                id :req.event.id
             },
             include: {
                 User: { select: { id: true, pseudo: true, email: true } }, // Auteur
@@ -131,13 +130,13 @@ export const updateEvent = async (req, res) => {
 
 export const deleteEvent = async (req, res) => {
     try {
-        const {id} = req.ParamVal;
+        const { id } = req.ParamVal;
 
         if (!id) {
             return res.status(400).send('Missing event ID');
         }
         const author = req.user?.id
-       const existing = await prisma.event.findUnique({ where: { id: id } })
+        const existing = await prisma.event.findUnique({ where: { id: id } })
         if (!existing) return res.sendStatus(404)
         if (existing.author !== author && !req.user.is_admin)
             return res.status(403).send({ message: "Accès refusé" })
