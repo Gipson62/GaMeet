@@ -126,7 +126,8 @@ VALUES
 INSERT INTO photo (url)
 VALUES
 ('https://picsum.photos/200/300?random=1'),
-('https://picsum.photos/200/300?random=2');
+('https://picsum.photos/200/300?random=2'),
+('https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Braum_0.jpg');
 
 -- EVENTS (sans jeux ni photos pour commencer)
 INSERT INTO event (name, scheduled_date, location, author)
