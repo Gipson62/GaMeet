@@ -26,7 +26,7 @@ router.delete('/me', checkJWT, CVM.delete ,deleteUser)
 
 // ADMIN USER MANAGEMENT
 // A AJOUTER VERIF ADMIN!!!!!!!!
-router.get("/list", getAllUsers);
+router.get("/list", checkJWT, admin, getAllUsers);
 router.get('/:id', CVM.searchedUser, getUser)
 router.delete('/:id', CVM.userToDelete, deleteUser)
 
