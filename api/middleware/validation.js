@@ -1,6 +1,6 @@
 import * as userValidator from './validator/user.js';
 import * as eventValidator from './validator/event.js';
-
+import * as reviewValidator from './validator/review.js';
 export const userValidatorMiddleware = {
     profile: async (req, res, next) => {
         try {
@@ -81,7 +81,34 @@ export const eventValidatorMiddleware = {
     },
     idParam: async (req, res, next) => {
         try {
-            req.ParamVal = await eventValidator.idParam.validate(req.params);
+            req.eventParamsVal = await eventValidator.idParam.validate(req.params);
+            next();
+        } catch (e) {
+            res.status(400).send(e.message);
+        }
+    }
+};
+
+export const reviewValidatorMiddleware = {
+    create: async (req, res, next) => {
+        try {
+            req.val = await reviewValidator.create.validate(req.body);
+            next();
+        } catch (e) {
+            res.status(400).send(e.message);
+        }
+    },
+    update: async (req, res, next) => {
+        try {
+            req.val = await reviewValidator.update.validate(req.body);
+            next();
+        } catch (e) {
+            res.status(400).send(e.message);
+        }
+    },
+    idParam: async (req, res, next) => {
+        try {
+            req.reviewParamsVal = await reviewValidator.idParam.validate({ id: req.params.reviewId });
             next();
         } catch (e) {
             res.status(400).send(e.message);

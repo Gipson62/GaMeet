@@ -1,4 +1,5 @@
 import Router from 'express';
+import reviewRouter from './review.js';
 import {
     getAllEvents,
     getEventById,
@@ -16,5 +17,7 @@ router.get('/', getAllEvents);
 router.get('/:id', EVM.idParam, getEventById);
 router.patch('/:id', checkJWT, EVM.idParam, EVM.update, updateEvent);
 router.delete('/:id', checkJWT, EVM.idParam, deleteEvent);
-
+router.use('/:id/review', EVM.idParam, reviewRouter);
 export default router;
+
+

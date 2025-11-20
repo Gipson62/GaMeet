@@ -147,3 +147,9 @@ VALUES
 (1, 1),
 (1, 2),
 (2, 1);
+
+INSERT INTO Review (user_id, event_id, note, description, photo_id)
+VALUES
+(2, 1, 8, 'Super tournoi !', 1),
+(2, 1, 7, 'Bien organisé', NULL),
+(1, 2, 9, 'Soirée au top', 2);

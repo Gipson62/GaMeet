@@ -1,6 +1,4 @@
 import prisma from '../database/databaseORM.js'
-import { hash, compare } from '../util/index.js'
-import  { sign } from '../util/jwt.js'
 
 export const getAllEvents = async (req, res) => {
     try {
@@ -22,9 +20,12 @@ export const getAllEvents = async (req, res) => {
 }
 export const getEventById = async (req, res) => {
     try {
+
+        const  {id}  = req.eventParamsVal;
+
         const event = await prisma.event.findUnique({
             where: {
-                id :req.event.id
+                id : id
             },
             include: {
                 User: { select: { id: true, pseudo: true, email: true } }, // Auteur
@@ -81,47 +82,49 @@ export const addEvent = async (req, res) => {
 
 export const updateEvent = async (req, res) => {
     try {
-        const { id } = req.ParamVal;
-        
+        const { id } = req.eventParamsVal
         const author = req.user?.id
 
-        if (!id) {
-            return res.status(400).send({ message: "Missing event ID" });
-        }
-
         const existing = await prisma.event.findUnique({ where: { id: id } })
+
         if (!existing) return res.sendStatus(404)
         if (existing.author !== author && !req.user.is_admin)
             return res.status(403).send({ message: "Accès refusé" })
         
+        
         const updateData  = {...req.body}
+
+        delete updateData.id
+        delete updateData.author
 
         if (updateData.scheduled_date) {
             updateData.scheduled_date = new Date(updateData.scheduled_date);
         }
 
-        if (updateData.game_id) {
         // Supprime les anciennes relations et ajoute les nouvelles
-        await prisma.event_game.deleteMany({ where: { event_id: id } })
-        updateData.event_game = {
-            create: updateData.game_id.map(gameId => ({ game_id: gameId }))
-        }
-        delete updateData.game_id
+        if (updateData.game_id) {
+            await prisma.event_game.deleteMany({ where: { event_id: id } })
+            updateData.event_game = {
+                create: updateData.game_id.map(gameId => ({ game_id: gameId }))
+            }
+            delete updateData.game_id
         }
 
         if (updateData.photo_id) {
-        await prisma.event_photo.deleteMany({ where: { event_id: id } })
-        updateData.event_photo = {
-            create: updateData.photo_id.map(photoId => ({ photo_id: photoId }))
+            await prisma.event_photo.deleteMany({ where: { event_id: id } })
+            updateData.event_photo = {
+                create: updateData.photo_id.map(photoId => ({ photo_id: photoId }))
+            }
+            delete updateData.photo_id
         }
-        delete updateData.photo_id
-        }
+
         await prisma.event.update({
             where: { id },
             data: updateData
         })
 
         res.sendStatus(204)
+
     } catch (e) {
         console.error(e)
         res.sendStatus(500)
@@ -130,22 +133,17 @@ export const updateEvent = async (req, res) => {
 
 export const deleteEvent = async (req, res) => {
     try {
-        const { id } = req.ParamVal;
-
-        if (!id) {
-            return res.status(400).send('Missing event ID');
-        }
+        const { id } = req.eventParamsVal
         const author = req.user?.id
+        
         const existing = await prisma.event.findUnique({ where: { id: id } })
+        
         if (!existing) return res.sendStatus(404)
         if (existing.author !== author && !req.user.is_admin)
             return res.status(403).send({ message: "Accès refusé" })
 
-        await prisma.event.delete({
-            where: {
-                id
-            }
-        })
+        await prisma.event.delete({ where: { id } })
+
         res.sendStatus(204)
     } catch (e) {
         console.error(e)
