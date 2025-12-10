@@ -2,6 +2,7 @@ import * as userValidator from './validator/user.js';
 import * as eventValidator from './validator/event.js';
 import * as reviewValidator from './validator/review.js';
 import * as gameValidator from './validator/game.js';
+import * as tagValidator from './validator/tag.js';
 
 export const userValidatorMiddleware = {
     profile: async (req, res, next) => {
@@ -138,6 +139,33 @@ export const gameValidatorMiddleware = {
     idParam: async (req, res, next) => {
         try {
             req.gameParamsVal = await gameValidator.idParam.validate(req.params);
+            next();
+        } catch (err) {
+            res.status(400).send(err.message);
+        }
+    }
+};
+
+export const tagValidatorMiddleware = {
+    create: async (req, res, next) => {
+        try {
+            req.val = await tagValidator.create.validate(req.body);
+            next();
+        } catch (err) {
+            res.status(400).send(err.message);
+        }
+    },
+    nameParam: async (req, res, next) => {
+        try {
+            req.gameParamsVal = await tagValidator.nameParam.validate(req.params);
+            next();
+        } catch (err) {
+            res.status(400).send(err.message);
+        }
+    },
+    gameIdParam: async (req, res, next) => {
+        try {
+            req.gameParamsVal = await tagValidator.idParam.validate(req.params);
             next();
         } catch (err) {
             res.status(400).send(err.message);
