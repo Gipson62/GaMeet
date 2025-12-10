@@ -14,7 +14,7 @@ export const getAllTags = async (req, res) => {
     }
 }
 
-export const getAllTagFromGame = async (req, res) => {
+export const getAllTagFromGameId = async (req, res) => {
     try {
         const { id } = req.gameParamsVal
         const tags = await prisma.game_tag.findMany({
