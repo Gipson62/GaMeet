@@ -1,7 +1,7 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import App from '../src/App'; // On importe le cadre
 import Login from '../pages/Login';
-import UserProfile from '../pages/UserProfile';
+// import UserProfile from '../pages/UserProfile';
 
 const router = createBrowserRouter([
     {
