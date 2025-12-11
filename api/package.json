@@ -38,5 +38,8 @@
     "pg": "^8.16.3",
     "prisma": "^6.19.0",
     "swagger": "^0.0.1"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   }
 }

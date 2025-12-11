@@ -8,7 +8,12 @@ export const getUser = async (req, res) => {
             where: {
                 id : req.val.id
             },
-            include: {
+            select: {
+                id: true,
+                pseudo: true,
+                bio: true,
+                creation_date: true,
+
                 photo: true,
                 event: true,
                 participant: true,
@@ -28,7 +33,15 @@ export const getUser = async (req, res) => {
 export const getAllUsers = async (req, res) => {
     try {
         const users = await prisma.user.findMany({
-            include: {
+            select: {
+                id: true,
+                pseudo: true,
+                email: true,
+                is_admin: true,
+                birth_date: true,
+                bio: true,
+                creation_date: true,
+
                 photo: true,
                 event: true,
                 participant: true,
