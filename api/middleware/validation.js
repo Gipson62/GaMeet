@@ -171,6 +171,14 @@ export const tagValidatorMiddleware = {
         } catch (err) {
             res.status(400).send(err.message);
         }
+    },
+    gameIdTagNameParam: async (req, res, next) => {
+        try {
+            req.gameTagParamsVal = await tagValidator.gameIdTagNameParam.validate(req.params);
+            next();
+        } catch (err) {
+            res.status(400).send(err.message);
+        }
     }
 }
 
