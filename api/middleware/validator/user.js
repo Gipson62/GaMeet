@@ -27,8 +27,7 @@ const updateSchema = vine.object({
 });
 
 export const
-    searchedUser = vine.compile(userIDSchema),
-    register = vine.compile(registerSchema),
+    create = vine.compile(registerSchema),
     update = vine.compile(updateSchema),
-    userToDelete = vine.compile(userIDSchema),
+    idParam = vine.compile(userIDSchema),
     login = vine.compile(loginSchema);

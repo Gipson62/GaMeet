@@ -8,15 +8,7 @@ import * as photoValidator from './validator/photo.js';
 export const userValidatorMiddleware = {
     profile: async (req, res, next) => {
         try {
-            req.val = await userValidator.searchedUser.validate(req.user);
-            next();
-        } catch (e) {
-            res.status(400).send(e.message);
-        }
-    },
-    searchedUser: async (req, res, next) => {
-        try {
-            req.val = await userValidator.searchedUser.validate(req.params);
+            req.val = await userValidator.idParam.validate(req.user);
             next();
         } catch (e) {
             res.status(400).send(e.message);
@@ -30,9 +22,9 @@ export const userValidatorMiddleware = {
             res.status(400).send(e.message);
         }
     },
-    register: async (req, res, next) => {
+    create: async (req, res, next) => {
         try {
-            req.val = await userValidator.register.validate(req.body);
+            req.val = await userValidator.create.validate(req.body);
             next();
         } catch (e) {
             res.status(400).send(e.message);
@@ -41,24 +33,22 @@ export const userValidatorMiddleware = {
     update: async (req, res, next) => {
         try {
             req.val = await userValidator.update.validate(req.body);
-            req.val.id = req.user.id;
             next();
         } catch (e) {
             res.status(400).send(e.message);
         }
     },
-    userToDelete: async (req, res, next) => {
+    idParam: async (req, res, next) => {
         try {
-            req.val = await userValidator.userToDelete.validate(req.params);
+            req.val = await userValidator.idParam.validate(req.params);
             next();
         } catch (e) {
             res.status(400).send(e.message);
         }
-    }
-    ,
+    },
     delete: async (req, res, next) => {
         try {
-            req.val = await userValidator.userToDelete.validate(req.user);
+            req.val = await userValidator.idParam.validate(req.user);
             next();
         } catch (e) {
             res.status(400).send(e.message);

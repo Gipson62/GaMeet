@@ -16,19 +16,18 @@ import {admin} from '../../middleware/authorization/mustBe.js';
 const router = Router();
 
 // AUTH
-router.post('/register', CVM.register, addUser)
+router.post('/register', CVM.idParam, addUser)
 router.post('/login', CVM.login, loginUser)
 
 // USER SELF
-router.get('/me', checkJWT,CVM.profile, getUser)
-router.patch('/me', checkJWT ,CVM.update, updateUser)
-router.delete('/me', checkJWT, CVM.delete ,deleteUser)
+router.get('/', checkJWT, CVM.profile, getUser)
+router.patch('/', checkJWT ,CVM.idParam ,CVM.update, updateUser)
+router.delete('/', checkJWT, CVM.delete ,deleteUser)
 
 // ADMIN USER MANAGEMENT
-// A AJOUTER VERIF ADMIN!!!!!!!!
 router.get("/list", checkJWT, admin, getAllUsers);
-router.get('/:id', CVM.searchedUser, getUser)
-router.delete('/:id', CVM.userToDelete, deleteUser)
+router.get('/:id', checkJWT, admin, CVM.idParam, getUser)
+router.delete('/:id', checkJWT, admin, CVM.idParam, deleteUser)
 
 
 export default router
