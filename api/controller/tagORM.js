@@ -34,6 +34,57 @@ export const getAllTagFromGameId = async (req, res) => {
     }
 }
 
+/*
+ * Associe un tag à un jeu, crée le tag s'il n'existe pas
+ */
+export const addTagFromGameId = async (req, res) => {
+    try {
+        const { id, tag_name } = req.gameTagParamsVal;
+
+
+        let tag = await prisma.tag.findUnique({ where: { tag_name } })
+        if (!tag) {
+            tag = await prisma.tag.create({ data: { tag_name } })
+        }
+
+        await prisma.game_tag.create({
+            data: {
+                game_id: id,
+                tag_id: tag.id
+            }
+        })
+
+        res.status(201).send({ message: "Tag ajouté au jeu" })
+    } catch (err) {
+        console.error(err)
+        res.sendStatus(500)
+    }
+}
+
+/*
+ * Retire un tag d'un jeu
+ */
+export const deleteTagFromGameId = async (req, res) => {
+    try {
+        const { id, tag_name } = req.gameIdTagNameParam;
+
+        const tag = await prisma.tag.findUnique({ where: { tag_name } })
+        if (!tag) return res.status(404).send({ message: "Tag non trouvé" })
+
+        await prisma.game_tag.deleteMany({
+            where: {
+                game_id: id,
+                tag_id: tag.id
+            }
+        })
+
+        res.sendStatus(204)
+    } catch (err) {
+        console.error(err)
+        res.sendStatus(500)
+    }
+}
+
 export const addTag = async (req, res) => {
     try {
         const {

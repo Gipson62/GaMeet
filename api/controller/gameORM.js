@@ -17,6 +17,7 @@ export const getAllGames = async (req, res) => {
         res.sendStatus(500);
     }
 }
+
 export const getGameById = async (req, res) => {
     try {
         const  {id}  = req.gameParamsVal;
@@ -79,6 +80,7 @@ export const addGame = async (req, res) => {
     }
 }
 
+//TODO: add photos handling
 export const updateGame = async (req, res) => {
     try {
         const { id } = req.gameParamsVal;
