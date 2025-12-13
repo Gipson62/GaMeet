@@ -79,6 +79,7 @@ export const addGame = async (req, res) => {
     }
 }
 
+//TODO: add photos handling
 export const updateGame = async (req, res) => {
     try {
         const { id } = req.gameParamsVal;

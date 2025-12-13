@@ -3,6 +3,7 @@ import * as eventValidator from './validator/event.js';
 import * as reviewValidator from './validator/review.js';
 import * as gameValidator from './validator/game.js';
 import * as tagValidator from './validator/tag.js';
+import * as photoValidator from './validator/photo.js';
 
 export const userValidatorMiddleware = {
     profile: async (req, res, next) => {
@@ -166,6 +167,25 @@ export const tagValidatorMiddleware = {
     gameIdParam: async (req, res, next) => {
         try {
             req.gameParamsVal = await tagValidator.idParam.validate(req.params);
+            next();
+        } catch (err) {
+            res.status(400).send(err.message);
+        }
+    }
+}
+
+export const photoValidatorMiddleware = {
+    update: async (req, res, next) => {
+        try {
+            req.photoParamsVal = await photoValidator.update.validate(req.params);
+            next();
+        } catch (err) {
+            res.status(400).send(err.message);
+        }
+    },
+    idParam: async (req, res, next) => {
+        try {
+            req.photoParamsVal = await photoValidator.idParam.validate(req.params);
             next();
         } catch (err) {
             res.status(400).send(err.message);
