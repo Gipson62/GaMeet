@@ -8,10 +8,19 @@ export const getAllEvents = async (req, res) => {
                 name: true,
                 scheduled_date: true,
                 location: true,
-                max_capacity: true
+                max_capacity: true,
+                event_game: {
+                    include: {
+                        game: true
+                    }
+                },
+                _count: {
+                    select: { participant: true } // récupère le nombre d'inscrits
+                }
             },
             orderBy: { scheduled_date: 'asc' }
         })
+
         res.send(events)
     } catch (err) {
         console.error(err)
@@ -32,7 +41,10 @@ export const getEventById = async (req, res) => {
                 event_game: { include: { game: true } },
                 event_photo: { include: { photo: true } },
                 participant: { include: { User: { select: { id: true, pseudo: true } } } },
-                review: { include: { User: { select: { id: true, pseudo: true } }, photo: true } }
+                review: { include: { User: { select: { id: true, pseudo: true } }, photo: true } },
+                _count: {
+                    select: { participant: true } // récupère le nombre d'inscrits
+                }
             }
         })
 
@@ -150,3 +162,63 @@ export const deleteEvent = async (req, res) => {
         res.sendStatus(500)
     }
 }
+export const joinEvent = async (req, res) => {
+    try {
+        const userId = req.user?.id;
+        const eventId = req.eventParamsVal.id;
+
+        if (!userId) return res.status(401).json({ message: 'Utilisateur non authentifié' });
+
+        const event = await prisma.event.findUnique({ where: { id: eventId } })
+        if (!event) return res.status(404).json({ message: 'Événement introuvable' });
+
+        // Vérifier si l'utilisateur est déjà inscrit
+        const existing = await prisma.participant.findUnique({
+            where: { event_id_user_id: { event_id: eventId, user_id: userId } }
+        });
+        if (existing) return res.status(400).json({ message: 'Déjà inscrit à cet événement' });
+
+        // Vérifier la capacité
+        if (event.max_capacity !== null) {
+            const participantCount = await prisma.participant.count({ where: { event_id: eventId } });
+            if (participantCount >= event.max_capacity) {
+                return res.status(400).json({ message: 'L’événement est complet' });
+            }
+        }
+
+        // Ajouter l'inscription
+        await prisma.participant.create({
+            data: { event_id: eventId, user_id: userId }
+        });
+
+        res.status(201).json({ message: 'Inscription réussie !' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Erreur interne' });
+    }
+};
+// Désinscription d'un événement
+export const leaveEvent = async (req, res) => {
+    try {
+        const userId = req.user?.id;
+        const eventId = req.eventParamsVal.id;
+
+        if (!userId) return res.status(401).json({ message: 'Utilisateur non authentifié' });
+
+        // Vérifier que l'inscription existe
+        const existing = await prisma.participant.findUnique({
+            where: { event_id_user_id: { event_id: eventId, user_id: userId } }
+        });
+        if (!existing) return res.status(404).json({ message: "Vous n'êtes pas inscrit à cet événement" });
+
+        // Supprimer l'inscription
+        await prisma.participant.delete({
+            where: { event_id_user_id: { event_id: eventId, user_id: userId } }
+        });
+
+        res.status(204).send();
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Erreur interne' });
+    }
+};
