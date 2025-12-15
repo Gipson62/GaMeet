@@ -94,7 +94,7 @@ export const updateReview = async (req, res) => {
         if (existing.user_id !== userId && !req.user.is_admin)
             return res.status(403).send({ message: "Accès refusé" });
 
-        const updateData = { ...req.body };
+        const updateData = { ...req.val };
 
         await prisma.review.update({
             where: { id: reviewId },

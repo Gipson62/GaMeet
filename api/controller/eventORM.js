@@ -28,11 +28,11 @@ export const getEventById = async (req, res) => {
                 id : id
             },
             include: {
-                User: { select: { id: true, pseudo: true, email: true } }, // Auteur
-                event_game: { include: { game: true } },                   // Jeux liés
-                event_photo: { include: { photo: true } },                 // Photos
-                participant: { include: { User: { select: { id: true, pseudo: true } } } }, // Participants
-                review: { include: { User: { select: { id: true, pseudo: true } }, photo: true } } // Notes avec auteur + photo
+                User: { select: { id: true, pseudo: true, email: true } },
+                event_game: { include: { game: true } },
+                event_photo: { include: { photo: true } },
+                participant: { include: { User: { select: { id: true, pseudo: true } } } },
+                review: { include: { User: { select: { id: true, pseudo: true } }, photo: true } }
             }
         })
 
@@ -92,7 +92,7 @@ export const updateEvent = async (req, res) => {
             return res.status(403).send({ message: "Accès refusé" })
         
         
-        const updateData  = {...req.body}
+        const updateData  = {...req.val}
 
         delete updateData.id
         delete updateData.author
@@ -102,25 +102,25 @@ export const updateEvent = async (req, res) => {
         }
 
         // Supprime les anciennes relations et ajoute les nouvelles
-        if (updateData.game_id) {
-            await prisma.event_game.deleteMany({ where: { event_id: id } })
-            updateData.event_game = {
+        await prisma.$transaction(async (tx) => {
+            if (updateData.game_id) {
+                await tx.event_game.deleteMany({ where: { event_id: id } })
+                updateData.event_game = {
                 create: updateData.game_id.map(gameId => ({ game_id: gameId }))
+                }
             }
-            delete updateData.game_id
-        }
 
-        if (updateData.photo_id) {
-            await prisma.event_photo.deleteMany({ where: { event_id: id } })
-            updateData.event_photo = {
+            if (updateData.photo_id) {
+                await tx.event_photo.deleteMany({ where: { event_id: id } })
+                updateData.event_photo = {
                 create: updateData.photo_id.map(photoId => ({ photo_id: photoId }))
+                }
             }
-            delete updateData.photo_id
-        }
 
-        await prisma.event.update({
-            where: { id },
-            data: updateData
+            await tx.event.update({
+                where: { id },
+                data: updateData
+            })
         })
 
         res.sendStatus(204)
