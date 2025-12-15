@@ -111,11 +111,17 @@ export const updateUser = async (req, res) => {
 export const deleteUser = async (req, res) => {
     try {
         const {id} = req.val;
-        await prisma.user.delete({
-            where: {
-                id
-            }
-        });
+        await prisma.$transaction([
+            prisma.review.deleteMany({
+                where: { user_id: id }
+            }),
+            prisma.participant.deleteMany({
+                where: { user_id: id }
+            }),
+            prisma.user.delete({
+                where: { id }
+            })
+        ]);
 
         res.sendStatus(204);
     } catch (err) {
