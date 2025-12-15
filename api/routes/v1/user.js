@@ -16,12 +16,12 @@ import {admin} from '../../middleware/authorization/mustBe.js';
 const router = Router();
 
 // AUTH
-router.post('/register', CVM.idParam, addUser)
+router.post('/register', CVM.create, addUser)
 router.post('/login', CVM.login, loginUser)
 
 // USER SELF
 router.get('/', checkJWT, CVM.profile, getUser)
-router.patch('/', checkJWT ,CVM.idParam ,CVM.update, updateUser)
+router.patch('/', checkJWT , CVM.update, updateUser)
 router.delete('/', checkJWT, CVM.delete ,deleteUser)
 
 // ADMIN USER MANAGEMENT
