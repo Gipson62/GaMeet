@@ -6,31 +6,17 @@ import Event from '../pages/Event.jsx';
 
 const router = createBrowserRouter([
     {
-        path: "/",
-        element: <App />, // <--- C'est ici qu'on active la Navbar !
-        // Toutes ces pages s'afficheront DANS le <Outlet /> de App
-        children: [
-            {
-                path: "/", // Redirection par défaut
-                element: <Navigate to="/login" replace />
-            },
-            {
-                path: "login",
-                element: <Login />
-            },
-            {
-                path: "/event", // Redirection par défaut
-                element: <Event />
-            },
-            /*
-            {
-                path: "profile",
-                element: <UserProfile />
-            }
-
-             */
-        ]
-    }
+        path: "/", // Redirection par défaut
+        element: <Navigate to="/login" replace />
+    },
+    {
+        path: "login",
+        element: <Login />
+    },
+    {
+        path: "/event", // Redirection par défaut
+        element: <Event />
+    },
 ]);
 
 export default router;
