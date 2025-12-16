@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import App from '../src/App'; // On importe le cadre
 import Login from '../pages/Login';
+import Event from '../pages/Event';
 // import UserProfile from '../pages/UserProfile';
 
 const router = createBrowserRouter([
@@ -16,6 +17,10 @@ const router = createBrowserRouter([
             {
                 path: "login",
                 element: <Login />
+            },
+            {
+                path: "/event", // Redirection par défaut
+                element: <Event />
             },
             /*
             {
