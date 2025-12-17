@@ -1,13 +1,19 @@
 import prisma from '../database/databaseORM.js'
+import fs from 'fs'
 
 export const getAllGames = async (req, res) => {
     try {
+        // Need to get: game_id, name, platformes, release_date, logo_id, studio, approval status, publisher
         const games = await prisma.game.findMany({
             select: {
                 id: true,
                 name: true,
                 platforms: true,
-                release_date: true
+                release_date: true,
+                logo_id: true,
+                is_approved: true,
+                publisher: true,
+                studio: true
             },
         });
         res.send(games);
@@ -148,4 +154,75 @@ export const deleteGame = async (req, res) => {
         res.sendStatus(500)
     }
 
+}
+
+/*
+ * Met à jour une photo (banner|logo|grid) d'un jeu :
+ * - upload d'un nouveau fichier
+ * - suppression de l'ancienne photo (DB + fichier)
+ * - mise à jour du champ sur le jeu
+ */
+export const updateGamePhoto = async (req, res) => {
+    try {
+        const { id, type } = req.params
+
+        if (!req.user?.is_admin) {
+            return res.status(403).json({ message: 'Accès refusé' })
+        }
+
+        if (!['banner', 'logo', 'grid'].includes(type)) {
+            return res.status(400).json({ message: 'Type de photo invalide' })
+        }
+
+        if (!req.file) {
+            return res.status(400).json({ message: 'Aucun fichier reçu' })
+        }
+
+        const numericId = Number(id)
+        const game = await prisma.game.findUnique({ where: { id: numericId } })
+        if (!game) return res.sendStatus(404)
+
+        const fieldMap = {
+            banner: 'banner_id',
+            logo: 'logo_id',
+            grid: 'grid_id'
+        }
+        const field = fieldMap[type]
+
+        // créer la nouvelle photo
+        const newPhoto = await prisma.photo.create({ data: { url: req.file.filename } })
+
+        // garder l'ancien id pour suppression
+        const oldPhotoId = game[field]
+
+        // mettre à jour le jeu
+        await prisma.game.update({
+            where: { id: numericId },
+            data: { [field]: newPhoto.id }
+        })
+
+        // supprimer l'ancienne photo (fichier + DB) si existante
+        if (oldPhotoId) {
+            try {
+                const oldPhoto = await prisma.photo.findUnique({ where: { id: oldPhotoId } })
+                if (oldPhoto?.url) {
+                    fs.unlink(`./uploads/${oldPhoto.url}`, () => {})
+                }
+                await prisma.photo.delete({ where: { id: oldPhotoId } })
+            } catch (cleanupErr) {
+                console.error('Erreur suppression ancienne photo', cleanupErr)
+            }
+        }
+
+        return res.status(200).json({
+            message: 'Photo mise à jour',
+            field,
+            photoId: newPhoto.id,
+            url: newPhoto.url
+        })
+
+    } catch (err) {
+        console.error(err)
+        res.sendStatus(500)
+    }
 }

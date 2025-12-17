@@ -128,9 +128,27 @@ VALUES
 -- PHOTOS
 INSERT INTO photo (url)
 VALUES
-('https://picsum.photos/200/300?random=1'),
-('https://picsum.photos/200/300?random=2'),
-('https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Braum_0.jpg');
+('Default_pfp.png'),
+('Default_pfp.png'),
+('Default_pfp.png');
+
+
+INSERT INTO game (banner_id, logo_id, grid_id, name, description, release_date, publisher, studio, platforms, is_approved)
+VALUES
+(3, 3, 3, 'League of Legends', 'Un jeu de stratégie en équipe très populaire.', '2009-10-27', 'Riot Games', 'Riot Games', 'PC, Mac', true);
+
+INSERT INTO Tag (name)
+VALUES
+('MOBA'),
+('Stratégie'),
+('Compétitif');
+
+INSERT INTO Game_Tag (game_id, tag_name)
+VALUES
+(3, 'MOBA'),
+(3, 'Stratégie'),
+(3, 'Compétitif');
+
 
 -- EVENTS (sans jeux ni photos pour commencer)
 INSERT INTO event (name, scheduled_date, location, author)
