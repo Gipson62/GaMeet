@@ -128,9 +128,9 @@ VALUES
 -- PHOTOS
 INSERT INTO photo (url)
 VALUES
-('Default_pfp.png'),
-('Default_pfp.png'),
-('Default_pfp.png');
+('default_pfp.png'),
+('default_pfp.png'),
+('default_pfp.png');
 
 
 INSERT INTO game (banner_id, logo_id, grid_id, name, description, release_date, publisher, studio, platforms, is_approved)

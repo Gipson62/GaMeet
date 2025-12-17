@@ -20,9 +20,9 @@ async function main() {
     console.log('Base de données nettoyée.')
 
 
-    const photo1 = await prisma.photo.create({ data: { url: 'https://picsum.photos/200/300?random=1' } })
-    const photo2 = await prisma.photo.create({ data: { url: 'https://picsum.photos/200/300?random=2' } })
-    const photo3 = await prisma.photo.create({ data: { url: 'https://picsum.photos/200/300?random=3' } })
+    const photo1 = await prisma.photo.create({ data: { url: 'default_pfp.png' } })
+    const photo2 = await prisma.photo.create({ data: { url: 'default_pfp.png' } })
+    const photo3 = await prisma.photo.create({ data: { url: 'default_pfp.png' } })
 
     // Kilou123
     const passwordHash = '$argon2id$v=19$m=65536,t=3,p=4$o00mO/AVSJmW5oyoPCTjow$asYozb3exKcgyFCqq0fTkxA+A6sHMMIg0Yx5s+RRGH0';
