@@ -1,119 +1,96 @@
 import { useEffect, useState } from 'react';
-import { Table, Button, Tag, Space, Input, Typography, Card } from 'antd';
-import { PlusOutlined, ReloadOutlined, SettingOutlined, DeleteOutlined } from '@ant-design/icons';
-
-const { Title } = Typography;
-const { Search } = Input;
+import { Card, message, Modal } from 'antd';
+import EventsHeader from '../components/EventsHeader';
+import EventsTable from '../components/EventsTable';
+import AddEventForm from '../components/EventForm';
+import { fetchEvents, deleteEvent, addEvent } from '../api/api';
 
 const AdminEvents = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
 
-  const fetchEvents = async () => {
+  const loadEvents = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:3001/v1/event', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-      const data = await response.json();
-
-      // Mapper les données pour correspondre aux colonnes du tableau
-      const mappedData = data.map(event => ({
-        id: event.id,
-        name: event.name,
-        date: event.scheduled_date,
-        location: event.location,
-        capacity: event.max_capacity,
-        participants: event._count?.participant || 0, // nouveau champ
-        games: event.event_game?.map(eg => eg.game.name) || [],
-      }));
-
-      setEvents(mappedData);
+      const data = await fetchEvents();
+      setEvents(
+        data.map(e => ({
+          id: e.id,
+          name: e.name,
+          date: e.scheduled_date,
+          location: e.location,
+          capacity: e.max_capacity,
+          participants: e._count?.participant || 0,
+          games: e.event_game?.map(eg => eg.game.name) || [],
+        }))
+      );
     } catch (err) {
-      console.error(err);
+      message.error(err.message);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchEvents();
-  }, []);
+async function handleAddEvent(values) {
+  // pas de quotes autour des valeurs
+  const payload = {
+    name: values.name,
+    scheduled_date: values.scheduled_date, // string ISO ok
+    location: values.location,
+    description: values.description,
+    max_capacity: values.max_capacity
+  };
 
-  const columns = [
-    {
-      title: 'Nom',
-      dataIndex: 'name',
-      key: 'name',
-      render: text => <strong>{text}</strong>,
-    },
-    {
-      title: 'Date',
-      dataIndex: 'date',
-      key: 'date',
-    },
-    {
-      title: 'Lieu',
-      dataIndex: 'location',
-      key: 'location',
-    },
-    {
-      title: 'Capacité',
-      dataIndex: 'capacity',
-      key: 'capacity',
-    },
-    {
-      title: 'Participants',
-      dataIndex: 'participants',
-      key: 'participants',
-    },
-    {
-      title: 'Jeu(x)',
-      dataIndex: 'games',
-      key: 'games',
-      render: games => games.map(game => <Tag key={game}>{game}</Tag>),
-    },
-    {
-      title: '',
-      key: 'actions',
-      render: () => (
-        <Space>
-          <Button icon={<SettingOutlined />} />
-          <Button danger icon={<DeleteOutlined />} />
-        </Space>
-      ),
-    },
-  ];
+  try {
+    const result = await addEvent(payload, localStorage.getItem('token'));
+    console.log('Event créé !', result);
+    setOpen(false);       // fermer le modal
+    loadEvents();         // rafraîchir la liste
+  } catch (err) {
+    console.error('Erreur création event :', err.message);
+    message.error(err.message);
+  }
+}
+
+
+
+
+  const handleDeleteEvent = async (id) => {
+    try {
+      await deleteEvent(id,localStorage.getItem('token'));
+      setEvents(prev => prev.filter(e => e.id !== id));
+      message.success('Événement supprimé');
+    } catch (err) {
+      message.error(err.message);
+    }
+  };
+
+  useEffect(() => {
+    loadEvents();
+  }, []);
 
   return (
     <Card style={{ margin: 24 }}>
-      {/* HEADER */}
-      <Space
-        style={{ width: '100%', justifyContent: 'space-between', marginBottom: 16 }}
-      >
-        <Title level={3}>GameEvents Admin</Title>
-
-        <Space>
-          <Search placeholder="Rechercher un événement..." allowClear />
-          <Button icon={<ReloadOutlined />} onClick={fetchEvents}>
-            Actualiser
-          </Button>
-          <Button type="primary" icon={<PlusOutlined />}>
-            Ajouter un événement
-          </Button>
-        </Space>
-      </Space>
-
-      {/* TABLE */}
-      <Table
-        columns={columns}
-        dataSource={events}
-        rowKey="id"
-        loading={loading}
-        pagination={{ pageSize: 5 }}
+      <EventsHeader
+        onRefresh={loadEvents}
+        onAdd={() => setOpen(true)}
       />
+
+      <EventsTable
+        events={events}
+        loading={loading}
+        onDelete={handleDeleteEvent}
+      />
+
+      <Modal
+        title="Ajouter un événement"
+        open={open}
+        footer={null}
+        onCancel={() => setOpen(false)}
+      >
+        <AddEventForm onSubmit={handleAddEvent} />
+      </Modal>
     </Card>
   );
 };

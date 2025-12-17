@@ -8,6 +8,7 @@ export const getAllEvents = async (req, res) => {
                 name: true,
                 scheduled_date: true,
                 location: true,
+                description: true,
                 max_capacity: true,
                 event_game: {
                     include: {
@@ -32,21 +33,18 @@ export const getEventById = async (req, res) => {
 
         const  {id}  = req.eventParamsVal;
 
-        const event = await prisma.event.findUnique({
-            where: {
-                id : id
-            },
-            include: {
-                User: { select: { id: true, pseudo: true, email: true } },
-                event_game: { include: { game: true } },
-                event_photo: { include: { photo: true } },
-                participant: { include: { User: { select: { id: true, pseudo: true } } } },
-                review: { include: { User: { select: { id: true, pseudo: true } }, photo: true } },
-                _count: {
-                    select: { participant: true } // récupère le nombre d'inscrits
-                }
-            }
-        })
+const event = await prisma.event.findUnique({
+  where: { id },
+  include: {
+    User: { select: { id: true, pseudo: true, email: true } },
+    event_game: { include: { game: true } },
+    event_photo: { include: { photo: true } },
+    participant: { include: { User: { select: { id: true, pseudo: true } } } },
+    review: { include: { User: { select: { id: true, pseudo: true } }, photo: true } },
+    _count: { select: { participant: true } }
+  }
+});
+
 
         if (event) {
             res.send(event)
@@ -63,6 +61,8 @@ export const addEvent = async (req, res) => {
     try {
         const { name, scheduled_date, description, location, max_capacity, game_id, photo_id } = req.val
         const author = req.user?.id
+        console.log('req.body:', req.body);
+
 
         if (!author) {
             return res.status(401).send({ message: 'Utilisateur non authentifié' })

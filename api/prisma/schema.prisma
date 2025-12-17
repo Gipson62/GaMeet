@@ -15,7 +15,7 @@ model User {
   creation_date DateTime?     @default(now()) @db.Timestamp(6)
   email         String        @unique @db.VarChar(64)
   password      String        @db.VarChar(255)
-  is_admin      Boolean?      @default(false)
+  is_admin      Boolean       @default(false)
   bio           String?
   photo         photo?        @relation(fields: [photo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   event         event[]
@@ -33,8 +33,8 @@ model event {
   description    String?
   location       String?
   max_capacity   Int?
-  author         Int?
-  User           User?         @relation(fields: [author], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  author         Int
+  User           User          @relation(fields: [author], references: [id], onDelete: Cascade, onUpdate: NoAction)
   event_game     event_game[]
   event_photo    event_photo[]
   participant    participant[]
@@ -44,12 +44,12 @@ model event {
 }
 
 model event_game {
-  game_id  Int
   event_id Int
+  game_id  Int
   event    event @relation(fields: [event_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   game     game  @relation(fields: [game_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  @@id([game_id, event_id])
+  @@id([event_id, game_id])
 }
 
 model event_photo {
@@ -72,7 +72,7 @@ model game {
   publisher                   String?      @db.VarChar(64)
   studio                      String?      @db.VarChar(64)
   platforms                   String?
-  is_approved                 Boolean?     @default(false)
+  is_approved                 Boolean      @default(false)
   event_game                  event_game[]
   photo_game_banner_idTophoto photo?       @relation("game_banner_idTophoto", fields: [banner_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   photo_game_grid_idTophoto   photo?       @relation("game_grid_idTophoto", fields: [grid_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -83,8 +83,8 @@ model game {
 model game_tag {
   game_id  Int
   tag_name String @db.VarChar(32)
-  game     game   @relation(fields: [game_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tag      tag    @relation(fields: [tag_name], references: [name], onDelete: NoAction, onUpdate: NoAction)
+  game     game   @relation(fields: [game_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  tag      tag    @relation(fields: [tag_name], references: [name], onDelete: Cascade, onUpdate: NoAction)
 
   @@id([game_id, tag_name])
 }
@@ -93,7 +93,7 @@ model participant {
   event_id Int
   user_id  Int
   event    event @relation(fields: [event_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  User     User  @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  User     User  @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@id([event_id, user_id])
 }
@@ -112,16 +112,17 @@ model photo {
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model review {
   id          Int       @id @default(autoincrement())
-  user_id     Int?
-  event_id    Int?
+  user_id     Int
+  event_id    Int
   photo_id    Int?
   note        Int?
   description String?
   created_at  DateTime? @default(now()) @db.Timestamp(6)
-  event       event?    @relation(fields: [event_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  event       event     @relation(fields: [event_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   photo       photo?    @relation(fields: [photo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  User        User?     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  User        User      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
+  @@unique([user_id, event_id])
   @@index([event_id], map: "idx_review_event")
   @@index([user_id], map: "idx_review_user")
 }

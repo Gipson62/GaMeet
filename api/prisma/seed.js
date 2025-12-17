@@ -71,7 +71,7 @@ async function main() {
     const event1 = await prisma.event.create({
         data: {
             name: 'Tournoi Alice',
-            scheduled_date: new Date('2025-12-20T18:00:00Z'),
+            scheduled_date: new Date('2025-12-20'),
             location: 'Paris',
             author: alice.id,
             max_capacity: 20,
@@ -84,7 +84,7 @@ async function main() {
     const event2 = await prisma.event.create({
         data: {
             name: 'Soirée Bob',
-            scheduled_date: new Date('2025-12-25T20:00:00Z'),
+            scheduled_date: new Date('2025-12-25'),
             location: 'Lyon',
             author: bob.id,
             max_capacity: 15,
