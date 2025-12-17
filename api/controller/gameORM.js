@@ -10,10 +10,10 @@ export const getAllGames = async (req, res) => {
                 name: true,
                 platforms: true,
                 release_date: true,
+                studio: true,
+                publisher: true,
                 logo_id: true,
                 is_approved: true,
-                publisher: true,
-                studio: true
             },
         });
         res.send(games);
