@@ -22,11 +22,11 @@ export const getPhotoById = async (req, res)=> {
 
         const photo = await prisma.photo.findUnique({
             where: {
-                photo_id: id
+                id
             }
         });
         if(photo){
-            res.sendFile(photo.file_name, { root: "./uploads"})
+            res.sendFile(photo.url, { root: "./uploads"})
         } else {
             res.sendStatus(404);
         }
@@ -42,7 +42,7 @@ export const addPhoto = async (req, res) => {
 
         const photo = await prisma.photo.create({
             data: {
-                file_name: filename,
+                url: filename,
             },
         });
 
@@ -66,7 +66,7 @@ export const updatePhoto = async (req, res) => {
 
         const existingPhoto = await prisma.photo.findUnique({
             where: {
-                photo_id: id
+                id
             }
         });
         if (!existingPhoto) {
@@ -81,10 +81,10 @@ export const updatePhoto = async (req, res) => {
             }
             const updatedPhoto = await prisma.photo.update({
                 where: {
-                    photo_id: id
+                    id: id
                 },
                 data: {
-                    file_name: filename
+                    url: filename
                 }
             });
             res.status(200).json({
@@ -106,7 +106,7 @@ export const deletePhoto = async (req, res) => {
 
         const existingPhoto = await prisma.photo.findUnique({
             where: {
-                photo_id: id
+                id: id
             }
         });
         if (!existingPhoto) {
@@ -121,7 +121,7 @@ export const deletePhoto = async (req, res) => {
             }
             await prisma.photo.delete({
                 where: {
-                    photo_id: id
+                    id: id
                 }
             });
             res.status(204).send();
