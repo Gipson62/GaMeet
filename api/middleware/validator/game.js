@@ -10,7 +10,7 @@ const createSchema = vine.object({
     logo_id: vine.number().withoutDecimals(),
     grid_id: vine.number().withoutDecimals(),
     is_approved: vine.boolean(),
-    release_date: vine.date(),
+    release_date: vine.date({ formats: ['iso8601'] }),
     description: vine.string().trim(),
 });
 
@@ -23,7 +23,7 @@ const updateSchema = vine.object({
     logo_id: vine.number().withoutDecimals().optional(),
     grid_id: vine.number().withoutDecimals().optional(),
     is_approved: vine.boolean().optional(),
-    release_date: vine.date().optional(),
+    release_date: vine.date({ formats: ['iso8601'] }).optional(),
     description: vine.string().trim().optional(),
 });
 

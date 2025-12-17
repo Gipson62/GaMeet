@@ -117,6 +117,7 @@ export const gameValidatorMiddleware = {
             req.val = await gameValidator.create.validate(req.body);
             next();
         } catch (err) {
+            console.log(err);
             res.status(400).send(err.message);
         }
     },
