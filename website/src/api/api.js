@@ -171,16 +171,14 @@ export async function uploadPhoto(file, token) {
   formData.append('photo', file);
   
   const res = await fetch(API_URL_PHOTO, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`
-    },
-    body: formData
-  });
-  
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(text);
-  }
-  return res.json();
+  method: 'POST',
+  headers: {
+    Authorization: `Bearer ${token}`
+  },
+  body: formData
+});
+
+const json = await res.json();
+console.log('UPLOAD RESPONSE =', json);
+return json;
 }

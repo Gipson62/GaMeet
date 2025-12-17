@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Card, message, Modal } from 'antd';
 import EventsHeader from '../components/EventsHeader';
 import EventsTable from '../components/EventsTable';
-import AddEventForm from '../components/EventForm';
+import EventForm from '../components/EventForm';
 import { fetchEvents, deleteEvent, addEvent } from '../api/api';
 
 const AdminEvents = () => {
@@ -13,7 +13,7 @@ const AdminEvents = () => {
   const loadEvents = async () => {
     setLoading(true);
     try {
-      const data = await fetchEvents();
+      const data = await fetchEvents(localStorage.getItem('token'));
       setEvents(
         data.map(e => ({
           id: e.id,
@@ -32,33 +32,27 @@ const AdminEvents = () => {
     }
   };
 
-async function handleAddEvent(values) {
-  // pas de quotes autour des valeurs
-  const payload = {
-    name: values.name,
-    scheduled_date: values.scheduled_date, // string ISO ok
-    location: values.location,
-    description: values.description,
-    max_capacity: values.max_capacity
+  useEffect(() => {
+    loadEvents();
+  }, []);
+
+  // 🔹 Gestion création event
+  const handleAddEvent = async (eventData) => {
+    try {
+      const result = await addEvent(eventData, localStorage.getItem('token'));
+      console.log('Event créé !', result);
+      setOpen(false);
+      loadEvents();
+      message.success('Événement ajouté !');
+    } catch (err) {
+      console.error('Erreur création event :', err.message);
+      message.error(err.message);
+    }
   };
-
-  try {
-    const result = await addEvent(payload, localStorage.getItem('token'));
-    console.log('Event créé !', result);
-    setOpen(false);       // fermer le modal
-    loadEvents();         // rafraîchir la liste
-  } catch (err) {
-    console.error('Erreur création event :', err.message);
-    message.error(err.message);
-  }
-}
-
-
-
 
   const handleDeleteEvent = async (id) => {
     try {
-      await deleteEvent(id,localStorage.getItem('token'));
+      await deleteEvent(id, localStorage.getItem('token'));
       setEvents(prev => prev.filter(e => e.id !== id));
       message.success('Événement supprimé');
     } catch (err) {
@@ -66,22 +60,10 @@ async function handleAddEvent(values) {
     }
   };
 
-  useEffect(() => {
-    loadEvents();
-  }, []);
-
   return (
     <Card style={{ margin: 24 }}>
-      <EventsHeader
-        onRefresh={loadEvents}
-        onAdd={() => setOpen(true)}
-      />
-
-      <EventsTable
-        events={events}
-        loading={loading}
-        onDelete={handleDeleteEvent}
-      />
+      <EventsHeader onRefresh={loadEvents} onAdd={() => setOpen(true)} />
+      <EventsTable events={events} loading={loading} onDelete={handleDeleteEvent} />
 
       <Modal
         title="Ajouter un événement"
@@ -89,7 +71,7 @@ async function handleAddEvent(values) {
         footer={null}
         onCancel={() => setOpen(false)}
       >
-        <AddEventForm onSubmit={handleAddEvent} />
+        <EventForm onSubmit={handleAddEvent} />
       </Modal>
     </Card>
   );
