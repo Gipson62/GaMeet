@@ -6,8 +6,7 @@ export const getAllGames = async (req, res) => {
             select: {
                 id: true,
                 name: true,
-                genre: true,
-                platform: true,
+                platforms: true,
                 release_date: true
             },
         });
@@ -26,10 +25,13 @@ export const getGameById = async (req, res) => {
             select: {
                 id: true,
                 name: true,
-                genre: true,
-                platform: true,
+                platforms: true,
                 release_date: true,
-                description: true
+                description: true,
+                banner_id: true,
+                logo_id: true,
+                grid_id: true,
+                is_approved: true,
             },
         });
         if (game) {
@@ -48,8 +50,7 @@ export const addGame = async (req, res) => {
     try {
         const {
             name,
-            genre,
-            platform,
+            platforms,
             release_date,
             description,
             banner_id,
@@ -60,8 +61,7 @@ export const addGame = async (req, res) => {
         const {id} = await prisma.game.create({
             data: {
                 name,
-                genre,
-                platform,
+                platforms,
                 release_date,
                 description,
                 banner_id,
