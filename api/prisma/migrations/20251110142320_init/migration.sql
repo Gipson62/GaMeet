@@ -61,7 +61,7 @@ CREATE TABLE "event" (
     "description" TEXT,
     "location" TEXT,
     "max_capacity" INTEGER,
-    "author_id" INTEGER,
+    "author" INTEGER,
 
     CONSTRAINT "Event_pkey" PRIMARY KEY ("id")
 );
@@ -125,7 +125,7 @@ ALTER TABLE "game_tag" ADD CONSTRAINT "game_tag_game_id_fkey" FOREIGN KEY ("game
 ALTER TABLE "game_tag" ADD CONSTRAINT "game_tag_tag_name_fkey" FOREIGN KEY ("tag_name") REFERENCES "tag"("name") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "event" ADD CONSTRAINT "event_author_id_fkey" FOREIGN KEY ("author_id") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "event" ADD CONSTRAINT "event_author_fkey" FOREIGN KEY ("author") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "event_game" ADD CONSTRAINT "event_game_game_id_fkey" FOREIGN KEY ("game_id") REFERENCES "game"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

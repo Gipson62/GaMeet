@@ -20,7 +20,7 @@ async function main() {
     console.log('Base de données nettoyée.')
 
 
-    const photo1 = await prisma.photo.create({ data: { url: 'default_pfp.png' } })
+    const photo1 = await prisma.photo.create({ data: { url: '1766011624940-Screenshot_20251208-2036402_1.png' } })
     const photo2 = await prisma.photo.create({ data: { url: 'default_pfp.png' } })
     const photo3 = await prisma.photo.create({ data: { url: 'default_pfp.png' } })
 
@@ -309,7 +309,7 @@ async function main() {
         data: {
             user_id: user1.id,
             event_id: event1.id,
-            note: 8,
+            note: 4,
             description: 'Bien organisé',
         }
     })
@@ -318,7 +318,7 @@ async function main() {
         data: {
             user_id: user3.id,
             event_id: event2.id,
-            note: 9,
+            note: 5,
             description: "Super ambiance sur Discord, on a bien discuté du lore !",
             created_at: new Date('2025-11-11'),
         }
@@ -329,7 +329,7 @@ async function main() {
         data: {
             user_id: user5.id,
             event_id: event2.id,
-            note: 7,
+            note: 5,
             description: "Sympa mais un peu court, j'aurais voulu jouer plus.",
             created_at: new Date('2025-11-12'),
         }
@@ -340,7 +340,7 @@ async function main() {
         data: {
             user_id: user1.id,
             event_id: event3.id,
-            note: 10,
+            note: 5,
             description: "Un défi incroyable, le niveau des joueurs était dingue.",
             created_at: new Date('2026-01-21'),
         }
@@ -362,7 +362,7 @@ async function main() {
         data: {
             user_id: user4.id,
             event_id: event4.id,
-            note: 8,
+            note: 5,
             description: "Une très belle découverte artistique à Bordeaux.",
             created_at: new Date('2025-12-06'),
         }
@@ -373,7 +373,7 @@ async function main() {
         data: {
             user_id: user2.id,
             event_id: event1.id,
-            note: 6,
+            note: 5,
             description: "Bien joué, mais il y avait un peu de lag sur les PC.",
             created_at: new Date('2025-12-21'),
         }
@@ -384,7 +384,7 @@ async function main() {
         data: {
             user_id: user3.id,
             event_id: event6.id,
-            note: 9,
+            note: 5,
             description: "L'événement de l'année ! La salle était immense.",
             created_at: new Date('2026-06-16'),
         }
@@ -395,7 +395,7 @@ async function main() {
         data: {
             user_id: user4.id,
             event_id: event6.id,
-            note: 10,
+            note: 5,
             description: "Rien à dire, tout était parfait du début à la fin.",
             created_at: new Date('2026-06-17'),
         }
@@ -417,7 +417,7 @@ async function main() {
         data: {
             user_id: user1.id,
             event_id: event5.id,
-            note: 8,
+            note: 5,
             description: "Une nuit blanche mémorable à Bruxelles !",
             created_at: new Date('2026-02-15'),
         }
