@@ -1,5 +1,6 @@
 import Router from 'express';
 import reviewRouter from './review.js';
+import participantRouter  from './participant.js';
 import {
     getAllEvents,
     getEventById,
@@ -11,7 +12,6 @@ import {
 } from '../../controller/eventORM.js';
 import { checkJWT } from '../../middleware/identification/jwt.js';
 import { eventValidatorMiddleware as EVM } from '../../middleware/validation.js';
-
 const router = Router();
 
 // CRUD Events
@@ -27,5 +27,5 @@ router.delete('/:id/leave', checkJWT, EVM.idParam, leaveEvent);
 
 // Routes reviews liées à un event
 router.use('/:id/review', EVM.idParam, reviewRouter);
-
+router.use('/:id/participant',EVM.idParam,participantRouter );
 export default router;

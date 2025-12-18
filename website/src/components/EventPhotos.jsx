@@ -1,11 +1,11 @@
 import { Card, Image, Space, Button } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
-const EventPhotos = ({ photos = [], onAdd }) => {
+const EventPhotos = ({ photos = [] }) => {
   return (
     <Card
       title="📸 Photos de l'événement"
-      extra={<Button icon={<PlusOutlined />} onClick={onAdd}>Ajouter</Button>}
+      
       style={{ marginTop: 24 }}
     >
       {photos.length === 0 ? (

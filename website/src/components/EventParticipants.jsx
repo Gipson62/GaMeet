@@ -1,45 +1,70 @@
-import { Card, Table, Button } from 'antd';
-import { PlusOutlined, CloseOutlined } from '@ant-design/icons';
+import { Card, Table, Button, Space, Popconfirm } from 'antd';
+import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 
-const EventParticipants = ({ participants = [], onRemove, onAdd }) => {
-  // Colonnes dynamiques
+const EventParticipants = ({ participants = [], onDelete, onAdd }) => {
   const columns = [
-    { title: 'Pseudo', dataIndex: 'pseudo', key: 'pseudo' },
-    { title: 'Email', dataIndex: 'email', key: 'email' },
-    { title: 'Rôle', dataIndex: 'role', key: 'role' },
+    {
+      title: 'Pseudo',
+      dataIndex: 'pseudo',
+      key: 'pseudo',
+    },
+    {
+      title: 'Email',
+      dataIndex: 'email',
+      key: 'email',
+    },
+    {
+      title: 'Rôle',
+      dataIndex: 'role',
+      key: 'role',
+    },
     {
       title: 'Actions',
       key: 'actions',
       render: (_, record) => (
-        <Button
-          danger
-          icon={<CloseOutlined />}
-          onClick={() => onRemove && onRemove(record.id)}
-        />
+        <Space>
+          <Popconfirm
+            title="Retirer ce participant ?"
+            onConfirm={() => onDelete(record.id)} // ✅ user.id
+            okText="Oui"
+            cancelText="Non"
+          >
+            <Button danger icon={<DeleteOutlined />} />
+          </Popconfirm>
+        </Space>
       ),
     },
   ];
 
-  // DataSource
-  const dataSource = participants.map(p => ({
-    key: p.id,
-    pseudo: p.pseudo,
-    email: p.email,
-    role: p.role || 'Participant',
-    id: p.id,
+  const dataSource = participants.map(user => ({
+    key: user.id,
+    id: user.id, // ✅ user_id
+    pseudo: user.pseudo,
+    email: user.email,
+    role: user.role || 'Participant',
   }));
 
   return (
     <Card
       title="👥 Participants"
       extra={
-        <Button icon={<PlusOutlined />} onClick={onAdd}>
+        <Button
+          icon={<PlusOutlined />}
+          onClick={() => {
+            const userId = prompt('ID utilisateur à ajouter');
+            if (userId) onAdd(Number(userId));
+          }}
+        >
           Ajouter
         </Button>
       }
       style={{ marginTop: 24 }}
     >
-      <Table columns={columns} dataSource={dataSource} pagination={false} />
+      <Table
+        columns={columns}
+        dataSource={dataSource}
+        pagination={false}
+      />
     </Card>
   );
 };

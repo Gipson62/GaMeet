@@ -3,7 +3,9 @@ import vine from '@vinejs/vine';
 // Création d'un event
 const createSchema = vine.object({
     name: vine.string().trim().maxLength(64),
-    scheduled_date: vine.date(),
+    scheduled_date: vine.date({
+        formats: ['iso8601']
+    }),
     description: vine.string().trim().maxLength(1024).optional(),
     location: vine.string().trim().maxLength(255).optional(),
     max_capacity: vine.number().withoutDecimals().optional(),
@@ -14,7 +16,9 @@ const createSchema = vine.object({
 // Mise à jour d'un event (tout optionnel)
 const updateSchema = vine.object({
     name: vine.string().trim().maxLength(64).optional(),
-    scheduled_date: vine.date().optional(),
+    scheduled_date: vine.date({
+        formats: ['iso8601']
+    }).optional(),
     description: vine.string().trim().maxLength(1024).optional(),
     location: vine.string().trim().maxLength(255).optional(),
     max_capacity: vine.number().withoutDecimals().optional(),

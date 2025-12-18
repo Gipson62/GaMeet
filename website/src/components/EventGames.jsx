@@ -5,7 +5,7 @@ const EventGames = ({ games = [] }) => {
   return (
     <Card
       title="🎮 Jeux liés"
-      extra={<Button icon={<PlusOutlined />}>Ajouter un jeu</Button>}
+      
       style={{ marginTop: 24 }}
     >
       {games.length === 0 ? (

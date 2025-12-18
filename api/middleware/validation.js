@@ -4,7 +4,7 @@ import * as reviewValidator from './validator/review.js';
 import * as gameValidator from './validator/game.js';
 import * as tagValidator from './validator/tag.js';
 import * as photoValidator from './validator/photo.js';
-
+import * as participantValidator from "./validator/participant.js";
 export const userValidatorMiddleware = {
     profile: async (req, res, next) => {
         try {
@@ -62,8 +62,19 @@ export const eventValidatorMiddleware = {
         try {
             req.val = await eventValidator.create.validate(req.body);
             next();
-        } catch (e) {
-            res.status(400).send(e.message);
+        } catch (err) {
+            console.log(err);
+             const fieldErrors = {};
+      if (err.issues) {
+        for (const issue of err.issues) {
+          fieldErrors[issue.path[0]] = issue.message;
+        }
+      }
+
+      return res.status(400).json({
+        message: 'Validation failed',
+        errors: fieldErrors,
+      });
         }
     },
     update: async (req, res, next) => {
@@ -110,6 +121,29 @@ export const reviewValidatorMiddleware = {
         }
     }
 };
+
+
+export const participantValidatorMiddleware = {
+  create: async (req, res, next) => {
+    try {
+        console.log('Validating participant creation with data:', req.body);
+      req.val = await participantValidator.create.validate(req.body);
+      next();
+    } catch (e) {
+      res.status(400).send(e.message);
+    }
+  },
+
+  remove: async (req, res, next) => {
+    try {console.log('Validating participant creation with data:', req.body);
+      req.val = await participantValidator.remove.validate(req.body);
+      next();
+    } catch (e) {
+      res.status(400).send(e.message);
+    }
+  },
+};
+
 
 export const gameValidatorMiddleware = {
     create: async (req, res, next) => {

@@ -4,12 +4,12 @@ import { useNavigate } from 'react-router-dom';
 
 const { Title, Text } = Typography;
 
-const EventHeader = ({ name, date, location, onEdit, onDelete }) => {
+const EventHeader = ({ onEdit, onDelete }) => {
   const navigate = useNavigate();
 
   return (
     <div style={{ marginBottom: 16 }}>
-      <Space direction="vertical" style={{ width: '100%' }}>
+      <Space style={{ width: '100%' }}>
         <Button
           icon={<ArrowLeftOutlined />}
           type="link"
@@ -17,11 +17,6 @@ const EventHeader = ({ name, date, location, onEdit, onDelete }) => {
         >
           Retour à la liste
         </Button>
-
-        <Title level={3} style={{ margin: 0 }}>
-          {name} {date && `- ${new Date(date).toLocaleDateString()}`}
-        </Title>
-        {location && <Text type="secondary">{location}</Text>}
 
         <Space>
           <Button icon={<EditOutlined />} onClick={onEdit}>

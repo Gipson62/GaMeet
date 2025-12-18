@@ -52,7 +52,21 @@ console.log(localStorage.getItem('token'));
 
   return res.json();
 }
-
+export async function updateEvent(id, eventData, token) {
+  const res = await fetch(`${API_URL_EVENT}/${id}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify(eventData)
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text);
+  }
+  return true;
+}
 // ========== GAMES ==========
 // Récupérer tous les jeux
 export const fetchGames = async (token) => {
@@ -182,3 +196,48 @@ const json = await res.json();
 console.log('UPLOAD RESPONSE =', json);
 return json;
 }
+/* ================= PARTICIPANTS ================= */
+
+// Ajouter un participant à un event (admin)
+export const addParticipant = async (eventId, userId, token) => {
+  const res = await fetch(
+    `http://localhost:3001/v1/event/${eventId}/participant`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ user_id:userId }),
+    }
+  );
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(err || 'Impossible d’ajouter le participant');
+  }
+
+  return true;
+};
+
+// Retirer un participant d’un event (admin)
+export const removeParticipant = async (eventId, userId, token) => {
+  const res = await fetch(
+    `http://localhost:3001/v1/event/${eventId}/participant`,
+    {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ user_id: userId }),
+    }
+  );
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(err || 'Impossible de retirer le participant');
+  }
+
+  return true;
+};

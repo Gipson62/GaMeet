@@ -8,7 +8,8 @@ const EventInfo = ({ name, description, date, location, capacity, participantsCo
       <Title level={3}>{name}</Title>
       {description && <Text>{description}</Text>}
 
-      <Space style={{ marginTop: 16 }} direction="vertical">
+      <Space style={{ marginTop: 16 }}>
+        
         {date && <Text><strong>Date :</strong> {new Date(date).toLocaleString()}</Text>}
         {location && <Text><strong>Lieu :</strong> {location}</Text>}
         {capacity !== undefined && participantsCount !== undefined && (
