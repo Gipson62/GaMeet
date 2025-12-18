@@ -1,71 +1,91 @@
-import { Card, Table, Button, Space, Popconfirm } from 'antd';
-import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Card, Table, Button, Modal, Form, Select } from 'antd';
+import { PlusOutlined, CloseOutlined } from '@ant-design/icons';
+import { useEffect, useState } from 'react';
+import { fetchUsers } from '../api/api';
 
 const EventParticipants = ({ participants = [], onDelete, onAdd }) => {
+  const [open, setOpen] = useState(false);
+  const [users, setUsers] = useState([]);
+  const [form] = Form.useForm();
+  const token = localStorage.getItem('token');
+  const availableUsers = Array.isArray(users) ? users.filter(
+  u => !participants.some(p => p.id === u.id)
+) : [];
+  useEffect(() => {
+    if (!open) return;
+
+    fetchUsers(token)
+      .then(setUsers)
+      .catch(console.error);
+  }, [open]);
+
   const columns = [
-    {
-      title: 'Pseudo',
-      dataIndex: 'pseudo',
-      key: 'pseudo',
-    },
-    {
-      title: 'Email',
-      dataIndex: 'email',
-      key: 'email',
-    },
-    {
-      title: 'Rôle',
-      dataIndex: 'role',
-      key: 'role',
-    },
+    { title: 'Pseudo', dataIndex: 'pseudo' },
+    { title: 'Email', dataIndex: 'email' },
     {
       title: 'Actions',
-      key: 'actions',
       render: (_, record) => (
-        <Space>
-          <Popconfirm
-            title="Retirer ce participant ?"
-            onConfirm={() => onDelete(record.id)} // ✅ user.id
-            okText="Oui"
-            cancelText="Non"
-          >
-            <Button danger icon={<DeleteOutlined />} />
-          </Popconfirm>
-        </Space>
+        <Button
+          danger
+          icon={<CloseOutlined />}
+          onClick={() => onDelete(record.id)}
+        />
       ),
     },
   ];
 
-  const dataSource = participants.map(user => ({
-    key: user.id,
-    id: user.id, // ✅ user_id
-    pseudo: user.pseudo,
-    email: user.email,
-    role: user.role || 'Participant',
-  }));
+  const handleSubmit = async () => {
+    const { user_id } = await form.validateFields();
+    await onAdd(user_id);
+    form.resetFields();
+    setOpen(false);
+  };
 
   return (
-    <Card
-      title="👥 Participants"
-      extra={
-        <Button
-          icon={<PlusOutlined />}
-          onClick={() => {
-            const userId = prompt('ID utilisateur à ajouter');
-            if (userId) onAdd(Number(userId));
-          }}
-        >
-          Ajouter
-        </Button>
-      }
-      style={{ marginTop: 24 }}
-    >
-      <Table
-        columns={columns}
-        dataSource={dataSource}
-        pagination={false}
-      />
-    </Card>
+    <>
+      <Card
+        title="👥 Participants"
+        extra={
+          <Button icon={<PlusOutlined />} onClick={() => setOpen(true)}>
+            Ajouter
+          </Button>
+        }
+      >
+        <Table
+          columns={columns}
+          dataSource={participants.map(p => ({
+            key: p.id,
+            ...p,
+          }))}
+          pagination={false}
+        />
+      </Card>
+
+      <Modal
+        title="Ajouter un participant"
+        open={open}
+        onCancel={() => setOpen(false)}
+        onOk={handleSubmit}
+      >
+        <Form form={form} layout="vertical">
+          <Form.Item
+            label="Utilisateur"
+            name="user_id"
+            rules={[{ required: true }]}
+          >
+            <Select
+              placeholder="Sélectionnez un utilisateur"
+              options={availableUsers.map(u => ({
+                label: `${u.pseudo} (${u.email})`,
+                value: u.id,
+              }))}
+            />
+
+
+          </Form.Item>
+        </Form>
+      </Modal>
+    </>
   );
 };
 

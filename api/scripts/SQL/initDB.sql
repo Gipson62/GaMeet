@@ -98,7 +98,7 @@ CREATE TABLE Review (
     user_id INTEGER NOT NULL REFERENCES "User"(id) ON DELETE CASCADE,
     event_id INTEGER NOT NULL REFERENCES Event(id) ON DELETE CASCADE,
     photo_id INTEGER REFERENCES Photo(id),
-    note INTEGER CHECK (note >= 0 AND note <= 10),
+    note INTEGER CHECK (note >= 0 AND note <= 5),
     description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (user_id, event_id)

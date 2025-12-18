@@ -1,3 +1,5 @@
+
+
 // website/src/api/api.js
 const API_BASE_URL = "http://localhost:3001/v1"; 
 const API_URL_EVENT = API_BASE_URL + '/event';
@@ -241,3 +243,24 @@ export const removeParticipant = async (eventId, userId, token) => {
 
   return true;
 };
+export const fetchUsers = async (token) => {
+  const res = await fetch('http://localhost:3001/v1/user/list', {
+    
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) throw new Error('Erreur récupération users');
+  return res.json();
+};
+
+
+export const deleteReview  = async (reviewId, token) => {
+  const res = await fetch(`http://localhost:3001/v1/review/${reviewId}`, {
+    method: 'DELETE',
+    headers: {  Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('Impossible de supprimer le review');
+  return true;
+}

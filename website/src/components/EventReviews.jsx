@@ -1,5 +1,6 @@
 import { Card, Rate, Button, Typography, Divider } from 'antd';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import dayjs from 'dayjs';
 
 const { Text } = Typography;
 
@@ -7,7 +8,6 @@ const EventReviews = ({ reviews = [], onAdd, onDelete }) => {
   return (
     <Card
       title="💬 Avis / Reviews"
-      extra={<Button icon={<PlusOutlined />} onClick={onAdd}>Ajouter</Button>}
       style={{ marginTop: 24 }}
     >
       {reviews.length === 0 ? (
@@ -16,10 +16,13 @@ const EventReviews = ({ reviews = [], onAdd, onDelete }) => {
         reviews.map(review => (
           <div key={review.id} style={{ marginBottom: 16 }}>
             <Text strong>
-              {review.User?.pseudo} — {new Date(review.createdAt).toLocaleDateString()}
+              {review.User?.pseudo || 'Utilisateur inconnu'} —{' '}
+              {dayjs(review.createdAt).isValid() 
+                ? dayjs(review.createdAt).format('DD/MM/YYYY') 
+                : 'Date invalide'}
             </Text>
             <br />
-            <Rate disabled value={review.rating || 0} />
+            <Rate disabled value={Number(review.note) || 0} />
             <p>{review.comment}</p>
             <Button
               danger

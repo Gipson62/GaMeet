@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { fetchEventById, deleteEvent, updateEvent, addParticipant, removeParticipant } from '../api/api';
+import { fetchEventById, deleteEvent, updateEvent, addParticipant, removeParticipant, deleteReview } from '../api/api';
 import { Spin, message, Modal } from 'antd';
 import dayjs from 'dayjs';
 
@@ -17,17 +17,20 @@ const EventDetails = () => {
   const navigate = useNavigate();
 
   const [event, setEvent] = useState(null);
+  const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editOpen, setEditOpen] = useState(false);
   const [editSaving, setEditSaving] = useState(false);
 
-  const getPhotoUrl = (id) => `http://localhost:3001/v1/photo/${id}`;
   const token = localStorage.getItem('token');
+  const getPhotoUrl = (photoId) => `http://localhost:3001/v1/photo/${photoId}`;
+
   const loadEvent = async () => {
     setLoading(true);
     try {
       const data = await fetchEventById(id, token);
       setEvent(data);
+      setReviews(data.review || []); // Charge aussi les reviews
     } catch {
       message.error('Impossible de charger l’événement');
     } finally {
@@ -68,27 +71,36 @@ const EventDetails = () => {
     }
   };
 
+  const handleAddParticipant = async (userId) => {
+    try {
+      await addParticipant(event.id, userId, token);
+      message.success('Participant ajouté');
+      await loadEvent();
+    } catch (err) {
+      message.error(err.message);
+    }
+  };
 
-const handleAddParticipant = async (userId) => {
-  try {
-    await addParticipant(event.id, userId, token);
-    message.success('Participant ajouté');
-    await loadEvent();
-  } catch (err) {
-    message.error(err.message);
-  }
-};
+  const handleRemoveParticipant = async (userId) => {
+    try {
+      await removeParticipant(event.id, userId, token);
+      message.success('Participant retiré');
+      await loadEvent();
+    } catch (err) {
+      message.error(err.message);
+    }
+  };
 
-const handleRemoveParticipant = async (userId) => {
-  try {
-    await removeParticipant(event.id, userId, token);
-    message.success('Participant retiré');
-    await loadEvent();
-  } catch (err) {
-    message.error(err.message);
-  }
-};
-
+  const handleDeleteReview = async (reviewId) => {
+    try {
+      await deleteReview(reviewId, token);
+      setReviews(prev => prev.filter(r => r.id !== reviewId)); // Mise à jour locale
+      message.success('Review supprimé avec succès');
+    } catch (err) {
+      console.error(err);
+      message.error('Impossible de supprimer le review');
+    }
+  };
 
   if (loading || !event) return <Spin />;
 
@@ -114,16 +126,22 @@ const handleRemoveParticipant = async (userId) => {
 
       <EventPhotos photos={event.event_photo.map(ep => ({
         ...ep.photo,
-        url: getPhotoUrl(ep.photo.id)
+        url: getPhotoUrl(ep.photo.id),
       }))} />
 
       <EventGames games={event.event_game.map(eg => eg.game)} />
+
       <EventParticipants
         participants={event.participant.map(p => p.User)}
         onDelete={handleRemoveParticipant}
         onAdd={handleAddParticipant}
       />
-      <EventReviews reviews={event.review} />
+
+      <EventReviews
+        reviews={reviews}
+        onAdd={() => message.info('Ajouter review à implémenter')}
+        onDelete={handleDeleteReview}
+      />
 
       <Modal
         title="Modifier l’événement"
