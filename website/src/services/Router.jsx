@@ -15,24 +15,12 @@ const router = createBrowserRouter([
         element: <Login />
     },
     {
-        path: "/event",
-        element: <Event />
-    },
-    {
         path: "/event/:id",
         element: <EventDetails />
     },
     {
-        path: "/game",
-        element: <Game />
-    },
-    {
         path: "/game/:id",
         element: <GameDetails />
-    },
-    {
-        path: "/tag",
-        element: <Tag />
     },
     {
         path: "/profile",
@@ -49,6 +37,7 @@ const router = createBrowserRouter([
             { path: 'users', element: <User /> },
             { path: 'games', element: <Game /> },
             { path: 'events', element: <Event /> },
+            { path: 'tags', element: <Tag /> },
         ],
     }
 ]);

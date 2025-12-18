@@ -1,7 +1,7 @@
 import { Layout, Menu, Spin } from 'antd';
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
-import { AppstoreOutlined, CalendarOutlined, UserOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, CalendarOutlined, UserOutlined, PlayCircleOutlined, TagsOutlined } from '@ant-design/icons';
 
 import UserWidget from '../components/UserWidget';
 import { fetchMe } from '../api/api.js';
@@ -56,7 +56,7 @@ const MainPage = () => {
                         },
                         {
                             key: '/games',
-                            icon: <AppstoreOutlined />,
+                            icon: <PlayCircleOutlined />,
                             label: 'Jeux',
                         },
                         {
@@ -64,6 +64,11 @@ const MainPage = () => {
                             icon: <CalendarOutlined />,
                             label: 'Événements',
                         },
+                        {
+                            key: '/tags',
+                            icon: <TagsOutlined />,
+                            label: 'Tags',
+                        }
                     ]}
                 />
             </Sider>
