@@ -1,6 +1,9 @@
 import prisma from '../database/databaseORM.js'
 import { hash, compare } from '../util/index.js'
 import  { sign } from '../util/jwt.js'
+import fs from "fs";
+
+const DEFAULT_AVATAR_URL = "default-avatar.png";
 
 export const getUser = async (req, res) => {
     try {
@@ -11,15 +14,48 @@ export const getUser = async (req, res) => {
             select: {
                 id: true,
                 pseudo: true,
+                email: true,
+                is_admin: true,
                 bio: true,
+                birth_date: true,
                 creation_date: true,
 
                 photo: true,
-                event: true,
-                participant: true,
-                review: true
-            }
-        })
+
+                event: {
+                    select: {
+                        id: true,
+                        name: true,
+                        scheduled_date: true,
+                        location: true,
+                    },
+                },
+
+                participant: {
+                    select: {
+                        event: {
+                            select: {
+                                id: true,
+                                name: true,
+                                scheduled_date: true,
+                                location: true,
+                            },
+                        },
+                    },
+                },
+
+                review: {
+                    select: {
+                        id: true,
+                        note: true,
+                        description: true,
+                        created_at: true,
+                        event: { select: { id: true, name: true } },
+                    },
+                    orderBy: { created_at: "desc" },
+                },
+            },
+        });
         if (user) {
             res.send(user)
         } else {
@@ -58,31 +94,59 @@ export const getAllUsers = async (req, res) => {
 
 export const addUser = async (req, res) => {
     try {
-        const { pseudo, email, password, birth_date, bio, photo_id } = req.val
+        const { pseudo, email, password, birth_date, bio} = req.val
 
         // Vérifie si l’email existe déjà
         const existing = await prisma.user.findUnique({ where: { email } })
-        if (existing) return res.status(409).send({ message: 'Email déjà utilisé' })
+        if (existing) {
+            if (req.file?.filename) fs.unlink(`./uploads/${req.file.filename}`, () => {
+            });
+            return res.status(409).send({message: 'Email déjà utilisé'})
+        }
 
-        const {id} = await prisma.user.create({
-            data: {
-                pseudo,
-                email,
-                birth_date,
-                bio,
-                is_admin: false,
-                photo_id,
-                password: await hash(password)
-            },
-            select: {
-                id: true
+        // Avatar par défaut
+        const defaultPhoto = await prisma.photo.findFirst({
+            where: { url: DEFAULT_AVATAR_URL },
+            select: { id: true },
+        });
+        if (!defaultPhoto) {
+            if (req.file?.filename) fs.unlink(`./uploads/${req.file.filename}`, () => {});
+            return res.status(500).json({ message: "Photo par défaut manquante" });
+        }
+
+        // transaction: si avatar => créer photo + user, sinon juste user
+        const created = await prisma.$transaction(async (tx) => {
+            let photoId = defaultPhoto.id;
+
+            if (req.file?.filename) {
+                const photo = await tx.photo.create({
+                    data: { url: req.file.filename },
+                    select: { id: true },
+                });
+                photoId = photo.id;
             }
-        })
 
-        res.status(201).send({id})
+            const user = await tx.user.create({
+                data: {
+                    pseudo: pseudo,
+                    email: email,
+                    password: await hash(password),
+                    birth_date: new Date(birth_date),
+                    bio: bio,
+                    is_admin: false,
+                    photo_id: photoId,
+                },
+                select: { id: true },
+            });
+            return user;
+        });
+
+        res.status(201).send(created);
     } catch (e) {
-        console.error(e)
-        res.sendStatus(500)
+        console.error(e);
+        // si upload a eu lieu et qu'on crash => on supprime le fichier uploadé
+        if (req.file?.filename) fs.unlink(`./uploads/${req.file.filename}`, () => {});
+        res.sendStatus(500);
     }
 }
 
@@ -169,9 +233,55 @@ export const loginUser = async (req, res) => {
         console.error(err)
         res.sendStatus(500)
     }
-
-
-
 }
+export const updateUserAvatar = async (req, res) => {
+    try {
+        const userId = req.val;
+
+        // Sécurité : soit admin, soit propriétaire
+        if (!req.user.is_admin && req.user.id !== userId) {
+            return res.status(403).json({ message: "Accès refusé" });
+        }
+
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                photo: {
+                    select: { id : true, url: true }
+                }
+            }
+        });
+
+        if (!user) return res.sendStatus(404);
+
+        const { filename } = req.file;
+
+        // créer la nouvelle photo
+        const newPhoto = await prisma.photo.create({
+            data: { url: filename }
+        });
+
+        // mettre à jour l'utilisateur
+        await prisma.user.update({
+            where: { id: userId },
+            data: { photo_id: newPhoto.id }
+        });
+
+        if (user.photo && user.photo.url !== DEFAULT_AVATAR_URL) {
+            const oldPhoto = await prisma.photo.findUnique({
+                where: { id: user.photo_id }
+            });
+
+            if (oldPhoto) {
+                await prisma.photo.delete({ where: { id: oldPhoto.id } });
+            }
+        }
+
+        res.status(200).json({ photo_id: newPhoto.id });
+    } catch (e) {
+        console.error(e);
+        res.sendStatus(500);
+    }
+};
 
 

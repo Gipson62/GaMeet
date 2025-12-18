@@ -7,6 +7,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 
 const { Text } = Typography;
+const API_PHOTO_URL = "http://localhost:3001/v1/photo";
 
 const UserWidget = ({ user }) => {
     const navigate = useNavigate();
@@ -48,7 +49,7 @@ const UserWidget = ({ user }) => {
             >
                 <Avatar
                     size={36}
-                    src={user.photo?.url}
+                    src={user.photo ? `${API_PHOTO_URL}/${user.photo.id}` : undefined}
                     icon={<UserOutlined />}
                 />
                 <div style={{ lineHeight: 1.2 }}>

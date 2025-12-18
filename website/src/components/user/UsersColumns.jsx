@@ -32,10 +32,6 @@ export const buildUsersColumns = ({ onView, onEdit, onDelete }) => [
                     Voir
                 </Button>
 
-                <Button size="small" onClick={() => onEdit(record)}>
-                    Modifier
-                </Button>
-
                 <Popconfirm
                     title="Supprimer cet utilisateur ?"
                     okText="Supprimer"

@@ -17,12 +17,6 @@ const Login = () => {
         setError('');
 
         try {
-            const response = await fetch('http://localhost:3001/v1/user/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(values),
-            });
-            console.log(response);
             const data = await loginUser(values);
 
             if (!data.user.is_admin) {
@@ -31,7 +25,7 @@ const Login = () => {
 
             // Stockage du token et redirection
             localStorage.setItem('token', data.token);
-            navigate('/admin/users');
+            navigate('/users');
 
         } catch (err) {
             setError(err.message);
