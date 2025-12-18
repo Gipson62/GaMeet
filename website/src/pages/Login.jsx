@@ -17,6 +17,15 @@ const Login = () => {
         setError('');
 
         try {
+<<<<<<< Updated upstream
+=======
+            const response = await fetch('http://localhost:3001/v1/user/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(values),
+            });
+            console.log(response);
+>>>>>>> Stashed changes
 
             const data = await loginUser(values);
 

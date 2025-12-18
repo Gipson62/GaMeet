@@ -1,0 +1,37 @@
+services:
+  api:
+    build: .
+    container_name: api
+    environment:
+      DB_HOST: postgres
+      DB_USER: ${USERDB}
+      DB_PASSWORD: ${PASSWORDDB}
+      DB_NAME: ${DBNAME}
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    
+  postgres:
+    image: postgres
+    container_name: postgres
+    environment:
+      POSTGRES_USER: ${USERDB}
+      PGUSER: ${USERDB}
+      POSTGRES_PASSWORD: ${PASSWORDDB}
+      POSTGRES_DB: ${DBNAME}
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${USERDB} -d ${DBNAME} -h localhost"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+volumes:
+  pgdata:

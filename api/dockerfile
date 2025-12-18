@@ -1,0 +1,31 @@
+# Use Node.js Alpine image for smaller size
+FROM node:25.2.1-alpine
+
+# Set working directory
+WORKDIR /app
+
+RUN apk add --no-cache postgresql-client
+
+# Copy package files and install dependencies
+COPY package*.json ./
+RUN npm install
+
+# Copy environment variables
+COPY .env ./
+
+# Copy prisma schema and migrations (MUST be before other files)
+COPY prisma ./prisma
+
+# Copy all source code
+COPY . .
+
+COPY entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Expose the API port
+EXPOSE 3001
+
+ENTRYPOINT [ "entrypoint.sh" ]
+
+# Start the application
+CMD ["npm", "start"]

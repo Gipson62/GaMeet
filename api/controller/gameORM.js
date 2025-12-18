@@ -3,7 +3,7 @@ import fs from 'fs'
 
 export const getAllGames = async (req, res) => {
     try {
-        // Need to get: game_id, name, platformes, release_date, logo_id, studio, approval status, publisher
+        // Need to get: game_id, name, platforms, release_date, logo_id, studio, approval status, publisher
         const games = await prisma.game.findMany({
             select: {
                 id: true,
@@ -25,7 +25,7 @@ export const getAllGames = async (req, res) => {
 
 export const getGameById = async (req, res) => {
     try {
-        const  {id}  = req.gameParamsVal;
+        const  {id} = req.gameParamsVal;
         const game = await prisma.game.findUnique({
             where: { id },
             select: {
@@ -48,6 +48,78 @@ export const getGameById = async (req, res) => {
     } catch (err) {
         console.error(err);
         res.sendStatus(500);
+    }
+}
+
+/*
+ * Crée un jeu avec ses 3 images (banner, logo, grid) en une transaction
+ * Accepte multipart/form-data :
+ *   - name, description, studio, publisher, release_date, platforms, is_approved
+ *   - banner, logo, grid (fichiers)
+ * Si l'upload ou la création du jeu échoue, tout est annulé
+ */
+export const addGameNew = async (req, res) => {
+    try {
+        // Vérifier que les 3 fichiers sont présents
+        if (!req.files?.banner || !req.files?.logo || !req.files?.grid) {
+            return res.status(400).json({ message: 'Les 3 images (banner, logo, grid) sont requises' })
+        }
+
+        const { name, studio, publisher, release_date, description, platforms, is_approved } = req.body
+
+        // Valider les champs requis
+        if (!name || !studio || !publisher || !release_date || !platforms) {
+            return res.status(400).json({ message: 'Les champs requis sont manquants' })
+        }
+
+        // Formater les platformes
+        const formatted_platforms = typeof platforms === 'string'
+            ? platforms.split(',').map(p => p.trim()).join(', ')
+            : Array.isArray(platforms)
+            ? platforms.join(', ')
+            : platforms
+
+        // Transaction : créer photos + jeu ensemble
+        const result = await prisma.$transaction(async (tx) => {
+            // 1. Créer les 3 photos
+            const bannerPhoto = await tx.photo.create({
+                data: { url: req.files.banner[0].filename }
+            })
+            const logoPhoto = await tx.photo.create({
+                data: { url: req.files.logo[0].filename }
+            })
+            const gridPhoto = await tx.photo.create({
+                data: { url: req.files.grid[0].filename }
+            })
+
+            // 2. Créer le jeu avec les IDs des photos
+            const game = await tx.game.create({
+                data: {
+                    name,
+                    studio,
+                    publisher,
+                    release_date: new Date(release_date),
+                    description: description || null,
+                    platforms: formatted_platforms,
+                    is_approved: is_approved === 'true' || is_approved === true || false,
+                    banner_id: bannerPhoto.id,
+                    logo_id: logoPhoto.id,
+                    grid_id: gridPhoto.id,
+                },
+                select: { id: true, name: true }
+            })
+
+            return game
+        })
+
+        res.status(201).json({
+            message: 'Jeu créé avec les images',
+            game: result
+        })
+
+    } catch (err) {
+        console.error('Erreur addGameNew:', err)
+        res.status(500).json({ error: err.message || 'Erreur lors de la création du jeu' })
     }
 }
 
