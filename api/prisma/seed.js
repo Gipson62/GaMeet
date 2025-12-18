@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client'
+import seedAllGames from './gameSeed.js'
 
 const prisma = new PrismaClient()
 
@@ -19,6 +20,9 @@ async function main() {
 
     console.log('Base de données nettoyée.')
 
+    console.log('Seeding des jeux...');
+    await seedAllGames(prisma);
+    console.log('Jeux seedés.');
 
     const photo1 = await prisma.photo.create({ data: { url: 'monkey_orange.png' } })
     const photo2 = await prisma.photo.create({ data: { url: 'default_pfp.png' } })
