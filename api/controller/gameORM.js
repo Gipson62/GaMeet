@@ -64,10 +64,12 @@ export const addGame = async (req, res) => {
             grid_id,
             is_approved
         } = req.val;
+        //Platforms Should just be a string. Join them with commas.
+        const formatted_platforms = platforms.join(', ');
         const {id} = await prisma.game.create({
             data: {
                 name,
-                platforms,
+                platforms: formatted_platforms,
                 release_date,
                 description,
                 banner_id,

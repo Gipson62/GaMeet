@@ -10,14 +10,20 @@ const GameForm = ({ onSubmit, initialValues }) => {
   const [gridFile, setGridFile] = useState(null);
 
   const handleSubmit = (values) => {
-    const formattedValues = {
+    const gameData = {
       ...values,
+      platforms: values.platforms
+        ? values.platforms.split(',').map(p => p.trim())
+        : [],
       release_date: values.release_date ? values.release_date.toISOString() : null,
+      publisher: values.publisher || null,
+      studio: values.studio || null,
       bannerFile,
       logoFile,
       gridFile,
     };
-    onSubmit(formattedValues);
+    console.log('Submitting game with values:', gameData);
+    onSubmit(gameData);
     form.resetFields();
     setBannerFile(null);
     setLogoFile(null);
@@ -42,6 +48,7 @@ const GameForm = ({ onSubmit, initialValues }) => {
       <Form.Item
         label="Description"
         name="description"
+        rules={[{ required: true, message: 'Veuillez entrer la description du jeu' }]}
       >
         <Input.TextArea placeholder="Description du jeu" rows={4} />
       </Form.Item>
@@ -49,6 +56,7 @@ const GameForm = ({ onSubmit, initialValues }) => {
       <Form.Item
         label="Studio"
         name="studio"
+        rules={[{ required: true, message: 'Veuillez entrer le studio de développement' }]}
       >
         <Input placeholder="Studio de développement" />
       </Form.Item>
@@ -56,6 +64,7 @@ const GameForm = ({ onSubmit, initialValues }) => {
       <Form.Item
         label="Éditeur"
         name="publisher"
+        rules={[{ required: true, message: 'Veuillez entrer l’éditeur du jeu' }]}
       >
         <Input placeholder="Éditeur du jeu" />
       </Form.Item>
@@ -63,16 +72,18 @@ const GameForm = ({ onSubmit, initialValues }) => {
       <Form.Item
         label="Date de sortie"
         name="release_date"
+        rules={[{ required: true, message: 'Veuillez sélectionner la date de sortie' }]}
       >
         <DatePicker
           placeholder="Sélectionner une date"
-          format="DD/MM/YYYY"
+          format="YYYY-MM-DD HH:mm"
         />
       </Form.Item>
 
       <Form.Item
         label="Platformes (séparées par des virgules)"
         name="platforms"
+        rules={[{ required: true, message: 'Veuillez entrer les platformes' }]}
       >
         <Input placeholder="PC, Switch, PlayStation..." />
       </Form.Item>
