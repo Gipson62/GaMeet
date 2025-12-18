@@ -357,10 +357,6 @@ export const removeParticipant = async (eventId, userId, token) => {
 
   return true;
 };
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
 
 export const deleteReview  = async (reviewId, token) => {
   const res = await fetch(`http://localhost:3001/v1/review/${reviewId}`, {
