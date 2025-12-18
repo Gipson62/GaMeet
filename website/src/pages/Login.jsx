@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, Card, Alert, Typography } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import {loginUser} from "../api/api.js";
 
 const { Title } = Typography;
 
@@ -16,21 +17,16 @@ const Login = () => {
         setError('');
 
         try {
-            const response = await fetch('http://localhost:3001/v1/user/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(values),
-            });
 
-            const data = await response.json();
+            const data = await loginUser(values);
 
-            if (!response.ok) {
-                throw new Error(data.message || 'Erreur de connexion');
+            if (!data.user.is_admin) {
+                throw new Error("Accès réservé aux administrateurs. Utilisez l'application mobile.");
             }
 
             // Stockage du token et redirection
             localStorage.setItem('token', data.token);
-            //navigate('/profile');
+            navigate('/admin/users');
 
         } catch (err) {
             setError(err.message);

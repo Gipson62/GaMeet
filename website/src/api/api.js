@@ -171,6 +171,28 @@ export async function addTag(tagData, token) {
 }
 // USERS
 
+// Connexion d'un utilisateur
+export const loginUser = async (credentials) => {
+    const res = await fetch(`${API_URL_USER}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(credentials),
+    });
+
+    const text = await res.text();
+    let data;
+    try {
+        data = JSON.parse(text);
+    } catch {
+        data = { message: text };
+    }
+
+    if (!res.ok) {
+        throw new Error(data.message || "Erreur de connexion");
+    }
+    return data;
+};
+
 // Récupérer tous les utilisateurs
 export const fetchUsers = async (token) => {
     const response = await fetch(`${API_URL_USER}/list`, {
@@ -335,18 +357,6 @@ export const removeParticipant = async (eventId, userId, token) => {
 
   return true;
 };
-export const fetchUsers = async (token) => {
-  const res = await fetch('http://localhost:3001/v1/user/list', {
-    
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!res.ok) throw new Error('Erreur récupération users');
-  return res.json();
-};
-
 
 export const deleteReview  = async (reviewId, token) => {
   const res = await fetch(`http://localhost:3001/v1/review/${reviewId}`, {
