@@ -11,6 +11,7 @@ export const userValidatorMiddleware = {
             req.val = await userValidator.idParam.validate(req.user);
             next();
         } catch (e) {
+            console.error(e);
             res.status(400).send(e.message);
         }
     },
@@ -19,6 +20,7 @@ export const userValidatorMiddleware = {
             req.val = await userValidator.login.validate(req.body);
             next();
         } catch (e) {
+            console.error(e);
             res.status(400).send(e.message);
         }
     },
@@ -27,6 +29,7 @@ export const userValidatorMiddleware = {
             req.val = await userValidator.create.validate(req.body);
             next();
         } catch (e) {
+            console.error(e);
             res.status(400).send(e.message);
         }
     },
@@ -36,6 +39,7 @@ export const userValidatorMiddleware = {
             req.val.id = req.user.id;
             next();
         } catch (e) {
+            console.error(e);
             res.status(400).send(e.message);
         }
     },
@@ -44,6 +48,7 @@ export const userValidatorMiddleware = {
             req.val = await userValidator.idParam.validate(req.params);
             next();
         } catch (e) {
+            console.error(e);
             res.status(400).send(e.message);
         }
     },
@@ -52,6 +57,7 @@ export const userValidatorMiddleware = {
             req.val = await userValidator.idParam.validate(req.user);
             next();
         } catch (e) {
+            console.error(e);
             res.status(400).send(e.message);
         }
     }
@@ -82,6 +88,7 @@ export const eventValidatorMiddleware = {
             req.val = await eventValidator.update.validate(req.body);
             next();
         } catch (e) {
+            console.error(e);
             res.status(400).send(e.message);
         }
     },
@@ -90,6 +97,7 @@ export const eventValidatorMiddleware = {
             req.eventParamsVal = await eventValidator.idParam.validate(req.params);
             next();
         } catch (e) {
+            console.error(e);
             res.status(400).send(e.message);
         }
     }
@@ -101,6 +109,7 @@ export const reviewValidatorMiddleware = {
             req.val = await reviewValidator.create.validate(req.body);
             next();
         } catch (e) {
+            console.error(e);
             res.status(400).send(e.message);
         }
     },
@@ -109,6 +118,7 @@ export const reviewValidatorMiddleware = {
             req.val = await reviewValidator.update.validate(req.body);
             next();
         } catch (e) {
+            console.error(e);
             res.status(400).send(e.message);
         }
     },
@@ -117,6 +127,7 @@ export const reviewValidatorMiddleware = {
             req.reviewParamsVal = await reviewValidator.idParam.validate({ id: req.params.reviewId });
             next();
         } catch (e) {
+            console.error(e);
             res.status(400).send(e.message);
         }
     }
@@ -130,6 +141,7 @@ export const participantValidatorMiddleware = {
       req.val = await participantValidator.create.validate(req.body);
       next();
     } catch (e) {
+        console.error(e);
       res.status(400).send(e.message);
     }
   },
@@ -139,6 +151,7 @@ export const participantValidatorMiddleware = {
       req.val = await participantValidator.remove.validate(req.body);
       next();
     } catch (e) {
+        console.error(e);
       res.status(400).send(e.message);
     }
   },
@@ -160,6 +173,7 @@ export const gameValidatorMiddleware = {
             req.val = await gameValidator.update.validate(req.body);
             next();
         } catch (err) {
+            console.error(err);
             res.status(400).send(err.message);
         }
     },
@@ -168,6 +182,7 @@ export const gameValidatorMiddleware = {
             req.gameParamsVal = await gameValidator.idParam.validate(req.params);
             next();
         } catch (err) {
+            console.error(err);
             res.status(400).send(err.message);
         }
     }
@@ -179,14 +194,16 @@ export const tagValidatorMiddleware = {
             req.val = await tagValidator.create.validate(req.body);
             next();
         } catch (err) {
+            console.error(err);
             res.status(400).send(err.message);
         }
     },
     nameParam: async (req, res, next) => {
         try {
-            req.gameParamsVal = await tagValidator.nameParam.validate(req.params);
+            req.gameParamsVal = await tagValidator.nameParam.validate({ name: req.params.id });
             next();
         } catch (err) {
+            console.error(err);
             res.status(400).send(err.message);
         }
     },
@@ -195,14 +212,19 @@ export const tagValidatorMiddleware = {
             req.gameParamsVal = await tagValidator.idParam.validate(req.params);
             next();
         } catch (err) {
+            console.error(err);
             res.status(400).send(err.message);
         }
     },
     gameIdTagNameParam: async (req, res, next) => {
         try {
-            req.gameTagParamsVal = await tagValidator.gameIdTagNameParam.validate(req.params);
+            req.gameIdTagNameParam = await tagValidator.gameIdTagNameParam.validate({
+                id: parseInt(req.params.id),
+                tag_name: req.body.tag_name
+            });
             next();
         } catch (err) {
+            console.error(err);
             res.status(400).send(err.message);
         }
     }
@@ -214,6 +236,7 @@ export const photoValidatorMiddleware = {
             req.photoParamsVal = await photoValidator.update.validate(req.params);
             next();
         } catch (err) {
+            console.error(err);
             res.status(400).send(err.message);
         }
     },
@@ -222,6 +245,7 @@ export const photoValidatorMiddleware = {
             req.photoParamsVal = await photoValidator.idParam.validate(req.params);
             next();
         } catch (err) {
+            console.error(err);
             res.status(400).send(err.message);
         }
     }

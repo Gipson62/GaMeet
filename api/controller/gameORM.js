@@ -38,6 +38,16 @@ export const getGameById = async (req, res) => {
                 logo_id: true,
                 grid_id: true,
                 is_approved: true,
+                event_game: {
+                    include: {
+                        event: true
+                    }
+                },
+                game_tag: {
+                    include: {
+                        tag: true
+                    }
+                }
             },
         });
         if (game) {
@@ -51,14 +61,7 @@ export const getGameById = async (req, res) => {
     }
 }
 
-/*
- * Crée un jeu avec ses 3 images (banner, logo, grid) en une transaction
- * Accepte multipart/form-data :
- *   - name, description, studio, publisher, release_date, platforms, is_approved
- *   - banner, logo, grid (fichiers)
- * Si l'upload ou la création du jeu échoue, tout est annulé
- */
-export const addGameNew = async (req, res) => {
+export const addGameWithPhotos = async (req, res) => {
     try {
         // Vérifier que les 3 fichiers sont présents
         if (!req.files?.banner || !req.files?.logo || !req.files?.grid) {
@@ -181,26 +184,37 @@ export const updateGame = async (req, res) => {
         }
         let game = await prisma.game.findUnique({ where: { id: id } });
 
-        if (updateData.banner_id) {
-            await prisma.photo.delete({
-                where: { id: game.banner_id }
-            });
-        }
-        if (updateData.logo_id) {
-            await prisma.photo.delete({
-                where: { id: game.logo_id }
-            });
-        }
-        if (updateData.grid_id) {
-            await prisma.photo.delete({
-                where: { id: game.grid_id }
-            });
+        // Store old photo IDs before updating
+        const oldBannerId = updateData.banner_id && updateData.banner_id !== game.banner_id ? game.banner_id : null;
+        const oldLogoId = updateData.logo_id && updateData.logo_id !== game.logo_id ? game.logo_id : null;
+        const oldGridId = updateData.grid_id && updateData.grid_id !== game.grid_id ? game.grid_id : null;
+
+        if (updateData.platforms && Array.isArray(updateData.platforms)) {
+            updateData.platforms = updateData.platforms.join(', ');
         }
 
+        // Update the game first
         await prisma.game.update({
             where: { id },
             data: updateData
         });
+
+        // Then delete old photos (after they're no longer referenced)
+        if (oldBannerId) {
+            await prisma.photo.delete({
+                where: { id: oldBannerId }
+            });
+        }
+        if (oldLogoId) {
+            await prisma.photo.delete({
+                where: { id: oldLogoId }
+            });
+        }
+        if (oldGridId) {
+            await prisma.photo.delete({
+                where: { id: oldGridId }
+            });
+        }
 
         res.sendStatus(204);
 
@@ -220,6 +234,21 @@ export const deleteGame = async (req, res) => {
         if (!req.user.is_admin)
             return res.status(403).send({ message: "Accès refusé" })
 
+        const game = await prisma.game.findUnique({ where: { id } })
+
+        // supprimer les photos associées (fichiers + entrées DB)
+        const photoIds = [game.banner_id, game.logo_id, game.grid_id].filter(Boolean)
+        for (const photoId of photoIds) {
+            try {
+                const photo = await prisma.photo.findUnique({ where: { id: photoId } })
+                if (photo?.url) {
+                    fs.unlink(`./uploads/${photo.url}`, () => { })
+                }
+                await prisma.photo.delete({ where: { id: photoId } })
+            } catch (cleanupErr) {
+                console.error('Erreur suppression photo associée', cleanupErr)
+            }
+        }
         await prisma.game.delete({ where: { id } })
 
         res.sendStatus(204)

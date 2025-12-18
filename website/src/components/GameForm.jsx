@@ -8,6 +8,9 @@ const GameForm = ({ onSubmit, initialValues }) => {
   const [bannerFile, setBannerFile] = useState(null);
   const [logoFile, setLogoFile] = useState(null);
   const [gridFile, setGridFile] = useState(null);
+  const [bannerChanged, setBannerChanged] = useState(false);
+  const [logoChanged, setLogoChanged] = useState(false);
+  const [gridChanged, setGridChanged] = useState(false);
 
   const handleSubmit = (values) => {
     const gameData = {
@@ -18,9 +21,12 @@ const GameForm = ({ onSubmit, initialValues }) => {
       release_date: values.release_date ? values.release_date.toISOString() : null,
       publisher: values.publisher || null,
       studio: values.studio || null,
-      bannerFile,
-      logoFile,
-      gridFile,
+      bannerFile: bannerChanged ? bannerFile : null,
+      logoFile: logoChanged ? logoFile : null,
+      gridFile: gridChanged ? gridFile : null,
+      bannerChanged,
+      logoChanged,
+      gridChanged,
     };
     console.log('Submitting game with values:', gameData);
     onSubmit(gameData);
@@ -28,6 +34,9 @@ const GameForm = ({ onSubmit, initialValues }) => {
     setBannerFile(null);
     setLogoFile(null);
     setGridFile(null);
+    setBannerChanged(false);
+    setLogoChanged(false);
+    setGridChanged(false);
   };
 
   return (
@@ -89,53 +98,71 @@ const GameForm = ({ onSubmit, initialValues }) => {
       </Form.Item>
 
       <Form.Item
-        label="Banner"
+        label="Bannière (ratio Steam hero)"
         name="banner"
+        extra="Utilisez une image large (ex. ~1920x620)."
         rules={[{ required: !initialValues, message: 'Veuillez sélectionner une image banner' }]}
       >
         <Upload
           beforeUpload={(file) => {
             setBannerFile(file);
+            setBannerChanged(true);
             return false;
           }}
           maxCount={1}
-          listType="picture"
+          listType="picture-card"
+          accept="image/*"
         >
-          <Button icon={<UploadOutlined />}>Sélectionner Banner</Button>
+          <div>
+            <UploadOutlined />
+            <div style={{ marginTop: 8 }}>Banner</div>
+          </div>
         </Upload>
       </Form.Item>
 
       <Form.Item
-        label="Logo"
+        label="Logo (fond transparent recommandé)"
         name="logo"
+        extra="PNG transparent conseillé."
         rules={[{ required: !initialValues, message: 'Veuillez sélectionner un logo' }]}
       >
         <Upload
           beforeUpload={(file) => {
             setLogoFile(file);
+            setLogoChanged(true);
             return false;
           }}
           maxCount={1}
-          listType="picture"
+          listType="picture-card"
+          accept="image/*"
         >
-          <Button icon={<UploadOutlined />}>Sélectionner Logo</Button>
+          <div>
+            <UploadOutlined />
+            <div style={{ marginTop: 8 }}>Logo</div>
+          </div>
         </Upload>
       </Form.Item>
 
       <Form.Item
-        label="Grid"
+        label="Grid (portrait 2:3)"
         name="grid"
+        extra="Ex. 600x900."
         rules={[{ required: !initialValues, message: 'Veuillez sélectionner une image grid' }]}
       >
         <Upload
           beforeUpload={(file) => {
             setGridFile(file);
+            setGridChanged(true);
             return false;
           }}
           maxCount={1}
-          listType="picture"
+          listType="picture-card"
+          accept="image/*"
         >
-          <Button icon={<UploadOutlined />}>Sélectionner Grid</Button>
+          <div>
+            <UploadOutlined />
+            <div style={{ marginTop: 8 }}>Grid</div>
+          </div>
         </Upload>
       </Form.Item>
 

@@ -170,6 +170,40 @@ export async function addTag(tagData, token) {
   }
   return res.json();
 }
+
+// Ajouter un tag à un jeu (crée le tag s'il n'existe pas)
+export async function addTagToGame(gameId, tagName, token) {
+  const res = await fetch(`${API_URL_TAG}/game/${gameId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({ tag_name: tagName })
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text);
+  }
+  return true;
+}
+
+// Supprimer un tag d'un jeu
+export async function deleteTagFromGame(gameId, tagName, token) {
+  const res = await fetch(`${API_URL_TAG}/game/${gameId}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({ tag_name: tagName })
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text);
+  }
+  return true;
+}
 // USERS
 
 // Connexion d'un utilisateur
@@ -296,7 +330,7 @@ export const deleteTag = async (name, token) => {
 };
 
 // ========== PHOTOS ==========
-// Upload une photo
+// Upload une photo et retourne son ID
 export async function uploadPhoto(file, token) {
   const formData = new FormData();
   formData.append('photo', file);
@@ -311,7 +345,8 @@ export async function uploadPhoto(file, token) {
 
 const json = await res.json();
 console.log('UPLOAD RESPONSE =', json);
-return json;
+// Retourner l'ID de la photo créée
+return json.photo.id;
 }
 /* ================= PARTICIPANTS ================= */
 
@@ -362,4 +397,41 @@ export const deleteReview  = async (reviewId, token) => {
   });
   if (!res.ok) throw new Error('Impossible de supprimer le review');
   return true;
+}
+
+// Ajouter un jeu avec 3 photos via endpoint transactionnel (multipart)
+export async function addGameWithPhotos(values, token) {
+  const formData = new FormData();
+  formData.append('name', values.name);
+  if (values.description) formData.append('description', values.description);
+  if (values.publisher) formData.append('publisher', values.publisher);
+  if (values.studio) formData.append('studio', values.studio);
+  if (values.release_date) formData.append('release_date', values.release_date);
+  // platforms peut être une chaîne ou un tableau; join si tableau
+  if (values.platforms) {
+    const platforms = Array.isArray(values.platforms)
+      ? values.platforms.join(', ')
+      : values.platforms;
+    formData.append('platforms', platforms);
+  }
+  formData.append('is_approved', String(values.is_approved || false));
+
+  // Fichiers: banner, logo, grid
+  formData.append('banner', values.bannerFile);
+  formData.append('logo', values.logoFile);
+  formData.append('grid', values.gridFile);
+
+  const res = await fetch(`${API_URL_GAME}/with-photos`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`
+      // Ne pas définir Content-Type pour laisser le navigateur gérer le boundary
+    },
+    body: formData
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text);
+  }
+  return res.json();
 }

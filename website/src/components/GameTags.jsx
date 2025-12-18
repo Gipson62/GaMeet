@@ -5,7 +5,7 @@ import { useState } from 'react';
 const GameTags = ({ tags = [], onAdd, onRemove }) => {
   const [newTag, setNewTag] = useState('');
 
-  const commonTags = ['RPG', 'Action', 'Adventure', 'Indie', 'Platforme', 'Puzzle', 'Sports', 'Stratégie', 'Simulation', 'Difficile'];
+  const commonTags = ['RPG', 'Action', 'Adventure', 'Indie', 'Platformer', 'Puzzle', 'Sports', 'Stratégie', 'Simulation', 'Difficile'];
 
   const handleAddTag = (tag) => {
     if (onAdd && tag.trim()) {
@@ -14,7 +14,7 @@ const GameTags = ({ tags = [], onAdd, onRemove }) => {
     setNewTag('');
   };
 
-  const tagNames = tags && tags.map(t => t.tag_name || t.name || t);
+  const tagNames = tags && tags.map(t => t.tag_name);
 
   return (
     <Card 

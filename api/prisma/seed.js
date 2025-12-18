@@ -20,7 +20,7 @@ async function main() {
     console.log('Base de données nettoyée.')
 
 
-    const photo1 = await prisma.photo.create({ data: { url: '1766011624940-Screenshot_20251208-2036402_1.png' } })
+    const photo1 = await prisma.photo.create({ data: { url: 'monkey_orange.png' } })
     const photo2 = await prisma.photo.create({ data: { url: 'default_pfp.png' } })
     const photo3 = await prisma.photo.create({ data: { url: 'default_pfp.png' } })
 
@@ -120,6 +120,10 @@ async function main() {
         }
     })
 
+    const the_witcher_logo = await prisma.photo.create({ data: { url: 'the_witcher_3_logo.png' } })
+    const the_witcher_grid = await prisma.photo.create({ data: { url: 'the_witcher_3_grid.png' } })
+    const the_witcher_banner = await prisma.photo.create({ data: { url: 'the_witcher_3_banner.png' } })
+
     // Game 2: The Witcher 3
     const game2 = await prisma.game.create({
         data: {
@@ -130,9 +134,9 @@ async function main() {
             studio: "CD Projekt RED",
             platforms: "PC, PS5, Xbox, Switch",
             is_approved: true,
-            banner_id: photo3.id,
-            logo_id: photo1.id,
-            grid_id: photo2.id
+            banner_id: the_witcher_banner.id,
+            logo_id: the_witcher_logo.id,
+            grid_id: the_witcher_grid.id
         }
     })
 

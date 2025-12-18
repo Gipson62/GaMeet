@@ -1,43 +1,9 @@
-import { Card, Table, Button, Space } from 'antd';
-import { EyeOutlined } from '@ant-design/icons';
+import { Card, List, Button, Tag } from 'antd';
+import { EyeOutlined, CalendarOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
 const GameEvents = ({ events = [] }) => {
   const navigate = useNavigate();
-
-  const columns = [
-    {
-      title: 'Nom',
-      dataIndex: ['event', 'name'],
-      key: 'name',
-    },
-    {
-      title: 'Date',
-      dataIndex: ['event', 'scheduled_date'],
-      key: 'date',
-      render: (date) => date ? new Date(date).toLocaleDateString() : '-',
-    },
-    {
-      title: 'Lieu',
-      dataIndex: ['event', 'location'],
-      key: 'location',
-    },
-    {
-      title: 'Actions',
-      key: 'actions',
-      render: (_, record) => (
-        <Space>
-          <Button
-            icon={<EyeOutlined />}
-            size="small"
-            onClick={() => navigate(`/event/${record.event.id}`)}
-          >
-            Voir
-          </Button>
-        </Space>
-      ),
-    },
-  ];
 
   return (
     <Card
@@ -45,11 +11,29 @@ const GameEvents = ({ events = [] }) => {
       style={{ marginTop: 24 }}
     >
       {events && events.length > 0 ? (
-        <Table
+        <List
+          grid={{ gutter: 16, xs: 1, sm: 2, md: 2, lg: 3, xl: 3 }}
           dataSource={events}
-          columns={columns}
           rowKey={(record) => record.event.id}
-          pagination={false}
+          renderItem={(record) => (
+            <List.Item>
+              <div className="game-card" style={{ paddingBottom: 8 }}>
+                <div style={{ padding: 12 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                    <Tag color="blue">Event</Tag>
+                    <strong>{record.event.name}</strong>
+                  </div>
+                  <div style={{ display: 'flex', gap: 12, color: 'rgba(255,255,255,0.7)' }}>
+                    <span><CalendarOutlined /> {record.event.scheduled_date ? new Date(record.event.scheduled_date).toLocaleDateString() : '-'}</span>
+                    <span><EnvironmentOutlined /> {record.event.location || '-'}</span>
+                  </div>
+                </div>
+                <div style={{ padding: '0 12px 12px', display: 'flex', justifyContent: 'flex-end' }}>
+                  <Button size="small" icon={<EyeOutlined />} onClick={() => navigate(`/event/${record.event.id}`)}>Voir</Button>
+                </div>
+              </div>
+            </List.Item>
+          )}
         />
       ) : (
         <p>Aucun événement associé</p>

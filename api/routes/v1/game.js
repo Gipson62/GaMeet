@@ -3,7 +3,7 @@ import {
     getAllGames,
     getGameById,
     addGame,
-    addGameNew,
+    addGameWithPhotos,
     updateGame,
     deleteGame,
     updateGamePhoto
@@ -15,7 +15,7 @@ import { upload } from '../../controller/photoORM.js';
 const router = Router();
 
 router.post('/', checkJWT, GVM.create, addGame);
-router.post('/with-photos', checkJWT, upload.fields([{ name: 'banner', maxCount: 1 }, { name: 'logo', maxCount: 1 }, { name: 'grid', maxCount: 1 }]), addGameNew);
+router.post('/with-photos', checkJWT, upload.fields([{ name: 'banner', maxCount: 1 }, { name: 'logo', maxCount: 1 }, { name: 'grid', maxCount: 1 }]), addGameWithPhotos);
 router.get('/', getAllGames);
 router.get('/:id', GVM.idParam, getGameById);
 router.patch('/:id', checkJWT, GVM.idParam, GVM.update, updateGame);

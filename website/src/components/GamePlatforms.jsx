@@ -16,7 +16,7 @@ const GamePlatforms = ({ platforms = [], onAdd, onRemove }) => {
 
   return (
     <Card 
-      title="Platformes" 
+      title="Plateformes" 
       style={{ marginTop: 24 }}
     >
       <Space wrap style={{ marginBottom: 16 }}>
