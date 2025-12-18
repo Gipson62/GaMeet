@@ -7,6 +7,7 @@ const API_URL_PHOTO = API_BASE_URL + '/photo';
 const API_URL_TAG = API_BASE_URL + '/tag';
 const API_URL_GAME = API_BASE_URL + '/game';
 const API_URL_USER = API_BASE_URL + '/user';
+const API_URL_REVIEW = API_BASE_URL + '/review';
 
 // Récupérer tous les événements
 export const fetchEvents = async (token) => {
@@ -38,7 +39,7 @@ export const deleteEvent = async (id, token) => {
 
 // ajouter un événement
 export async function addEvent(eventData, token) {
-  const res = await fetch('http://localhost:3001/v1/event', {
+  const res = await fetch(API_URL_EVENT, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -303,7 +304,7 @@ export const updateUserAvatar = async (userId, file, token) => {
     const formData = new FormData();
     formData.append("file", file);
 
-    const res = await fetch(`http://localhost:3001/v1/user/${userId}/avatar`, {
+    const res = await fetch(`${API_URL_USER}/${userId}/avatar`, {
         method: "PATCH",
         headers: {
             Authorization: `Bearer ${token}`,
@@ -351,9 +352,7 @@ return json.photo.id;
 
 // Ajouter un participant à un event (admin)
 export const addParticipant = async (eventId, userId, token) => {
-  const res = await fetch(
-    `http://localhost:3001/v1/event/${eventId}/participant`,
-    {
+  const res = await fetch(`${API_URL_EVENT}/${eventId}/participant`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -373,9 +372,7 @@ export const addParticipant = async (eventId, userId, token) => {
 
 // Retirer un participant d’un event (admin)
 export const removeParticipant = async (eventId, userId, token) => {
-  const res = await fetch(
-    `http://localhost:3001/v1/event/${eventId}/participant`,
-    {
+  const res = await fetch(`${API_URL_EVENT}/${eventId}/participant`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -394,7 +391,7 @@ export const removeParticipant = async (eventId, userId, token) => {
 };
 
 export const deleteReview  = async (reviewId, token) => {
-  const res = await fetch(`http://localhost:3001/v1/review/${reviewId}`, {
+  const res = await fetch(`${API_URL_REVIEW}/${reviewId}`, {
     method: 'DELETE',
     headers: {  Authorization: `Bearer ${token}` },
   });

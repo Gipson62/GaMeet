@@ -1,4 +1,4 @@
-import { Card, Table, Button, Modal, Form, Select } from 'antd';
+import { Card, Table, Button, Modal, Form, Select, Tag } from 'antd';
 import { PlusOutlined, CloseOutlined } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
 import { fetchUsers } from '../api/api';
@@ -21,7 +21,13 @@ const EventParticipants = ({ participants = [], onDelete, onAdd }) => {
 
   const columns = [
     { title: 'Pseudo', dataIndex: 'pseudo' },
-    { title: 'Email', dataIndex: 'email' },
+    {
+      title: 'Statut',
+      dataIndex: 'isOrganizer',
+      render: (isOrganizer) => (
+        isOrganizer ? <Tag color="green">Organisateur</Tag> : <Tag>Participant</Tag>
+      ),
+    },
     {
       title: 'Actions',
       render: (_, record) => (

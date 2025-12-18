@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect,useMemo, useState } from 'react';
 import { Card, message, Modal } from 'antd';
 import EventsHeader from '../components/EventsHeader';
 import EventsTable from '../components/EventsTable';
@@ -9,7 +9,7 @@ const AdminEvents = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
-
+  const [q, setQ] = useState("");
   const loadEvents = async () => {
     setLoading(true);
     try {
@@ -31,7 +31,23 @@ const AdminEvents = () => {
       setLoading(false);
     }
   };
+const filteredEvents = useMemo(() => {
+    const query = q.trim().toLowerCase();
+    if (!query) return events;
 
+    return events.filter((e) => {
+      const name = (e.name || "").toLowerCase();
+      const location = (e.location || "").toLowerCase();
+      const games = (Array.isArray(e.games) ? e.games.join(' ') : '').toLowerCase();
+      const date = (e.date || "").toLowerCase();
+      return (
+        name.includes(query) ||
+        location.includes(query) ||
+        games.includes(query) ||
+        date.includes(query)
+      );
+    });
+  }, [events, q]);
   useEffect(() => {
     loadEvents();
   }, []);
@@ -62,8 +78,8 @@ const AdminEvents = () => {
 
   return (
     <Card style={{ margin: 24 }}>
-      <EventsHeader onRefresh={loadEvents} onAdd={() => setOpen(true)} />
-      <EventsTable events={events} loading={loading} onDelete={handleDeleteEvent} />
+      <EventsHeader onRefresh={loadEvents} onAdd={() => setOpen(true)} q={q} onSearchChange={setQ} />
+      <EventsTable events={filteredEvents} loading={loading} onDelete={handleDeleteEvent} />
 
       <Modal
         title="Ajouter un événement"
