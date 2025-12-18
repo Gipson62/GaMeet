@@ -6,6 +6,7 @@ const API_URL_EVENT = API_BASE_URL + '/event';
 const API_URL_PHOTO = API_BASE_URL + '/photo';
 const API_URL_TAG = API_BASE_URL + '/tag';
 const API_URL_GAME = API_BASE_URL + '/game';
+const API_URL_USER = API_BASE_URL + '/user';
 
 // Récupérer tous les événements
 export const fetchEvents = async (token) => {
@@ -45,13 +46,12 @@ export async function addEvent(eventData, token) {
     },
     body: JSON.stringify(eventData)
     
-  });console.log('eventData:', eventData);
-console.log(localStorage.getItem('token'));
+  });
+    console.log(eventData);
   if (!res.ok) {
     const text = await res.text(); // texte brut en cas d'erreur
     throw new Error(text);
   }
-
   return res.json();
 }
 export async function updateEvent(id, eventData, token) {
@@ -169,6 +169,98 @@ export async function addTag(tagData, token) {
   }
   return res.json();
 }
+// USERS
+
+// Récupérer tous les utilisateurs
+export const fetchUsers = async (token) => {
+    const response = await fetch(`${API_URL_USER}/list`, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!response.ok) throw new Error('Erreur lors du chargement des utilisateurs');
+    return response.json();
+};
+
+// Récupérer un utilisateur par ID
+export const fetchUserById = async (id, token) => {
+    const response = await fetch(`${API_URL_USER}/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!response.ok) throw new Error("Erreur lors du chargement de l'utilisateur");
+    return response.json();
+};
+
+// Récupérer le profil de l'utilisateur connecté
+export const fetchMe = async (token) => {
+    const response = await fetch(`${API_URL_USER}`, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!response.ok) throw new Error("Erreur lors du chargement du profil");
+    return response.json();
+};
+
+
+// Supprimer un utilisateur
+export const deleteUser = async (id, token) => {
+    const response = await fetch(`${API_URL_USER}/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!response.ok) throw new Error('Impossible de supprimer l’utilisateur');
+    return true;
+};
+
+// Ajouter un utilisateur
+export async function addUser(userData, file, token) {
+    const formData = new FormData();
+
+    formData.append("pseudo", userData.pseudo);
+    formData.append("email", userData.email);
+    formData.append("password", userData.password);
+    formData.append("birth_date", userData.birth_date);
+
+    if (userData.bio) {
+        formData.append("bio", userData.bio);
+    }
+
+    if (file) {
+        formData.append("avatar", file); // ⚠️ même nom que multer
+    }
+
+    const res = await fetch(`${API_URL_USER}/register`, {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+    });
+
+    if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || "Erreur création utilisateur");
+    }
+
+    return res.json();
+}
+
+// Mettre à jour l'avatar d'un utilisateur
+export const updateUserAvatar = async (userId, file, token) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await fetch(`http://localhost:3001/v1/user/${userId}/avatar`, {
+        method: "PATCH",
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+    });
+
+    if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || "Impossible de mettre à jour l'avatar");
+    }
+    return res.json();
+};
 
 // Supprimer un tag par nom (l'API attend le paramètre comme identifiant)
 export const deleteTag = async (name, token) => {
