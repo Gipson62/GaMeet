@@ -38,6 +38,8 @@ export const getGameById = async (req, res) => {
                 logo_id: true,
                 grid_id: true,
                 is_approved: true,
+                studio: true,
+                publisher: true,
                 event_game: {
                     include: {
                         event: true

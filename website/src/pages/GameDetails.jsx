@@ -263,12 +263,18 @@ const GameDetails = () => {
         open={editOpen}
         footer={null}
         onCancel={() => setEditOpen(false)}
+        destroyOnClose
       >
         <GameForm
           onSubmit={handleEditSubmit}
           initialValues={{
-            ...game,
+            name: game.name,
+            description: game.description,
+            studio: game.studio ?? '',
+            publisher: game.publisher ?? '',
             release_date: game.release_date ? dayjs(game.release_date) : null,
+            platforms: game.platforms,
+            is_approved: game.is_approved,
           }}
         />
         {editSaving && <Spin />}

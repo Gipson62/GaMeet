@@ -1,5 +1,5 @@
 import { Card, Tag, Button, Space, Input, Popconfirm } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, CloseOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 
 const GameTags = ({ tags = [], onAdd, onRemove }) => {
@@ -51,12 +51,12 @@ const GameTags = ({ tags = [], onAdd, onRemove }) => {
             <Tag>{tagName}</Tag>
             {onRemove && (
               <Popconfirm
-                title="Supprimer ce tag ?"
+                title={`Retirer "${tagName}" de ce jeu ?`}
                 onConfirm={() => onRemove(idx)}
                 okText="Oui"
                 cancelText="Non"
               >
-                <Button size="small" danger>Supprimer</Button>
+                <Button type="text" size="small" icon={<CloseOutlined />} aria-label="Supprimer" />
               </Popconfirm>
             )}
           </Space>
