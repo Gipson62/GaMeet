@@ -1,4 +1,4 @@
-import { Card, Typography, Space } from 'antd';
+import { Card, Typography, Descriptions } from 'antd';
 
 const { Title, Text } = Typography;
 
@@ -12,23 +12,25 @@ const GameInfo = ({ description, releaseDate, studio, publisher }) => {
         </>
       )}
 
-      <Space style={{ marginTop: 16 }} direction="vertical">
+      <Descriptions
+        bordered
+        column={1}
+        size="middle"
+        style={{ marginTop: 16 }}
+        labelStyle={{ width: 160, fontWeight: 600 }}
+      >
         {releaseDate && (
-          <Text>
-            <strong>Date de sortie :</strong> {new Date(releaseDate).toLocaleDateString()}
-          </Text>
+          <Descriptions.Item label="Date de sortie">
+            {new Date(releaseDate).toLocaleDateString()}
+          </Descriptions.Item>
         )}
         {studio && (
-          <Text>
-            <strong>Studio :</strong> {studio}
-          </Text>
+          <Descriptions.Item label="Studio">{studio}</Descriptions.Item>
         )}
         {publisher && (
-          <Text>
-            <strong>Éditeur :</strong> {publisher}
-          </Text>
+          <Descriptions.Item label="Éditeur">{publisher}</Descriptions.Item>
         )}
-      </Space>
+      </Descriptions>
     </Card>
   );
 };
