@@ -1,11 +1,9 @@
-import { Card, Tag, Button, Space, Input } from 'antd';
+import { Card, Tag, Button, Space, Input, Popconfirm } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 
 const GameTags = ({ tags = [], onAdd, onRemove }) => {
   const [newTag, setNewTag] = useState('');
-
-  const commonTags = ['RPG', 'Action', 'Adventure', 'Indie', 'Platformer', 'Puzzle', 'Sports', 'Stratégie', 'Simulation', 'Difficile'];
 
   const handleAddTag = (tag) => {
     if (onAdd && tag.trim()) {
@@ -14,32 +12,22 @@ const GameTags = ({ tags = [], onAdd, onRemove }) => {
     setNewTag('');
   };
 
-  const tagNames = tags && tags.map(t => t.tag_name);
+  const tagNames = Array.isArray(tags)
+    ? tags.map(t => (t && (t.tag_name || t.name)) || t).filter(Boolean)
+    : [];
 
-  return (
-    <Card 
-      title="Tags" 
-      style={{ marginTop: 24 }}
-    >
-      <Space wrap style={{ marginBottom: 16 }}>
-        {tagNames && tagNames.length > 0 && tagNames.map((tagName, idx) => (
-          <Tag
-            key={idx}
-            closable={!!onRemove}
-            onClose={() => onRemove && onRemove(idx)}
-          >
-            {tagName}
-          </Tag>
-        ))}
-      </Space>
-
+  const header = (
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+      <span style={{ fontWeight: 600 }}>Tags</span>
       {onAdd && (
-        <Space style={{ marginTop: 16 }}>
+        <Space>
           <Input
             placeholder="Ajouter un tag..."
             value={newTag}
             onChange={(e) => setNewTag(e.target.value)}
             onPressEnter={() => handleAddTag(newTag)}
+            style={{ width: 220 }}
+            allowClear
           />
           <Button
             icon={<PlusOutlined />}
@@ -49,25 +37,31 @@ const GameTags = ({ tags = [], onAdd, onRemove }) => {
           </Button>
         </Space>
       )}
+    </div>
+  );
 
-      {onAdd && (
-        <div style={{ marginTop: 12 }}>
-          <small style={{ color: '#999' }}>Suggestions :</small>
-          <Space wrap style={{ marginTop: 8 }}>
-            {commonTags
-              .filter(t => !tagNames || !tagNames.includes(t))
-              .map((t) => (
-                <Tag
-                  key={t}
-                  onClick={() => handleAddTag(t)}
-                  style={{ cursor: 'pointer' }}
-                >
-                  + {t}
-                </Tag>
-              ))}
+  return (
+    <Card 
+      title={header} 
+      style={{ marginTop: 24 }}
+    >
+      <Space wrap style={{ marginBottom: 16 }}>
+        {tagNames && tagNames.length > 0 && tagNames.map((tagName, idx) => (
+          <Space key={idx}>
+            <Tag>{tagName}</Tag>
+            {onRemove && (
+              <Popconfirm
+                title="Supprimer ce tag ?"
+                onConfirm={() => onRemove(idx)}
+                okText="Oui"
+                cancelText="Non"
+              >
+                <Button size="small" danger>Supprimer</Button>
+              </Popconfirm>
+            )}
           </Space>
-        </div>
-      )}
+        ))}
+      </Space>
     </Card>
   );
 };

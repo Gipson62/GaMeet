@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Card, message, Modal } from 'antd';
 import TagsHeader from '../components/TagsHeader';
 import TagsTable from '../components/TagsTable';
@@ -9,6 +9,7 @@ const TagPage = () => {
   const [tags, setTags] = useState([]);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [q, setQ] = useState('');
 
   const loadTags = async () => {
     setLoading(true);
@@ -43,6 +44,16 @@ const TagPage = () => {
     }
   };
 
+  const filteredTags = useMemo(() => {
+    const query = q.trim().toLowerCase();
+    if (!query) return tags;
+
+    return tags.filter((t) => {
+      const name = (t.name || '').toLowerCase();
+      return name.includes(query);
+    });
+  }, [tags, q]);
+
   useEffect(() => {
     loadTags();
   }, []);
@@ -52,10 +63,12 @@ const TagPage = () => {
       <TagsHeader
         onRefresh={loadTags}
         onAdd={() => setOpen(true)}
+        q={q}
+        onSearchChange={setQ}
       />
 
       <TagsTable
-        tags={tags}
+        tags={filteredTags}
         loading={loading}
         onDelete={handleDeleteTag}
       />

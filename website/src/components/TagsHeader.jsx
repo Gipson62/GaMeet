@@ -4,7 +4,7 @@ import { PlusOutlined, ReloadOutlined } from '@ant-design/icons';
 const { Title } = Typography;
 const { Search } = Input;
 
-const TagsHeader = ({ onRefresh, onAdd }) => {
+const TagsHeader = ({ onRefresh, onAdd, q, onSearchChange }) => {
   return (
     <Space
       style={{
@@ -16,7 +16,13 @@ const TagsHeader = ({ onRefresh, onAdd }) => {
       <Title level={3}>Tags</Title>
 
       <Space>
-        <Search placeholder="Rechercher un tag..." allowClear disabled />
+        <Search 
+          placeholder="Rechercher un tag..." 
+          allowClear 
+          value={q}
+          onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
+          onSearch={(val) => onSearchChange && onSearchChange(val)}
+        />
         <Button icon={<ReloadOutlined />} onClick={onRefresh}>
           Actualiser
         </Button>

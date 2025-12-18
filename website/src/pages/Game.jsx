@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Card, message, Modal, Table, Button, Space, Spin, Popconfirm } from 'antd';
 import { EditOutlined, DeleteOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons';
 import { fetchGames, deleteGame, addGameWithPhotos } from '../api/api';
@@ -10,6 +10,7 @@ const Game = () => {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [q, setQ] = useState('');
   const navigate = useNavigate();
 
   const loadGames = async () => {
@@ -56,6 +57,24 @@ const Game = () => {
       message.error(err.message);
     }
   };
+
+  const filteredGames = useMemo(() => {
+    const query = q.trim().toLowerCase();
+    if (!query) return games;
+
+    return games.filter((g) => {
+      const name = (g.name || '').toLowerCase();
+      const studio = (g.studio || '').toLowerCase();
+      const publisher = (g.publisher || '').toLowerCase();
+      const platforms = (g.platforms || '').toLowerCase();
+      return (
+        name.includes(query) ||
+        studio.includes(query) ||
+        publisher.includes(query) ||
+        platforms.includes(query)
+      );
+    });
+  }, [games, q]);
 
   const columns = [
     {
@@ -128,16 +147,33 @@ const Game = () => {
   return (
     <Card style={{ margin: 24 }}>
       <Space direction="vertical" style={{ width: '100%' }}>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() => setOpen(true)}
-        >
-          Ajouter un jeu
-        </Button>
+        <Space style={{ width: '100%', justifyContent: 'space-between' }}>
+          <div></div>
+          <Space>
+            <input
+              type="text"
+              placeholder="Rechercher un jeu..."
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              style={{
+                padding: '6px 12px',
+                borderRadius: '4px',
+                border: '1px solid #d9d9d9',
+                fontSize: '14px',
+              }}
+            />
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => setOpen(true)}
+            >
+              Ajouter un jeu
+            </Button>
+          </Space>
+        </Space>
 
         <Table
-          dataSource={games}
+          dataSource={filteredGames}
           columns={columns}
           loading={loading}
           rowKey="id"
