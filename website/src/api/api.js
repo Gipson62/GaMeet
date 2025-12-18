@@ -295,7 +295,7 @@ export const deleteTag = async (name, token) => {
 };
 
 // ========== PHOTOS ==========
-// Upload une photo
+// Upload une photo et retourne son ID
 export async function uploadPhoto(file, token) {
   const formData = new FormData();
   formData.append('photo', file);
@@ -310,7 +310,8 @@ export async function uploadPhoto(file, token) {
 
 const json = await res.json();
 console.log('UPLOAD RESPONSE =', json);
-return json;
+// Retourner l'ID de la photo créée
+return json.photo.id;
 }
 /* ================= PARTICIPANTS ================= */
 

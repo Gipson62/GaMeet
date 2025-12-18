@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Card, message, Modal, Table, Button, Space, Spin } from 'antd';
+import { Card, message, Modal, Table, Button, Space, Spin, Popconfirm } from 'antd';
 import { EditOutlined, DeleteOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons';
 import { fetchGames, deleteGame, addGame, uploadPhoto } from '../api/api';
 import GameForm from '../components/GameForm';
@@ -126,13 +126,14 @@ const Game = () => {
           >
             Voir
           </Button>
-          <Button
-            icon={<DeleteOutlined />}
-            danger
-            onClick={() => handleDeleteGame(record.id)}
+          <Popconfirm
+            title="Voulez-vous vraiment supprimer cet événement ?"
+            onConfirm={() => handleDeleteGame(record.id)}
+            okText="Oui"
+            cancelText="Non"
           >
-            Supprimer
-          </Button>
+            <Button danger icon={<DeleteOutlined />} />
+          </Popconfirm>
         </Space>
       ),
     },

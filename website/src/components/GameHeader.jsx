@@ -1,4 +1,4 @@
-import { Button, Space, Typography, Tag } from 'antd';
+import { Button, Space, Typography, Tag, Popconfirm } from 'antd';
 import { ArrowLeftOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
@@ -37,9 +37,14 @@ const GameHeader = ({ name, studio, publisher, is_approved, release_date, logo_i
           <Button icon={<EditOutlined />} onClick={onEdit}>
             Modifier
           </Button>
-          <Button danger icon={<DeleteOutlined />} onClick={onDelete}>
-            Supprimer
-          </Button>
+          <Popconfirm
+            title="Voulez-vous vraiment supprimer cet événement ?"
+            onConfirm={() => onDelete()}
+            okText="Oui"
+            cancelText="Non"
+          >
+            <Button danger icon={<DeleteOutlined />} />
+          </Popconfirm>
         </Space>
       </Space>
     </div>

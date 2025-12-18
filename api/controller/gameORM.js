@@ -181,26 +181,37 @@ export const updateGame = async (req, res) => {
         }
         let game = await prisma.game.findUnique({ where: { id: id } });
 
-        if (updateData.banner_id) {
-            await prisma.photo.delete({
-                where: { id: game.banner_id }
-            });
-        }
-        if (updateData.logo_id) {
-            await prisma.photo.delete({
-                where: { id: game.logo_id }
-            });
-        }
-        if (updateData.grid_id) {
-            await prisma.photo.delete({
-                where: { id: game.grid_id }
-            });
+        // Store old photo IDs before updating
+        const oldBannerId = updateData.banner_id && updateData.banner_id !== game.banner_id ? game.banner_id : null;
+        const oldLogoId = updateData.logo_id && updateData.logo_id !== game.logo_id ? game.logo_id : null;
+        const oldGridId = updateData.grid_id && updateData.grid_id !== game.grid_id ? game.grid_id : null;
+
+        if (updateData.platforms && Array.isArray(updateData.platforms)) {
+            updateData.platforms = updateData.platforms.join(', ');
         }
 
+        // Update the game first
         await prisma.game.update({
             where: { id },
             data: updateData
         });
+
+        // Then delete old photos (after they're no longer referenced)
+        if (oldBannerId) {
+            await prisma.photo.delete({
+                where: { id: oldBannerId }
+            });
+        }
+        if (oldLogoId) {
+            await prisma.photo.delete({
+                where: { id: oldLogoId }
+            });
+        }
+        if (oldGridId) {
+            await prisma.photo.delete({
+                where: { id: oldGridId }
+            });
+        }
 
         res.sendStatus(204);
 
