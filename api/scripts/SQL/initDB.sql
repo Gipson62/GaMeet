@@ -74,7 +74,7 @@ CREATE TABLE Event (
 -- === TABLE: Event_Game ===
 CREATE TABLE Event_Game (
     event_id INTEGER REFERENCES Event(id) ON DELETE CASCADE,
-    game_id INTEGER REFERENCES Game(id) ON DELETE,
+    game_id INTEGER REFERENCES Game(id) ON DELETE CASCADE,
     PRIMARY KEY (event_id, game_id)
 );
 
