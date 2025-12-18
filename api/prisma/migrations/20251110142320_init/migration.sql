@@ -1,5 +1,5 @@
 -- CreateTable
-CREATE TABLE "Photo" (
+CREATE TABLE "photo" (
     "id" SERIAL NOT NULL,
     "url" TEXT NOT NULL,
 
@@ -7,7 +7,7 @@ CREATE TABLE "Photo" (
 );
 
 -- CreateTable
-CREATE TABLE "User" (
+CREATE TABLE "user" (
     "id" SERIAL NOT NULL,
     "photo_id" INTEGER,
     "pseudo" TEXT NOT NULL,
@@ -22,7 +22,7 @@ CREATE TABLE "User" (
 );
 
 -- CreateTable
-CREATE TABLE "Game" (
+CREATE TABLE "game" (
     "id" SERIAL NOT NULL,
     "banner_id" INTEGER,
     "logo_id" INTEGER,
@@ -38,14 +38,14 @@ CREATE TABLE "Game" (
 );
 
 -- CreateTable
-CREATE TABLE "Tag" (
+CREATE TABLE "tag" (
     "name" TEXT NOT NULL,
 
     CONSTRAINT "Tag_pkey" PRIMARY KEY ("name")
 );
 
 -- CreateTable
-CREATE TABLE "Game_Tag" (
+CREATE TABLE "game_tag" (
     "game_id" INTEGER NOT NULL,
     "tag_name" TEXT NOT NULL,
 
@@ -53,7 +53,7 @@ CREATE TABLE "Game_Tag" (
 );
 
 -- CreateTable
-CREATE TABLE "Event" (
+CREATE TABLE "event" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "scheduled_date" TIMESTAMP(3) NOT NULL,
@@ -67,7 +67,7 @@ CREATE TABLE "Event" (
 );
 
 -- CreateTable
-CREATE TABLE "Event_Game" (
+CREATE TABLE "event_game" (
     "game_id" INTEGER NOT NULL,
     "event_id" INTEGER NOT NULL,
 
@@ -75,7 +75,7 @@ CREATE TABLE "Event_Game" (
 );
 
 -- CreateTable
-CREATE TABLE "Event_Photo" (
+CREATE TABLE "event_photo" (
     "event_id" INTEGER NOT NULL,
     "photo_id" INTEGER NOT NULL,
 
@@ -83,7 +83,7 @@ CREATE TABLE "Event_Photo" (
 );
 
 -- CreateTable
-CREATE TABLE "Participant" (
+CREATE TABLE "participant" (
     "event_id" INTEGER NOT NULL,
     "user_id" INTEGER NOT NULL,
 
@@ -91,7 +91,7 @@ CREATE TABLE "Participant" (
 );
 
 -- CreateTable
-CREATE TABLE "Review" (
+CREATE TABLE "review" (
     "id" SERIAL NOT NULL,
     "user_id" INTEGER NOT NULL,
     "event_id" INTEGER NOT NULL,
@@ -104,52 +104,52 @@ CREATE TABLE "Review" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+CREATE UNIQUE INDEX "user_email_key" ON "user"("email");
 
 -- AddForeignKey
-ALTER TABLE "User" ADD CONSTRAINT "User_photo_id_fkey" FOREIGN KEY ("photo_id") REFERENCES "Photo"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "user" ADD CONSTRAINT "user_photo_id_fkey" FOREIGN KEY ("photo_id") REFERENCES "photo"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Game" ADD CONSTRAINT "Game_banner_id_fkey" FOREIGN KEY ("banner_id") REFERENCES "Photo"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "game" ADD CONSTRAINT "game_banner_id_fkey" FOREIGN KEY ("banner_id") REFERENCES "photo"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Game" ADD CONSTRAINT "Game_logo_id_fkey" FOREIGN KEY ("logo_id") REFERENCES "Photo"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "game" ADD CONSTRAINT "game_logo_id_fkey" FOREIGN KEY ("logo_id") REFERENCES "photo"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Game" ADD CONSTRAINT "Game_grid_id_fkey" FOREIGN KEY ("grid_id") REFERENCES "Photo"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "game" ADD CONSTRAINT "game_grid_id_fkey" FOREIGN KEY ("grid_id") REFERENCES "photo"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Game_Tag" ADD CONSTRAINT "Game_Tag_game_id_fkey" FOREIGN KEY ("game_id") REFERENCES "Game"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "game_tag" ADD CONSTRAINT "game_tag_game_id_fkey" FOREIGN KEY ("game_id") REFERENCES "game"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Game_Tag" ADD CONSTRAINT "Game_Tag_tag_name_fkey" FOREIGN KEY ("tag_name") REFERENCES "Tag"("name") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "game_tag" ADD CONSTRAINT "game_tag_tag_name_fkey" FOREIGN KEY ("tag_name") REFERENCES "tag"("name") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Event" ADD CONSTRAINT "Event_author_id_fkey" FOREIGN KEY ("author_id") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "event" ADD CONSTRAINT "event_author_id_fkey" FOREIGN KEY ("author_id") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Event_Game" ADD CONSTRAINT "Event_Game_game_id_fkey" FOREIGN KEY ("game_id") REFERENCES "Game"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "event_game" ADD CONSTRAINT "event_game_game_id_fkey" FOREIGN KEY ("game_id") REFERENCES "game"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Event_Game" ADD CONSTRAINT "Event_Game_event_id_fkey" FOREIGN KEY ("event_id") REFERENCES "Event"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "event_game" ADD CONSTRAINT "event_game_event_id_fkey" FOREIGN KEY ("event_id") REFERENCES "event"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Event_Photo" ADD CONSTRAINT "Event_Photo_event_id_fkey" FOREIGN KEY ("event_id") REFERENCES "Event"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "event_photo" ADD CONSTRAINT "event_photo_event_id_fkey" FOREIGN KEY ("event_id") REFERENCES "event"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Event_Photo" ADD CONSTRAINT "Event_Photo_photo_id_fkey" FOREIGN KEY ("photo_id") REFERENCES "Photo"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "event_photo" ADD CONSTRAINT "event_photo_photo_id_fkey" FOREIGN KEY ("photo_id") REFERENCES "photo"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Participant" ADD CONSTRAINT "Participant_event_id_fkey" FOREIGN KEY ("event_id") REFERENCES "Event"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "participant" ADD CONSTRAINT "participant_event_id_fkey" FOREIGN KEY ("event_id") REFERENCES "event"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Participant" ADD CONSTRAINT "Participant_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "participant" ADD CONSTRAINT "participant_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Review" ADD CONSTRAINT "Review_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "review" ADD CONSTRAINT "review_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Review" ADD CONSTRAINT "Review_event_id_fkey" FOREIGN KEY ("event_id") REFERENCES "Event"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "review" ADD CONSTRAINT "review_event_id_fkey" FOREIGN KEY ("event_id") REFERENCES "event"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Review" ADD CONSTRAINT "Review_photo_id_fkey" FOREIGN KEY ("photo_id") REFERENCES "Photo"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "review" ADD CONSTRAINT "review_photo_id_fkey" FOREIGN KEY ("photo_id") REFERENCES "photo"("id") ON DELETE SET NULL ON UPDATE CASCADE;
