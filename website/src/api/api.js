@@ -367,3 +367,40 @@ export const deleteReview  = async (reviewId, token) => {
   if (!res.ok) throw new Error('Impossible de supprimer le review');
   return true;
 }
+
+// Ajouter un jeu avec 3 photos via endpoint transactionnel (multipart)
+export async function addGameWithPhotos(values, token) {
+  const formData = new FormData();
+  formData.append('name', values.name);
+  if (values.description) formData.append('description', values.description);
+  if (values.publisher) formData.append('publisher', values.publisher);
+  if (values.studio) formData.append('studio', values.studio);
+  if (values.release_date) formData.append('release_date', values.release_date);
+  // platforms peut être une chaîne ou un tableau; join si tableau
+  if (values.platforms) {
+    const platforms = Array.isArray(values.platforms)
+      ? values.platforms.join(', ')
+      : values.platforms;
+    formData.append('platforms', platforms);
+  }
+  formData.append('is_approved', String(values.is_approved || false));
+
+  // Fichiers: banner, logo, grid
+  formData.append('banner', values.bannerFile);
+  formData.append('logo', values.logoFile);
+  formData.append('grid', values.gridFile);
+
+  const res = await fetch(`${API_URL_GAME}/with-photos`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`
+      // Ne pas définir Content-Type pour laisser le navigateur gérer le boundary
+    },
+    body: formData
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text);
+  }
+  return res.json();
+}

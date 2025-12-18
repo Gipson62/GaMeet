@@ -51,14 +51,7 @@ export const getGameById = async (req, res) => {
     }
 }
 
-/*
- * Crée un jeu avec ses 3 images (banner, logo, grid) en une transaction
- * Accepte multipart/form-data :
- *   - name, description, studio, publisher, release_date, platforms, is_approved
- *   - banner, logo, grid (fichiers)
- * Si l'upload ou la création du jeu échoue, tout est annulé
- */
-export const addGameNew = async (req, res) => {
+export const addGameWithPhotos = async (req, res) => {
     try {
         // Vérifier que les 3 fichiers sont présents
         if (!req.files?.banner || !req.files?.logo || !req.files?.grid) {

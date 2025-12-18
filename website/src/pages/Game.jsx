@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Card, message, Modal, Table, Button, Space, Spin, Popconfirm } from 'antd';
 import { EditOutlined, DeleteOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons';
-import { fetchGames, deleteGame, addGame, uploadPhoto } from '../api/api';
+import { fetchGames, deleteGame, addGameWithPhotos } from '../api/api';
 import GameForm from '../components/GameForm';
 import { useNavigate } from 'react-router-dom';
 
@@ -27,35 +27,17 @@ const Game = () => {
   const handleAddGame = async (values) => {
     const token = localStorage.getItem('token');
     setUploading(true);
-    
     try {
-      // Upload les 3 photos d'abord
+      // Vérifier les 3 photos obligatoires
       if (!values.bannerFile || !values.logoFile || !values.gridFile) {
         message.error('Les 3 photos sont requises');
-        setUploading(false);
         return;
       }
 
-      const bannerResult = await uploadPhoto(values.bannerFile, token);
-      const logoResult = await uploadPhoto(values.logoFile, token);
-      const gridResult = await uploadPhoto(values.gridFile, token);
+      // Appel de l'endpoint transactionnel multipart
+      await addGameWithPhotos(values, token);
 
-      // Créer le jeu avec les IDs des photos
-      const payload = {
-        name: values.name,
-        description: values.description,
-        publisher: values.publisher,
-        studio: values.studio,
-        release_date: values.release_date || null,
-        platforms: values.platforms,
-        is_approved: values.is_approved || false,
-        banner_id: bannerResult.photo.id,
-        logo_id: logoResult.photo.id,
-        grid_id: gridResult.photo.id,
-      };
-
-      await addGame(payload, token);
-      message.success('Jeu créé avec les photos !');
+      message.success('Jeu créé avec les photos (transaction) !');
       setOpen(false);
       loadGames();
     } catch (err) {
