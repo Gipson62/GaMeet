@@ -169,6 +169,40 @@ export async function addTag(tagData, token) {
   }
   return res.json();
 }
+
+// Ajouter un tag à un jeu (crée le tag s'il n'existe pas)
+export async function addTagToGame(gameId, tagName, token) {
+  const res = await fetch(`${API_URL_TAG}/game/${gameId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({ tag_name: tagName })
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text);
+  }
+  return true;
+}
+
+// Supprimer un tag d'un jeu
+export async function deleteTagFromGame(gameId, tagName, token) {
+  const res = await fetch(`${API_URL_TAG}/game/${gameId}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({ tag_name: tagName })
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text);
+  }
+  return true;
+}
 // USERS
 
 // Connexion d'un utilisateur

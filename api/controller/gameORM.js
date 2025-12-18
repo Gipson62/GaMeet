@@ -38,6 +38,16 @@ export const getGameById = async (req, res) => {
                 logo_id: true,
                 grid_id: true,
                 is_approved: true,
+                event_game: {
+                    include: {
+                        event: true
+                    }
+                },
+                game_tag: {
+                    include: {
+                        tag: true
+                    }
+                }
             },
         });
         if (game) {
@@ -224,6 +234,21 @@ export const deleteGame = async (req, res) => {
         if (!req.user.is_admin)
             return res.status(403).send({ message: "Accès refusé" })
 
+        const game = await prisma.game.findUnique({ where: { id } })
+
+        // supprimer les photos associées (fichiers + entrées DB)
+        const photoIds = [game.banner_id, game.logo_id, game.grid_id].filter(Boolean)
+        for (const photoId of photoIds) {
+            try {
+                const photo = await prisma.photo.findUnique({ where: { id: photoId } })
+                if (photo?.url) {
+                    fs.unlink(`./uploads/${photo.url}`, () => { })
+                }
+                await prisma.photo.delete({ where: { id: photoId } })
+            } catch (cleanupErr) {
+                console.error('Erreur suppression photo associée', cleanupErr)
+            }
+        }
         await prisma.game.delete({ where: { id } })
 
         res.sendStatus(204)

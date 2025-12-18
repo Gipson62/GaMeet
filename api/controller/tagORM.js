@@ -27,7 +27,7 @@ export const getAllTagFromGameId = async (req, res) => {
                 }
             }
         })
-        res.send(tags.map(t => t.tag))
+        res.send(tags.map(t => ({ tag_name: t.tag.name })))
     } catch (err) {
         console.error(err)
         res.sendStatus(500)
@@ -39,18 +39,21 @@ export const getAllTagFromGameId = async (req, res) => {
  */
 export const addTagFromGameId = async (req, res) => {
     try {
-        const { id, tag_name } = req.gameTagParamsVal;
+        const { id, tag_name } = req.gameIdTagNameParam;
 
 
-        let tag = await prisma.tag.findUnique({ where: { tag_name } })
+        let tag = await prisma.tag.findUnique({ where: { name: tag_name } })
         if (!tag) {
-            tag = await prisma.tag.create({ data: { tag_name } })
+            tag = await prisma.tag.create({ data: { name: tag_name }, select: { name: true } })
         }
 
         await prisma.game_tag.create({
             data: {
                 game_id: id,
-                tag_id: tag.id
+                tag_name: tag.name
+            },
+            select: {
+                tag_name: true
             }
         })
 
@@ -68,13 +71,15 @@ export const deleteTagFromGameId = async (req, res) => {
     try {
         const { id, tag_name } = req.gameIdTagNameParam;
 
-        const tag = await prisma.tag.findUnique({ where: { tag_name } })
+        const tag = await prisma.tag.findUnique({ where: { name: tag_name } })
         if (!tag) return res.status(404).send({ message: "Tag non trouvé" })
 
-        await prisma.game_tag.deleteMany({
+        await prisma.game_tag.delete({
             where: {
-                game_id: id,
-                tag_id: tag.id
+                game_id_tag_name: {
+                    game_id: id,
+                    tag_name: tag.name
+                }
             }
         })
 
@@ -106,13 +111,13 @@ export const deleteTag = async (req, res) => {
     try {
         const { name } = req.gameParamsVal
 
-        const existing = await prisma.game.findUnique({ where: { name } })
+        const existing = await prisma.tag.findUnique({ where: { name } })
 
         if (!existing) return res.sendStatus(404)
         if (!req.user.is_admin)
             return res.status(403).send({ message: "Accès refusé" })
 
-        await prisma.game.delete({ where: { name } })
+        await prisma.tag.delete({ where: { name } })
 
         res.sendStatus(204)
     } catch (e) {

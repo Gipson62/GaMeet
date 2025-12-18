@@ -98,8 +98,9 @@ const GameForm = ({ onSubmit, initialValues }) => {
       </Form.Item>
 
       <Form.Item
-        label="Banner"
+        label="Bannière (ratio Steam hero)"
         name="banner"
+        extra="Utilisez une image large (ex. ~1920x620)."
         rules={[{ required: !initialValues, message: 'Veuillez sélectionner une image banner' }]}
       >
         <Upload
@@ -109,15 +110,20 @@ const GameForm = ({ onSubmit, initialValues }) => {
             return false;
           }}
           maxCount={1}
-          listType="picture"
+          listType="picture-card"
+          accept="image/*"
         >
-          <Button icon={<UploadOutlined />}>Sélectionner Banner</Button>
+          <div>
+            <UploadOutlined />
+            <div style={{ marginTop: 8 }}>Banner</div>
+          </div>
         </Upload>
       </Form.Item>
 
       <Form.Item
-        label="Logo"
+        label="Logo (fond transparent recommandé)"
         name="logo"
+        extra="PNG transparent conseillé."
         rules={[{ required: !initialValues, message: 'Veuillez sélectionner un logo' }]}
       >
         <Upload
@@ -127,15 +133,20 @@ const GameForm = ({ onSubmit, initialValues }) => {
             return false;
           }}
           maxCount={1}
-          listType="picture"
+          listType="picture-card"
+          accept="image/*"
         >
-          <Button icon={<UploadOutlined />}>Sélectionner Logo</Button>
+          <div>
+            <UploadOutlined />
+            <div style={{ marginTop: 8 }}>Logo</div>
+          </div>
         </Upload>
       </Form.Item>
 
       <Form.Item
-        label="Grid"
+        label="Grid (portrait 2:3)"
         name="grid"
+        extra="Ex. 600x900."
         rules={[{ required: !initialValues, message: 'Veuillez sélectionner une image grid' }]}
       >
         <Upload
@@ -145,9 +156,13 @@ const GameForm = ({ onSubmit, initialValues }) => {
             return false;
           }}
           maxCount={1}
-          listType="picture"
+          listType="picture-card"
+          accept="image/*"
         >
-          <Button icon={<UploadOutlined />}>Sélectionner Grid</Button>
+          <div>
+            <UploadOutlined />
+            <div style={{ marginTop: 8 }}>Grid</div>
+          </div>
         </Upload>
       </Form.Item>
 
