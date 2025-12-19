@@ -29,7 +29,7 @@ export const getAllTags = async (req, res) => {
         });
         res.send(games);
     } catch (err) {
-        console.error(err);
+
         res.sendStatus(500);
     }
 }
@@ -79,7 +79,6 @@ export const getAllTagFromGameId = async (req, res) => {
         })
         res.send(tags.map(t => ({ tag_name: t.tag.name })))
     } catch (err) {
-        console.error(err)
         res.sendStatus(500)
     }
 }
@@ -151,7 +150,6 @@ export const addTagFromGameId = async (req, res) => {
 
         res.status(201).send({ message: "Tag ajouté au jeu" })
     } catch (err) {
-        console.error(err)
         res.sendStatus(500)
     }
 }
@@ -210,7 +208,6 @@ export const deleteTagFromGameId = async (req, res) => {
 
         res.sendStatus(204)
     } catch (err) {
-        console.error(err)
         res.sendStatus(500)
     }
 }
@@ -254,14 +251,14 @@ export const addTag = async (req, res) => {
         const {
             name,
         } = req.val;
-        const {id} = await prisma.tag.create({
+        const { id } = await prisma.tag.create({
             data: {
                 name,
             },
         });
-        res.status(201).send({id});
+        res.status(201).send({ id });
     } catch (err) {
-        console.error(err);
+
         res.sendStatus(500);
     }
 }
@@ -307,7 +304,6 @@ export const deleteTag = async (req, res) => {
 
         res.sendStatus(204)
     } catch (e) {
-        console.error(e)
         res.sendStatus(500)
     }
 

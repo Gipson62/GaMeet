@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import {default as userRouter } from "./v1/user.js";
+import { default as userRouter } from "./v1/user.js";
 import { default as eventRouter } from "./v1/event.js";
 import { default as reviewRouter } from "./v1/review.js";
 import { default as gameRouter } from "./v1/game.js";

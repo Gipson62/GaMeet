@@ -20,12 +20,12 @@ export const upload = multer({
     },
     fileFilter(req, file, cb) {
         if (!file.mimetype.startsWith("image/")) {
-        cb(new Error("Seules les images sont autorisées"));
+            cb(new Error("Seules les images sont autorisées"));
         } else {
-        cb(null, true);
+            cb(null, true);
         }
     },
-    storage 
+    storage
 });
 
 /**
@@ -56,7 +56,7 @@ export const upload = multer({
  *       500:
  *         description: Server error
  */
-export const getPhotoById = async (req, res)=> {
+export const getPhotoById = async (req, res) => {
     try {
         const { id } = req.photoParamsVal;
 
@@ -65,13 +65,13 @@ export const getPhotoById = async (req, res)=> {
                 id
             }
         });
-        if(photo){
-            res.sendFile(photo.url, { root: "./uploads"})
+        if (photo) {
+            res.sendFile(photo.url, { root: "./uploads" })
         } else {
             res.sendStatus(404);
         }
     } catch (err) {
-        console.error(err);
+
         res.sendStatus(500);
     }
 };
@@ -129,7 +129,7 @@ export const addPhoto = async (req, res) => {
             photo,
         });
     } catch (err) {
-        console.error(err);
+
         res.status(500).json({ error: 'Failed to upload photo' });
     }
 };
@@ -165,7 +165,7 @@ export const updatePhoto = async (req, res) => {
         const { id } = req.photoParamsVal;
         const { filename } = req.file;
 
-        if(!req.user.is_admin)
+        if (!req.user.is_admin)
             return res.status(403).json({ message: 'Accès refusé' });
 
         const existingPhoto = await prisma.photo.findUnique({
@@ -179,7 +179,7 @@ export const updatePhoto = async (req, res) => {
 
         fs.unlink("./uploads/" + existingPhoto.url, async (err) => {
             if (err) {
-                console.error(err);
+
                 res.sendStatus(500);
                 return;
             }
@@ -197,7 +197,7 @@ export const updatePhoto = async (req, res) => {
             });
         });
     } catch (e) {
-        console.error(e);
+
         res.sendStatus(500);
     }
 };
@@ -205,7 +205,7 @@ export const deletePhoto = async (req, res) => {
     try {
         const { id } = req.photoParamsVal;
 
-        if(!req.user.is_admin)
+        if (!req.user.is_admin)
             return res.status(403).json({ message: 'Accès refusé' });
 
         const existingPhoto = await prisma.photo.findUnique({
@@ -219,7 +219,7 @@ export const deletePhoto = async (req, res) => {
 
         fs.unlink("./uploads/" + existingPhoto.url, async (err) => {
             if (err) {
-                console.error(err);
+
                 res.sendStatus(500);
                 return;
             }
@@ -232,7 +232,7 @@ export const deletePhoto = async (req, res) => {
         });
 
     } catch (e) {
-        console.error(e);
+
         res.sendStatus(500);
     }
 };

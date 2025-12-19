@@ -71,7 +71,7 @@ export default function UserForm({ onSubmit, initialValues, mode = "create" }) {
             try {
                 const parsed = JSON.parse(msg);
                 msg = parsed.message || msg;
-            } catch {}
+            } catch { }
             message.error(msg);
         } finally {
             setSaving(false);

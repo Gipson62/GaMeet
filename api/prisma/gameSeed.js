@@ -289,6 +289,10 @@ const seedAllGames = async (prisma) => {
         ],
         skipDuplicates: true,
     });
+
+    // Array to collect all game IDs
+    const gameIds = [];
+
     BINDING_OF_ISAAC.grid_id = await prisma.photo.create({
         data: {
             url: BINDING_OF_ISAAC.grid,
@@ -319,8 +323,9 @@ const seedAllGames = async (prisma) => {
             banner_id: BINDING_OF_ISAAC.banner_id.id,
             logo_id: BINDING_OF_ISAAC.logo_id.id,
             is_approved: true,
-        }
+        },
     });
+    gameIds.push(bindingOfIsaac.id);
     await prisma.game_tag.createMany({
         data: [
             { game_id: bindingOfIsaac.id, tag_name: "Roguelike" },
@@ -359,8 +364,9 @@ const seedAllGames = async (prisma) => {
             banner_id: THE_WITCHER_3.banner_id.id,
             logo_id: THE_WITCHER_3.logo_id.id,
             is_approved: true,
-        }
+        },
     });
+    gameIds.push(witcher3.id);
     await prisma.game_tag.createMany({
         data: [
             { game_id: witcher3.id, tag_name: "RPG" },
@@ -400,8 +406,9 @@ const seedAllGames = async (prisma) => {
             banner_id: DESTINY_2.banner_id.id,
             logo_id: DESTINY_2.logo_id.id,
             is_approved: true,
-        }
+        },
     });
+    gameIds.push(destiny2.id);
     await prisma.game_tag.createMany({
         data: [
             { game_id: destiny2.id, tag_name: "FPS" },
@@ -441,8 +448,9 @@ const seedAllGames = async (prisma) => {
             banner_id: WAR_THUNDER.banner_id.id,
             logo_id: WAR_THUNDER.logo_id.id,
             is_approved: true,
-        }
+        },
     });
+    gameIds.push(warThunder.id);
     await prisma.game_tag.createMany({
         data: [
             { game_id: warThunder.id, tag_name: "Simulation" },
@@ -481,8 +489,9 @@ const seedAllGames = async (prisma) => {
             banner_id: LEAGUE_OF_LEGENDS.banner_id.id,
             logo_id: LEAGUE_OF_LEGENDS.logo_id.id,
             is_approved: true,
-        }
+        },
     });
+    gameIds.push(lol.id);
     await prisma.game_tag.createMany({
         data: [
             { game_id: lol.id, tag_name: "MOBA" },
@@ -521,8 +530,9 @@ const seedAllGames = async (prisma) => {
             banner_id: RAINBOW_SIX_SIEGE.banner_id.id,
             logo_id: RAINBOW_SIX_SIEGE.logo_id.id,
             is_approved: true,
-        }
+        },
     });
+    gameIds.push(rainbow6.id);
     await prisma.game_tag.createMany({
         data: [
             { game_id: rainbow6.id, tag_name: "FPS" },
@@ -561,8 +571,9 @@ const seedAllGames = async (prisma) => {
             banner_id: COUNTER_STRIKE_2.banner_id.id,
             logo_id: COUNTER_STRIKE_2.logo_id.id,
             is_approved: true,
-        }
+        },
     });
+    gameIds.push(counterStrike2.id);
     await prisma.game_tag.createMany({
         data: [
             { game_id: counterStrike2.id, tag_name: "FPS" },
@@ -603,6 +614,7 @@ const seedAllGames = async (prisma) => {
             is_approved: true,
         }
     });
+    gameIds.push(lostArk.id);
     await prisma.game_tag.createMany({
         data: [
             { game_id: lostArk.id, tag_name: "RPG" },
@@ -643,6 +655,7 @@ const seedAllGames = async (prisma) => {
             is_approved: true,
         }
     });
+    gameIds.push(marioKart8.id);
     await prisma.game_tag.createMany({
         data: [
             { game_id: marioKart8.id, tag_name: "Sports" },
@@ -682,6 +695,7 @@ const seedAllGames = async (prisma) => {
             is_approved: true,
         }
     });
+    gameIds.push(wow.id);
     await prisma.game_tag.createMany({
         data: [
             { game_id: wow.id, tag_name: "RPG" },
@@ -722,6 +736,7 @@ const seedAllGames = async (prisma) => {
             is_approved: true,
         }
     });
+    gameIds.push(yomiHustle.id);
     await prisma.game_tag.createMany({
         data: [
             { game_id: yomiHustle.id, tag_name: "Action" },
@@ -762,6 +777,7 @@ const seedAllGames = async (prisma) => {
             is_approved: true,
         }
     });
+    gameIds.push(clairObscure.id);
     await prisma.game_tag.createMany({
         data: [
             { game_id: clairObscure.id, tag_name: "Action" },
@@ -802,6 +818,7 @@ const seedAllGames = async (prisma) => {
             is_approved: true,
         }
     });
+    gameIds.push(dragonDogmaOnline.id);
     await prisma.game_tag.createMany({
         data: [
             { game_id: dragonDogmaOnline.id, tag_name: "RPG" },
@@ -829,6 +846,7 @@ const seedAllGames = async (prisma) => {
             is_approved: true,
         }
     });
+    gameIds.push(apex.id);
     await prisma.game_tag.createMany({
         data: [
             { game_id: apex.id, tag_name: "Battle Royale" },
@@ -859,6 +877,7 @@ const seedAllGames = async (prisma) => {
             is_approved: true,
         }
     });
+    gameIds.push(bloodborne.id);
     await prisma.game_tag.createMany({
         data: [
             { game_id: bloodborne.id, tag_name: "Soulslike" },
@@ -888,6 +907,7 @@ const seedAllGames = async (prisma) => {
             is_approved: true,
         }
     });
+    gameIds.push(civ6.id);
     await prisma.game_tag.createMany({
         data: [
             { game_id: civ6.id, tag_name: "Stratégie" },
@@ -916,6 +936,7 @@ const seedAllGames = async (prisma) => {
             is_approved: true,
         }
     });
+    gameIds.push(ds3.id);
     await prisma.game_tag.createMany({
         data: [
             { game_id: ds3.id, tag_name: "Soulslike" },
@@ -945,6 +966,7 @@ const seedAllGames = async (prisma) => {
             is_approved: true,
         }
     });
+    gameIds.push(elden.id);
     await prisma.game_tag.createMany({
         data: [
             { game_id: elden.id, tag_name: "Soulslike" },
@@ -975,6 +997,7 @@ const seedAllGames = async (prisma) => {
             is_approved: true,
         }
     });
+    gameIds.push(enlisted.id);
     await prisma.game_tag.createMany({
         data: [
             { game_id: enlisted.id, tag_name: "FPS" },
@@ -1004,6 +1027,7 @@ const seedAllGames = async (prisma) => {
             is_approved: true,
         }
     });
+    gameIds.push(ffxiv.id);
     await prisma.game_tag.createMany({
         data: [
             { game_id: ffxiv.id, tag_name: "MMORPG" },
@@ -1033,6 +1057,7 @@ const seedAllGames = async (prisma) => {
             is_approved: true,
         }
     });
+    gameIds.push(fe3h.id);
     await prisma.game_tag.createMany({
         data: [
             { game_id: fe3h.id, tag_name: "Tactical RPG" },
@@ -1061,6 +1086,7 @@ const seedAllGames = async (prisma) => {
             is_approved: true,
         }
     });
+    gameIds.push(fortnite.id);
     await prisma.game_tag.createMany({
         data: [
             { game_id: fortnite.id, tag_name: "Battle Royale" },
@@ -1091,6 +1117,7 @@ const seedAllGames = async (prisma) => {
             is_approved: true,
         }
     });
+    gameIds.push(gw2.id);
     await prisma.game_tag.createMany({
         data: [
             { game_id: gw2.id, tag_name: "MMORPG" },
@@ -1120,6 +1147,7 @@ const seedAllGames = async (prisma) => {
             is_approved: true,
         }
     });
+    gameIds.push(hades.id);
     await prisma.game_tag.createMany({
         data: [
             { game_id: hades.id, tag_name: "Roguelike" },
@@ -1148,6 +1176,7 @@ const seedAllGames = async (prisma) => {
             is_approved: true,
         }
     });
+    gameIds.push(minecraft.id);
     await prisma.game_tag.createMany({
         data: [
             { game_id: minecraft.id, tag_name: "Sandbox" },
@@ -1178,6 +1207,7 @@ const seedAllGames = async (prisma) => {
             is_approved: true,
         }
     });
+    gameIds.push(bannerlord.id);
     await prisma.game_tag.createMany({
         data: [
             { game_id: bannerlord.id, tag_name: "Stratégie" },
@@ -1206,6 +1236,7 @@ const seedAllGames = async (prisma) => {
             is_approved: true,
         }
     });
+    gameIds.push(ow2.id);
     await prisma.game_tag.createMany({
         data: [
             { game_id: ow2.id, tag_name: "Hero Shooter" },
@@ -1234,6 +1265,7 @@ const seedAllGames = async (prisma) => {
             is_approved: true,
         }
     });
+    gameIds.push(eso.id);
     await prisma.game_tag.createMany({
         data: [
             { game_id: eso.id, tag_name: "MMORPG" },
@@ -1263,6 +1295,7 @@ const seedAllGames = async (prisma) => {
             is_approved: true,
         }
     });
+    gameIds.push(valorant.id);
     await prisma.game_tag.createMany({
         data: [
             { game_id: valorant.id, tag_name: "Tactical Shooter" },
@@ -1292,6 +1325,7 @@ const seedAllGames = async (prisma) => {
             is_approved: true,
         }
     });
+    gameIds.push(kh2.id);
     await prisma.game_tag.createMany({
         data: [
             { game_id: kh2.id, tag_name: "JRPG" },
@@ -1302,6 +1336,9 @@ const seedAllGames = async (prisma) => {
             { game_id: kh2.id, tag_name: "Singleplayer" },
         ]
     });
+
+    // Collect and return all created game IDs
+    return gameIds;
 }
 
 export default seedAllGames;

@@ -9,7 +9,7 @@ const EventInfo = ({ name, description, date, location, capacity, participantsCo
       {description && <Text>{description}</Text>}
 
       <Space style={{ marginTop: 16 }}>
-        
+
         {date && <Text><strong>Date :</strong> {new Date(date).toLocaleString()}</Text>}
         {location && <Text><strong>Lieu :</strong> {location}</Text>}
         {capacity !== undefined && participantsCount !== undefined && (

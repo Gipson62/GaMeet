@@ -1,5 +1,5 @@
-import { Table, Button, Tag, Space, Popconfirm  } from 'antd';
-import { SettingOutlined, DeleteOutlined, FileSearchOutlined} from '@ant-design/icons';
+import { Table, Button, Tag, Space, Popconfirm } from 'antd';
+import { SettingOutlined, DeleteOutlined, FileSearchOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 const EventsTable = ({ events, loading, onDelete }) => {
   const navigate = useNavigate();
@@ -51,7 +51,7 @@ const EventsTable = ({ events, loading, onDelete }) => {
   ];
 
   return (
-    <Table 
+    <Table
       columns={columns}
       dataSource={events}
       rowKey="id"

@@ -1,18 +1,10 @@
-import { Button, Typography } from "antd";
 import dayjs from "dayjs";
-import { Link } from "react-router-dom";
 
-const { Text } = Typography;
 
 export const eventColumns = [
     {
         title: "Nom",
         dataIndex: "name",
-        render: (text, record) => (
-            <Link to={`/event/${record.id}`}>
-                {text}
-            </Link>
-        ),
     },
     {
         title: "Date",
@@ -23,21 +15,13 @@ export const eventColumns = [
         title: "Lieu",
         dataIndex: "location",
     },
-    {
-        title: "",
-        render: (_, record) => (
-            <Link to={`/event/${record.id}`}>
-                <Button size="small">Voir</Button>
-            </Link>
-        ),
-    },
 ];
 
 export const reviewColumns = [
     {
         title: "Événement",
-        dataIndex: "event_id",
-        render: (id) => <Text>{id}</Text>,
+        dataIndex: "event",
+        render: (event) => event?.name ?? "-",
     },
     {
         title: "Note",

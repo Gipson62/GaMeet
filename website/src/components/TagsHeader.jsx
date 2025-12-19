@@ -16,9 +16,9 @@ const TagsHeader = ({ onRefresh, onAdd, q, onSearchChange }) => {
       <Title level={3}>Tags</Title>
 
       <Space>
-        <Search 
-          placeholder="Rechercher un tag..." 
-          allowClear 
+        <Search
+          placeholder="Rechercher un tag..."
+          allowClear
           value={q}
           onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
           onSearch={(val) => onSearchChange && onSearchChange(val)}

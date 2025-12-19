@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import {Space, Spin, message, Button, Modal, Card, Avatar, Tag, Typography} from "antd";
+import { Space, Spin, message, Modal, Card, Avatar, Tag, Typography } from "antd";
 
 import { fetchUserById, fetchMe, deleteUser, updateUser } from "../api/api.js";
 
@@ -100,7 +100,7 @@ export default function UserDetails() {
             await updateUser(user.id, payload, token);
             message.success("Profil modifié");
             setEditOpen(false);
-            await loadUser();
+            await load();
         } catch (e) {
             message.error(e.message || "Modification impossible");
         } finally {
@@ -124,15 +124,15 @@ export default function UserDetails() {
             <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 16 }}>
                 <Space direction="vertical" size={16}>
                     <Card>
-                    <Space direction="vertical" size={4}>
-                        <Space align="center">
-                            <Title level={3} style={{ margin: 0 }}>{user.pseudo}</Title>
-                            <Tag color="blue">{user.is_admin ? "Administrateur" : "Utilisateur"}</Tag>
+                        <Space direction="vertical" size={4}>
+                            <Space align="center">
+                                <Title level={3} style={{ margin: 0 }}>{user.pseudo}</Title>
+                                <Tag color="blue">{user.is_admin ? "Administrateur" : "Utilisateur"}</Tag>
+                            </Space>
+                            <Text type="secondary">{user.email}</Text>
+                            <Text>{user.bio}</Text>
+                            <Text type="secondary">Membre depuis : {dayjs(user.creation_date).format("DD/MM/YYYY")}</Text>
                         </Space>
-                        <Text type="secondary">{user.email}</Text>
-                        <Text>{user.bio}</Text>
-                        <Text type="secondary">Membre depuis : {dayjs(user.creation_date).format("DD/MM/YYYY")}</Text>
-                    </Space>
                     </Card>
 
                     <UserEventsCard
@@ -142,16 +142,15 @@ export default function UserDetails() {
                     />
 
                     <UserEventsCard
-                        title="Événements auxquels il a participé"
+                        title="Participations"
                         events={(user.participant || []).map((p) => p.event)}
                         navigate={navigate}
                         emptyText
                     />
 
-                    <UserReviewsCard reviews={user.review || []} navigate={navigate} />
+                    <UserReviewsCard reviews={user.review || []} />
                 </Space>
 
-                {/* Avatar affiché seulement */}
                 <Card title="Photo de profil" style={{ textAlign: "center" }}>
                     <Avatar src={photoSrc} size={240} style={{ marginBottom: 16 }} />
                 </Card>

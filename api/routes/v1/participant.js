@@ -5,7 +5,7 @@ import { participantValidatorMiddleware as PVM } from '../../middleware/validati
 import {
   addParticipant,
   removeParticipant,
-  
+
 } from '../../controller/participantORM.js';
 
 

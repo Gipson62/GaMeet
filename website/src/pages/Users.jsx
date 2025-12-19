@@ -6,17 +6,27 @@ import UsersHeader from "../components/user/UsersHeader.jsx";
 import UsersTable from "../components/user/UsersTable.jsx";
 import UserForm from "../components/user/UserForm.jsx";
 
-import { fetchUsers, deleteUser, addUser } from "../api/api.js";
+import { fetchUsers, deleteUser, addUser, fetchMe } from "../api/api.js";
 
 export default function UsersPage() {
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
 
+    const [me, setMe] = useState(null);
     const [users, setUsers] = useState([]);
-    const [loading, setLoading] = useState(false);
 
+    const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
     const [q, setQ] = useState("");
+
+
+    useEffect(() => {
+        if (!token) return;
+
+        fetchMe(token)
+            .then(setMe)
+            .catch(() => { });
+    }, [token]);
 
     const loadUsers = async () => {
         setLoading(true);
@@ -32,7 +42,6 @@ export default function UsersPage() {
 
     useEffect(() => {
         loadUsers();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const filteredUsers = useMemo(() => {
@@ -60,13 +69,20 @@ export default function UsersPage() {
         }
     };
 
-    const handleDeleteUser = async (userId) => {
+    const handleDelete = async (userId) => {
         try {
             await deleteUser(userId, token);
             message.success("Utilisateur supprimé");
-            await loadUsers();
-        } catch (err) {
-            message.error(err.message || "Suppression impossible");
+
+            if (me && me.id === userId) {
+                localStorage.removeItem("token");
+                navigate("/login");
+                return;
+            }
+
+            loadUsers();
+        } catch (e) {
+            message.error(e.message || "Suppression impossible");
         }
     };
 
@@ -82,7 +98,7 @@ export default function UsersPage() {
             <UsersTable
                 users={filteredUsers}
                 loading={loading}
-                onDelete={handleDeleteUser}
+                onDelete={handleDelete}
                 onView={(u) => navigate(`/user/${u.id}`)}
             />
 

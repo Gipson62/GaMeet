@@ -2,7 +2,7 @@ import { Button, Space } from 'antd';
 import { ArrowLeftOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
-const UserHeader = ({ onEdit, onDelete}) => {
+const UserHeader = ({ onEdit, onDelete }) => {
   const navigate = useNavigate();
 
   return (

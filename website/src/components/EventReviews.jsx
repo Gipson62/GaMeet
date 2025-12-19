@@ -17,8 +17,8 @@ const EventReviews = ({ reviews = [], onAdd, onDelete }) => {
           <div key={review.id} style={{ marginBottom: 16 }}>
             <Text strong>
               {review.User?.pseudo || 'Utilisateur inconnu'} —{' '}
-              {dayjs(review.createdAt).isValid() 
-                ? dayjs(review.createdAt).format('DD/MM/YYYY') 
+              {dayjs(review.createdAt).isValid()
+                ? dayjs(review.createdAt).format('DD/MM/YYYY')
                 : 'Date invalide'}
             </Text>
             <br />

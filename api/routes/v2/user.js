@@ -7,9 +7,9 @@ import {
     getUser,
     getAllUsers
 } from '../../controller/userORM.js';
-import {checkJWT} from '../../middleware/identification/jwt.js';
-import {userValidatorMiddleware as CVM} from '../../middleware/validation.js';
-import {admin} from '../../middleware/authorization/mustBe.js';
+import { checkJWT } from '../../middleware/identification/jwt.js';
+import { userValidatorMiddleware as CVM } from '../../middleware/validation.js';
+import { admin } from '../../middleware/authorization/mustBe.js';
 
 
 
@@ -20,9 +20,9 @@ router.post('/register', CVM.register, addUser)
 router.post('/login', CVM.login, loginUser)
 
 // USER SELF
-router.get('/me', checkJWT,CVM.profile, getUser)
-router.patch('/me', checkJWT ,CVM.update, updateUser)
-router.delete('/me', checkJWT, CVM.delete ,deleteUser)
+router.get('/me', checkJWT, CVM.profile, getUser)
+router.patch('/me', checkJWT, CVM.update, updateUser)
+router.delete('/me', checkJWT, CVM.delete, deleteUser)
 
 // ADMIN USER MANAGEMENT
 // A AJOUTER VERIF ADMIN!!!!!!!!

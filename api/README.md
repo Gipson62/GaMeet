@@ -23,5 +23,5 @@ PEPPER=UnPepperTrèsSûre!
 Exécuter la commande suivante depuis le répertoire `api/` :
 
 ```bash
-docker-compose up --build
+docker compose up
 ``` 

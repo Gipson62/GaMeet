@@ -5,7 +5,7 @@ const EventGames = ({ games = [] }) => {
   return (
     <Card
       title="🎮 Jeux liés"
-      
+
       style={{ marginTop: 24 }}
     >
       {games.length === 0 ? (
