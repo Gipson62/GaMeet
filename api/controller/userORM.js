@@ -1,6 +1,6 @@
 import prisma from '../database/databaseORM.js'
 import { hash, compare } from '../util/index.js'
-import  { sign } from '../util/jwt.js'
+import { sign } from '../util/jwt.js'
 import fs from "fs";
 
 const DEFAULT_AVATAR_URL = "default_pfp.png";
@@ -8,14 +8,14 @@ const DEFAULT_AVATAR_URL = "default_pfp.png";
 
 const safeUnlink = (filename) => {
     if (!filename) return;
-    fs.unlink(`./uploads/${filename}`, () => {});
+    fs.unlink(`./uploads/${filename}`, () => { });
 };
 
 export const getUser = async (req, res) => {
     try {
         const user = await prisma.user.findUnique({
             where: {
-                id : req.val.id
+                id: req.val.id
             },
             select: {
                 id: true,
@@ -92,21 +92,21 @@ export const getAllUsers = async (req, res) => {
 
         res.send(users);
     } catch (err) {
-        
+
         res.sendStatus(500);
     }
 };
 
 export const addUser = async (req, res) => {
     try {
-        const { pseudo, email, password, birth_date, bio} = req.val
+        const { pseudo, email, password, birth_date, bio } = req.val
 
         // Vérifie si l’email existe déjà
         const existing = await prisma.user.findUnique({ where: { email } })
         if (existing) {
             if (req.file?.filename) fs.unlink(`./uploads/${req.file.filename}`, () => {
             });
-            return res.status(409).send({message: 'Email déjà utilisé'})
+            return res.status(409).send({ message: 'Email déjà utilisé' })
         }
 
         // Avatar par défaut
@@ -143,9 +143,9 @@ export const addUser = async (req, res) => {
 
         res.status(201).send(created);
     } catch (e) {
-        
+
         // si upload a eu lieu et qu'on crash => on supprime le fichier uploadé
-        if (req.file?.filename) fs.unlink(`./uploads/${req.file.filename}`, () => {});
+        if (req.file?.filename) fs.unlink(`./uploads/${req.file.filename}`, () => { });
         res.sendStatus(500);
     }
 }
@@ -232,7 +232,7 @@ export const updateUser = async (req, res) => {
 
         return res.sendStatus(204);
     } catch (e) {
-        
+
         safeUnlink(uploadedFilename);
         return res.sendStatus(500);
     }
@@ -292,7 +292,7 @@ export const deleteUser = async (req, res) => {
 
         return res.sendStatus(204);
     } catch (err) {
-        
+
         return res.sendStatus(500);
     }
 };

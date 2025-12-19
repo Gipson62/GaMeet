@@ -1,5 +1,5 @@
 import express from "express";
-import {default as Router} from "./routes/index.js";
+import { default as Router } from "./routes/index.js";
 import cors from "cors";
 import internalIp from "internal-ip";
 import swaggerUi from "swagger-ui-express";
@@ -55,6 +55,6 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(port, () => {
-    console.log(`Example app listening at address: http://${internalIP}:${port}`);
-    console.log(`Swagger UI available at: http://${internalIP}:${port}/api-docs`);
+  console.log(`Example app listening at address: http://${internalIP}:${port}`);
+  console.log(`Swagger UI available at: http://${internalIP}:${port}/api-docs`);
 });

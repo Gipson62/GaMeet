@@ -143,46 +143,46 @@ const GameDetails = () => {
   const handleEditSubmit = async (values) => {
     setEditSaving(true);
     try {
-        console.log('Submitting edit with values:', values);
-        
-        // Upload new photos if changed, otherwise keep existing photo IDs
-        let banner_id = game.banner_id;
-        let logo_id = game.logo_id;
-        let grid_id = game.grid_id;
+      console.log('Submitting edit with values:', values);
 
-        const token = localStorage.getItem('token');
+      // Upload new photos if changed, otherwise keep existing photo IDs
+      let banner_id = game.banner_id;
+      let logo_id = game.logo_id;
+      let grid_id = game.grid_id;
 
-        // Upload new banner if changed
-        if (values.bannerChanged && values.bannerFile) {
-          const bannerPhotoId = await uploadPhoto(values.bannerFile, token);
-          banner_id = bannerPhotoId;
-        }
+      const token = localStorage.getItem('token');
 
-        // Upload new logo if changed
-        if (values.logoChanged && values.logoFile) {
-          const logoPhotoId = await uploadPhoto(values.logoFile, token);
-          logo_id = logoPhotoId;
-        }
+      // Upload new banner if changed
+      if (values.bannerChanged && values.bannerFile) {
+        const bannerPhotoId = await uploadPhoto(values.bannerFile, token);
+        banner_id = bannerPhotoId;
+      }
 
-        // Upload new grid if changed
-        if (values.gridChanged && values.gridFile) {
-          const gridPhotoId = await uploadPhoto(values.gridFile, token);
-          grid_id = gridPhotoId;
-        }
+      // Upload new logo if changed
+      if (values.logoChanged && values.logoFile) {
+        const logoPhotoId = await uploadPhoto(values.logoFile, token);
+        logo_id = logoPhotoId;
+      }
 
-        const updated_data = {
-            name: values.name,
-            studio: values.studio,
-            publisher: values.publisher,
-            description: values.description,
-            release_date: values.release_date ? values.release_date : null,
-            platforms: values.platforms,
-            is_approved: values.is_approved || false,
-            banner_id,
-            logo_id,
-            grid_id,
-        }
-        console.log('Updating game with data:', updated_data);
+      // Upload new grid if changed
+      if (values.gridChanged && values.gridFile) {
+        const gridPhotoId = await uploadPhoto(values.gridFile, token);
+        grid_id = gridPhotoId;
+      }
+
+      const updated_data = {
+        name: values.name,
+        studio: values.studio,
+        publisher: values.publisher,
+        description: values.description,
+        release_date: values.release_date ? values.release_date : null,
+        platforms: values.platforms,
+        is_approved: values.is_approved || false,
+        banner_id,
+        logo_id,
+        grid_id,
+      }
+      console.log('Updating game with data:', updated_data);
       await updateGame(id, updated_data, token);
       message.success('Jeu mis à jour');
       setEditOpen(false);
@@ -222,7 +222,7 @@ const GameDetails = () => {
           </div>
         </div>
       )}
-      <GameHeader 
+      <GameHeader
         name={game.name}
         studio={game.studio}
         publisher={game.publisher}
@@ -235,21 +235,21 @@ const GameDetails = () => {
       {/* Two-column layout: About on right, main on left */}
       <Row gutter={[16, 16]}>
         <Col xs={24} lg={16}>
-          <GamePlatforms 
+          <GamePlatforms
             platforms={game.platforms ? game.platforms.split(',') : []}
           />
-          <GameTags 
+          <GameTags
             tags={game.game_tag}
             onAdd={handleAddTag}
             onRemove={handleRemoveTag}
           />
-          <GameEvents 
+          <GameEvents
             events={game.event_game}
             onUnlink={handleUnlink}
           />
         </Col>
         <Col xs={24} lg={8}>
-          <GameInfo 
+          <GameInfo
             description={game.description}
             releaseDate={game.release_date}
             studio={game.studio}

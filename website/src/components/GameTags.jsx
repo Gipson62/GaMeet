@@ -41,8 +41,8 @@ const GameTags = ({ tags = [], onAdd, onRemove }) => {
   );
 
   return (
-    <Card 
-      title={header} 
+    <Card
+      title={header}
       style={{ marginTop: 24 }}
     >
       <Space wrap style={{ marginBottom: 16 }}>

@@ -79,10 +79,10 @@ const Game = () => {
 
   const columns = [
     {
-        title: 'Logo',
-        dataIndex: 'logo_id',
-        key: 'logo_id',
-        render: (logo_id) => logo_id ? <img src={`http://localhost:3001/v1/photo/${logo_id}`} alt="Logo Not Found" style={{ width: 50 }} /> : 'N/A',
+      title: 'Logo',
+      dataIndex: 'logo_id',
+      key: 'logo_id',
+      render: (logo_id) => logo_id ? <img src={`http://localhost:3001/v1/photo/${logo_id}`} alt="Logo Not Found" style={{ width: 50 }} /> : 'N/A',
     },
     {
       title: 'Nom',
@@ -100,16 +100,16 @@ const Game = () => {
       key: 'publisher',
     },
     {
-        title: 'Date de sortie',
-        dataIndex: 'release_date',
-        key: 'release_date',
-        render: (date) => date ? new Date(date).toLocaleDateString() : 'N/A',
+      title: 'Date de sortie',
+      dataIndex: 'release_date',
+      key: 'release_date',
+      render: (date) => date ? new Date(date).toLocaleDateString() : 'N/A',
     },
     {
-        title: 'Plateformes',
-        dataIndex: 'platforms',
-        key: 'platforms',
-        render: (platforms) => platforms || 'N/A',
+      title: 'Plateformes',
+      dataIndex: 'platforms',
+      key: 'platforms',
+      render: (platforms) => platforms || 'N/A',
     },
     {
       title: 'Approuvé',

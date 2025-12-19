@@ -38,7 +38,7 @@ export const getAllGames = async (req, res) => {
         });
         res.send(games);
     } catch (err) {
-        
+
         res.sendStatus(500);
     }
 }
@@ -72,7 +72,7 @@ export const getAllGames = async (req, res) => {
  */
 export const getGameById = async (req, res) => {
     try {
-        const  {id} = req.gameParamsVal;
+        const { id } = req.gameParamsVal;
         const game = await prisma.game.findUnique({
             where: { id },
             select: {
@@ -105,7 +105,7 @@ export const getGameById = async (req, res) => {
             res.sendStatus(404);
         }
     } catch (err) {
-        
+
         res.sendStatus(500);
     }
 }
@@ -191,8 +191,8 @@ export const addGameWithPhotos = async (req, res) => {
         const formatted_platforms = typeof platforms === 'string'
             ? platforms.split(',').map(p => p.trim()).join(', ')
             : Array.isArray(platforms)
-            ? platforms.join(', ')
-            : platforms;
+                ? platforms.join(', ')
+                : platforms;
 
         // Transaction : créer photos + jeu ensemble
         const result = await prisma.$transaction(async (tx) => {
@@ -252,7 +252,7 @@ export const addGame = async (req, res) => {
         } = req.val;
         //Platforms Should just be a string. Join them with commas.
         const formatted_platforms = platforms.join(', ');
-        const {id} = await prisma.game.create({
+        const { id } = await prisma.game.create({
             data: {
                 name,
                 platforms: formatted_platforms,
@@ -267,9 +267,9 @@ export const addGame = async (req, res) => {
                 id: true
             }
         });
-        res.status(201).send({id});
+        res.status(201).send({ id });
     } catch (err) {
-        
+
         res.sendStatus(500);
     }
 }
@@ -339,9 +339,9 @@ export const updateGame = async (req, res) => {
 
         if (!existing) return res.sendStatus(404);
         if (!req.user.is_admin) {
-            return res.status(403).send({message: "Accès refusé"});
+            return res.status(403).send({ message: "Accès refusé" });
         }
-        const updateData  = {...req.body};
+        const updateData = { ...req.body };
 
         delete updateData.id;
         delete updateData.author;
@@ -386,7 +386,7 @@ export const updateGame = async (req, res) => {
         res.sendStatus(204);
 
     } catch (err) {
-        
+
         res.sendStatus(500);
     }
 }
@@ -447,7 +447,7 @@ export const deleteGame = async (req, res) => {
 
         res.sendStatus(204);
     } catch (e) {
-        
+
         res.sendStatus(500);
     }
 

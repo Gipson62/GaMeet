@@ -17,9 +17,9 @@ const GameEvents = ({ events = [] }) => {
           rowKey={(record) => record.event.id}
           renderItem={(record) => (
             <List.Item>
-              <div style={{ 
-                padding: 12, 
-                border: '1px solid #d9d9d9', 
+              <div style={{
+                padding: 12,
+                border: '1px solid #d9d9d9',
                 borderRadius: '8px',
                 background: '#fff',
                 height: '100%'

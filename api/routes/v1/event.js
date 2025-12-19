@@ -1,6 +1,6 @@
 import Router from 'express';
 import reviewRouter from './review.js';
-import participantRouter  from './participant.js';
+import participantRouter from './participant.js';
 import {
     getAllEvents,
     getEventById,
@@ -155,5 +155,5 @@ router.delete('/:id/leave', checkJWT, EVM.idParam, leaveEvent);
 
 // Routes reviews liées à un event
 router.use('/:id/review', EVM.idParam, reviewRouter);
-router.use('/:id/participant',EVM.idParam,participantRouter );
+router.use('/:id/participant', EVM.idParam, participantRouter);
 export default router;

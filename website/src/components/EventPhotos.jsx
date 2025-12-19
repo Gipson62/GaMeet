@@ -5,7 +5,7 @@ const EventPhotos = ({ photos = [] }) => {
   return (
     <Card
       title="📸 Photos de l'événement"
-      
+
       style={{ marginTop: 24 }}
     >
       {photos.length === 0 ? (

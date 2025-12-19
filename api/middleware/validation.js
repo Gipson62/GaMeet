@@ -1,9 +1,9 @@
-import * as userValidator from './validator/user.js';
-import * as eventValidator from './validator/event.js';
-import * as reviewValidator from './validator/review.js';
-import * as gameValidator from './validator/game.js';
-import * as tagValidator from './validator/tag.js';
-import * as photoValidator from './validator/photo.js';
+import * as userValidator from "./validator/user.js";
+import * as eventValidator from "./validator/event.js";
+import * as reviewValidator from "./validator/review.js";
+import * as gameValidator from "./validator/game.js";
+import * as tagValidator from "./validator/tag.js";
+import * as photoValidator from "./validator/photo.js";
 import * as participantValidator from "./validator/participant.js";
 export const userValidatorMiddleware = {
     profile: async (req, res, next) => {
@@ -54,7 +54,7 @@ export const userValidatorMiddleware = {
         } catch (e) {
             res.status(400).send(e.message);
         }
-    }
+    },
 };
 
 export const eventValidatorMiddleware = {
@@ -63,18 +63,17 @@ export const eventValidatorMiddleware = {
             req.val = await eventValidator.create.validate(req.body);
             next();
         } catch (err) {
-            
-             const fieldErrors = {};
-      if (err.issues) {
-        for (const issue of err.issues) {
-          fieldErrors[issue.path[0]] = issue.message;
-        }
-      }
+            const fieldErrors = {};
+            if (err.issues) {
+                for (const issue of err.issues) {
+                    fieldErrors[issue.path[0]] = issue.message;
+                }
+            }
 
-      return res.status(400).json({
-        message: 'Validation failed',
-        errors: fieldErrors,
-      });
+            return res.status(400).json({
+                message: "Validation failed",
+                errors: fieldErrors,
+            });
         }
     },
     update: async (req, res, next) => {
@@ -92,7 +91,7 @@ export const eventValidatorMiddleware = {
         } catch (e) {
             res.status(400).send(e.message);
         }
-    }
+    },
 };
 
 export const reviewValidatorMiddleware = {
@@ -114,35 +113,35 @@ export const reviewValidatorMiddleware = {
     },
     idParam: async (req, res, next) => {
         try {
-            req.reviewParamsVal = await reviewValidator.idParam.validate({ id: req.params.reviewId });
+            req.reviewParamsVal = await reviewValidator.idParam.validate({
+                id: req.params.reviewId,
+            });
             next();
         } catch (e) {
             res.status(400).send(e.message);
         }
-    }
+    },
 };
-
 
 export const participantValidatorMiddleware = {
-  create: async (req, res, next) => {
-    try {
-      req.val = await participantValidator.create.validate(req.body);
-      next();
-    } catch (e) {
-      res.status(400).send(e.message);
-    }
-  },
-
-  remove: async (req, res, next) => {
+    create: async (req, res, next) => {
         try {
-      req.val = await participantValidator.remove.validate(req.body);
-      next();
-    } catch (e) {
-      res.status(400).send(e.message);
-    }
-  },
-};
+            req.val = await participantValidator.create.validate(req.body);
+            next();
+        } catch (e) {
+            res.status(400).send(e.message);
+        }
+    },
 
+    remove: async (req, res, next) => {
+        try {
+            req.val = await participantValidator.remove.validate(req.body);
+            next();
+        } catch (e) {
+            res.status(400).send(e.message);
+        }
+    },
+};
 
 export const gameValidatorMiddleware = {
     create: async (req, res, next) => {
@@ -168,7 +167,7 @@ export const gameValidatorMiddleware = {
         } catch (err) {
             res.status(400).send(err.message);
         }
-    }
+    },
 };
 
 export const tagValidatorMiddleware = {
@@ -182,7 +181,9 @@ export const tagValidatorMiddleware = {
     },
     nameParam: async (req, res, next) => {
         try {
-            req.gameParamsVal = await tagValidator.nameParam.validate({ name: req.params.id });
+            req.gameParamsVal = await tagValidator.nameParam.validate({
+                name: req.params.id,
+            });
             next();
         } catch (err) {
             res.status(400).send(err.message);
@@ -200,14 +201,14 @@ export const tagValidatorMiddleware = {
         try {
             req.gameIdTagNameParam = await tagValidator.gameIdTagNameParam.validate({
                 id: parseInt(req.params.id),
-                tag_name: req.body.tag_name
+                tag_name: req.body.tag_name,
             });
             next();
         } catch (err) {
             res.status(400).send(err.message);
         }
-    }
-}
+    },
+};
 
 export const photoValidatorMiddleware = {
     update: async (req, res, next) => {
@@ -225,5 +226,5 @@ export const photoValidatorMiddleware = {
         } catch (err) {
             res.status(400).send(err.message);
         }
-    }
-}
+    },
+};

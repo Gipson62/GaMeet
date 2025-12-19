@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import {Space, Spin, message, Modal, Card, Avatar, Tag, Typography} from "antd";
+import { Space, Spin, message, Modal, Card, Avatar, Tag, Typography } from "antd";
 
 import { fetchUserById, fetchMe, deleteUser, updateUser } from "../api/api.js";
 
@@ -124,15 +124,15 @@ export default function UserDetails() {
             <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 16 }}>
                 <Space direction="vertical" size={16}>
                     <Card>
-                    <Space direction="vertical" size={4}>
-                        <Space align="center">
-                            <Title level={3} style={{ margin: 0 }}>{user.pseudo}</Title>
-                            <Tag color="blue">{user.is_admin ? "Administrateur" : "Utilisateur"}</Tag>
+                        <Space direction="vertical" size={4}>
+                            <Space align="center">
+                                <Title level={3} style={{ margin: 0 }}>{user.pseudo}</Title>
+                                <Tag color="blue">{user.is_admin ? "Administrateur" : "Utilisateur"}</Tag>
+                            </Space>
+                            <Text type="secondary">{user.email}</Text>
+                            <Text>{user.bio}</Text>
+                            <Text type="secondary">Membre depuis : {dayjs(user.creation_date).format("DD/MM/YYYY")}</Text>
                         </Space>
-                        <Text type="secondary">{user.email}</Text>
-                        <Text>{user.bio}</Text>
-                        <Text type="secondary">Membre depuis : {dayjs(user.creation_date).format("DD/MM/YYYY")}</Text>
-                    </Space>
                     </Card>
 
                     <UserEventsCard

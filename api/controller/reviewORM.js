@@ -30,7 +30,7 @@ export const getReviewsOfEvent = async (req, res) => {
         });
         res.send(reviews);
     } catch (err) {
-        
+
         res.sendStatus(500);
     }
 };
@@ -38,7 +38,7 @@ export const getReviewsOfEvent = async (req, res) => {
 // Récupérer une review par son ID
 export const getReviewById = async (req, res) => {
     try {
-        const id = req.reviewParamsVal.id;   
+        const id = req.reviewParamsVal.id;
         const review = await prisma.review.findUnique({
             where: { id },
             include: {
@@ -50,7 +50,7 @@ export const getReviewById = async (req, res) => {
         if (!review) return res.sendStatus(404);
         res.send(review);
     } catch (err) {
-        
+
         res.sendStatus(500);
     }
 };
@@ -77,7 +77,7 @@ export const addReview = async (req, res) => {
 
         res.status(201).send(review);
     } catch (err) {
-        
+
         res.sendStatus(500);
     }
 };
@@ -102,7 +102,7 @@ export const updateReview = async (req, res) => {
 
         res.sendStatus(204);
     } catch (err) {
-        
+
         res.sendStatus(500);
     }
 };
@@ -121,7 +121,7 @@ export const deleteReview = async (req, res) => {
         await prisma.review.delete({ where: { id: reviewId } });
         res.sendStatus(204);
     } catch (err) {
-        
+
         res.sendStatus(500);
     }
 };

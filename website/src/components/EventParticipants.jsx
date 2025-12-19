@@ -9,8 +9,8 @@ const EventParticipants = ({ participants = [], onDelete, onAdd }) => {
   const [form] = Form.useForm();
   const token = localStorage.getItem('token');
   const availableUsers = Array.isArray(users) ? users.filter(
-  u => !participants.some(p => p.id === u.id)
-) : [];
+    u => !participants.some(p => p.id === u.id)
+  ) : [];
   useEffect(() => {
     if (!open) return;
 

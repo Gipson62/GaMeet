@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, Card, Alert, Typography } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import {loginUser} from "../api/api.js";
+import { loginUser } from "../api/api.js";
 
 const { Title } = Typography;
 

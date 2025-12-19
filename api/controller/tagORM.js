@@ -29,7 +29,7 @@ export const getAllTags = async (req, res) => {
         });
         res.send(games);
     } catch (err) {
-        
+
         res.sendStatus(500);
     }
 }
@@ -251,14 +251,14 @@ export const addTag = async (req, res) => {
         const {
             name,
         } = req.val;
-        const {id} = await prisma.tag.create({
+        const { id } = await prisma.tag.create({
             data: {
                 name,
             },
         });
-        res.status(201).send({id});
+        res.status(201).send({ id });
     } catch (err) {
-        
+
         res.sendStatus(500);
     }
 }

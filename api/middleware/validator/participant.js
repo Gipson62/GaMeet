@@ -8,8 +8,5 @@ const deleteSchema = vine.object({
   user_id: vine.number().withoutDecimals(),
 });
 
-
-
-export const
-  create = vine.compile(createSchema),
+export const create = vine.compile(createSchema),
   remove = vine.compile(deleteSchema);

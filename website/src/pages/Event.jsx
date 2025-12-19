@@ -1,4 +1,4 @@
-import { useEffect,useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Card, message, Modal } from 'antd';
 import EventsHeader from '../components/EventsHeader';
 import EventsTable from '../components/EventsTable';
@@ -31,7 +31,7 @@ const AdminEvents = () => {
       setLoading(false);
     }
   };
-const filteredEvents = useMemo(() => {
+  const filteredEvents = useMemo(() => {
     const query = q.trim().toLowerCase();
     if (!query) return events;
 

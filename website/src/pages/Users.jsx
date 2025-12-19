@@ -25,7 +25,7 @@ export default function UsersPage() {
 
         fetchMe(token)
             .then(setMe)
-            .catch(() => {});
+            .catch(() => { });
     }, [token]);
 
     const loadUsers = async () => {
