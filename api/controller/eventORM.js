@@ -1,27 +1,7 @@
 import prisma from '../database/databaseORM.js'
 import fs from 'fs'
 
-async function cleanupIfOrphan(photoId) {
-  try {
-    if (!photoId) return;
-    const [eventCount, gameCount, reviewCount, userCount] = await Promise.all([
-      prisma.event_photo.count({ where: { photo_id: photoId } }),
-      prisma.game.count({ where: { OR: [{ banner_id: photoId }, { logo_id: photoId }, { grid_id: photoId }] } }),
-      prisma.review.count({ where: { photo_id: photoId } }),
-      prisma.user.count({ where: { photo_id: photoId } }),
-    ]);
-    const total = eventCount + gameCount + reviewCount + userCount;
-    if (total === 0) {
-      const photo = await prisma.photo.findUnique({ where: { id: photoId } });
-      if (photo?.url) {
-        fs.unlink(`./uploads/${photo.url}`, (err) => { if (err) console.error('unlink error', err); });
-      }
-      await prisma.photo.delete({ where: { id: photoId } });
-    }
-  } catch (err) {
-    console.error('cleanupIfOrphan error', err);
-  }
-}
+// Photo cleanup handled inline (same approach as gameORM)
 
 /**
  * @swagger
@@ -315,7 +295,7 @@ export const updateEvent = async (req, res) => {
             game_id: gameId
           }))
         });
-        delete updateData.game_id; // 🔥 CRUCIAL
+        delete updateData.game_id; 
       }
 
       // 🖼 photos
@@ -327,7 +307,7 @@ export const updateEvent = async (req, res) => {
             photo_id: photoId
           }))
         });
-        delete updateData.photo_id; // 🔥 CRUCIAL
+        delete updateData.photo_id; 
       }
 
       await tx.event.update({
@@ -336,11 +316,19 @@ export const updateEvent = async (req, res) => {
       });
     });
 
-    // Cleanup orphan photos that were removed from this event
+    // Remove photos that were detached from this event (delete file + DB row, same as gameORM)
     if (Array.isArray(newPhotoIds)) {
       const removed = oldPhotoIds.filter(pid => !newPhotoIds.includes(pid));
       for (const pid of removed) {
-        await cleanupIfOrphan(pid);
+        try {
+          const photo = await prisma.photo.findUnique({ where: { id: pid } });
+          if (photo?.url) {
+            fs.unlink(`./uploads/${photo.url}`, () => { });
+          }
+          await prisma.photo.delete({ where: { id: pid } });
+        } catch (cleanupErr) {
+          console.error('Erreur suppression photo associée', cleanupErr);
+        }
       }
     }
 
@@ -395,12 +383,20 @@ export const deleteEvent = async (req, res) => {
     const photoIds = eventPhotos.map(p => p.photo_id)
 
     // delete the event (cascade will remove event_photo entries)
-    await prisma.event.delete({ where: { id } })
-
-    // cleanup orphan photos
-    for (const pid of photoIds) {
-      await cleanupIfOrphan(pid)
+    // supprimer les photos associées (fichiers + entrées DB) — same as gameORM
+    for (const photoId of photoIds) {
+      try {
+        const photo = await prisma.photo.findUnique({ where: { id: photoId } });
+        if (photo?.url) {
+          fs.unlink(`./uploads/${photo.url}`, () => { });
+        }
+        await prisma.photo.delete({ where: { id: photoId } });
+      } catch (cleanupErr) {
+        console.error('Erreur suppression photo associée', cleanupErr);
+      }
     }
+
+    await prisma.event.delete({ where: { id } })
 
     res.sendStatus(204)
   } catch (e) {

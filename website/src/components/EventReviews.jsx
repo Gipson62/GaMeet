@@ -17,13 +17,13 @@ const EventReviews = ({ reviews = [], onAdd, onDelete }) => {
           <div key={review.id} style={{ marginBottom: 16 }}>
             <Text strong>
               {review.User?.pseudo || 'Utilisateur inconnu'} —{' '}
-              {dayjs(review.createdAt).isValid()
-                ? dayjs(review.createdAt).format('DD/MM/YYYY')
+              {dayjs(review.created_at || review.createdAt).isValid()
+                ? dayjs(review.created_at || review.createdAt).format('DD/MM/YYYY')
                 : 'Date invalide'}
             </Text>
             <br />
             <Rate disabled value={Number(review.note) || 0} />
-            <p>{review.comment}</p>
+            <p>{review.description || 'Aucune description fournie'}</p>
             <Button
               danger
               size="small"

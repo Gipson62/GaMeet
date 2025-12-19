@@ -34,7 +34,6 @@ export const userValidatorMiddleware = {
         try {
             req.val = await userValidator.update.validate(req.body);
             req.val.id = req.params.id;
-            //req.val.id = req.user.id;
             next();
         } catch (e) {
             res.status(400).send(e.message);

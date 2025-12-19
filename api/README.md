@@ -25,3 +25,7 @@ Exécuter la commande suivante depuis le répertoire `api/` :
 ```bash
 docker compose up
 ``` 
+
+### 3. Lien GitHub
+
+[GaMeet API Repository](https://github.com/Gipson62/GaMeet)
