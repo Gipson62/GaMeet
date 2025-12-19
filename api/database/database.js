@@ -19,7 +19,6 @@ export const pool = {
                     try {
                         return await client.query(query, params);
                     } catch (e) {
-                        console.error(e);
                         throw e;
                     }
                 },
@@ -28,7 +27,6 @@ export const pool = {
                 }
             };
         } catch (e){
-            console.error(e);
             throw e;
         }
     },
@@ -36,7 +34,6 @@ export const pool = {
         try {
             return await pgPool.query(query, params);
         } catch (e) {
-            console.error(e);
             throw e;
         }
     },
@@ -48,5 +45,5 @@ export const pool = {
 /* ----- Troisième partie ----- */
 // Si nous fermons notre processus, nous fermerons automatiquement toutes les connexions ouvertes à la base de données
 process.on('exit', () => {
-    pgPool.end().then(() => console.log('pool closed'));
+    pgPool.end();
 });
