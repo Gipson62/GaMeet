@@ -1,7 +1,7 @@
 import { Card, Table } from "antd";
 import { eventColumns } from "./userColumns";
 
-const UserEventsCard = ({ title, events, emptyText }) => {
+const UserEvents = ({ title, events, emptyText }) => {
     return (
         <Card title={title}>
             <Table
@@ -14,4 +14,4 @@ const UserEventsCard = ({ title, events, emptyText }) => {
         </Card>
     );
 }
-export default UserEventsCard;
+export default UserEvents;

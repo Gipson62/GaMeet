@@ -6,7 +6,7 @@ import Game from '../pages/Game.jsx';
 import GameDetails from '../pages/GameDetails.jsx';
 import Tag from '../pages/Tag.jsx';
 import UserDetails from '../pages/UserDetails.jsx';
-import User from "../pages/User.jsx";
+import User from "../pages/Users.jsx";
 import MainPage from "../pages/MainPage.jsx";
 
 const router = createBrowserRouter([

@@ -266,27 +266,55 @@ export const deleteUser = async (id, token) => {
     return true;
 };
 
+
+export async function updateUser(id, userData, token) {
+    const formData = new FormData();
+
+    formData.append("id", id); // utile si ton validator attend id dans le body
+    formData.append("pseudo", userData.pseudo);
+    formData.append("email", userData.email);
+    formData.append("birth_date", userData.birth_date);
+    if (userData.bio) formData.append("bio", userData.bio);
+
+    if (userData.avatarFile) {
+        formData.append("avatar", userData.avatarFile);
+    }
+
+    const res = await fetch(`${API_URL_USER}/${id}`, {
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+    });
+
+    if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text);
+    }
+    return true;
+}
+
+
+
 // Ajouter un utilisateur
-export async function addUser(userData, file, token) {
+export async function addUser(userData, token) {
     const formData = new FormData();
 
     formData.append("pseudo", userData.pseudo);
     formData.append("email", userData.email);
     formData.append("password", userData.password);
-    formData.append("birth_date", userData.birth_date);
+    formData.append("birth_date", userData.birth_date); // "YYYY-MM-DD"
+    if (userData.bio) formData.append("bio", userData.bio);
 
-    if (userData.bio) {
-        formData.append("bio", userData.bio);
-    }
-
-    if (file) {
-        formData.append("avatar", file); // ⚠️ même nom que multer
+    // IMPORTANT: le champ doit s'appeler "avatar" car ton route fait upload.single("avatar")
+    if (userData.avatarFile) {
+        formData.append("avatar", userData.avatarFile);
     }
 
     const res = await fetch(`${API_URL_USER}/register`, {
         method: "POST",
         headers: {
             Authorization: `Bearer ${token}`,
+            // surtout PAS de Content-Type ici, le navigateur met le boundary
         },
         body: formData,
     });
@@ -295,29 +323,10 @@ export async function addUser(userData, file, token) {
         const text = await res.text();
         throw new Error(text || "Erreur création utilisateur");
     }
-
     return res.json();
 }
 
-// Mettre à jour l'avatar d'un utilisateur
-export const updateUserAvatar = async (userId, file, token) => {
-    const formData = new FormData();
-    formData.append("file", file);
 
-    const res = await fetch(`${API_URL_USER}/${userId}/avatar`, {
-        method: "PATCH",
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-    });
-
-    if (!res.ok) {
-        const text = await res.text();
-        throw new Error(text || "Impossible de mettre à jour l'avatar");
-    }
-    return res.json();
-};
 
 // Supprimer un tag par nom (l'API attend le paramètre comme identifiant)
 export const deleteTag = async (name, token) => {
