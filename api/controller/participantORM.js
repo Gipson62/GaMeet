@@ -19,7 +19,7 @@ export const addParticipant = async (req, res) => {
 
     res.sendStatus(201);
   } catch (e) {
-    console.error(e);
+    
     res.sendStatus(500);
   }
 };
@@ -47,7 +47,7 @@ export const removeParticipant = async (req, res) => {
 
     res.sendStatus(204);
   } catch (e) {
-    console.error(e);
+    
     res.sendStatus(500);
   }
 };

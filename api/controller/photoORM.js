@@ -71,7 +71,7 @@ export const getPhotoById = async (req, res)=> {
             res.sendStatus(404);
         }
     } catch (err) {
-        console.error(err);
+        
         res.sendStatus(500);
     }
 };
@@ -129,7 +129,7 @@ export const addPhoto = async (req, res) => {
             photo,
         });
     } catch (err) {
-        console.error(err);
+        
         res.status(500).json({ error: 'Failed to upload photo' });
     }
 };
@@ -179,7 +179,7 @@ export const updatePhoto = async (req, res) => {
 
         fs.unlink("./uploads/" + existingPhoto.url, async (err) => {
             if (err) {
-                console.error(err);
+                
                 res.sendStatus(500);
                 return;
             }
@@ -197,7 +197,7 @@ export const updatePhoto = async (req, res) => {
             });
         });
     } catch (e) {
-        console.error(e);
+        
         res.sendStatus(500);
     }
 };
@@ -219,7 +219,7 @@ export const deletePhoto = async (req, res) => {
 
         fs.unlink("./uploads/" + existingPhoto.url, async (err) => {
             if (err) {
-                console.error(err);
+                
                 res.sendStatus(500);
                 return;
             }
@@ -232,7 +232,7 @@ export const deletePhoto = async (req, res) => {
         });
 
     } catch (e) {
-        console.error(e);
+        
         res.sendStatus(500);
     }
 };

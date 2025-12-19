@@ -67,7 +67,7 @@ export const getAllEvents = async (req, res) => {
 
         res.send(events)
     } catch (err) {
-        console.error(err)
+        
         res.sendStatus(500)
     }
 }
@@ -124,7 +124,7 @@ console.log(event.event_photo);
             res.sendStatus(404)
         }
     } catch (e) {
-        console.error(e)
+        
         res.sendStatus(500)
     }
 }
@@ -216,7 +216,7 @@ export const addEvent = async (req, res) => {
 
         res.status(201).send({id})
     } catch (e) {
-        console.error(e)
+        
         res.sendStatus(500)
     }
 }
@@ -404,7 +404,7 @@ export const deleteEvent = async (req, res) => {
 
         res.sendStatus(204)
     } catch (e) {
-        console.error(e)
+        
         res.sendStatus(500)
     }
 }
@@ -439,7 +439,7 @@ export const joinEvent = async (req, res) => {
 
         res.status(201).json({ message: 'Inscription réussie !' });
     } catch (err) {
-        console.error(err);
+        
         res.status(500).json({ message: 'Erreur interne' });
     }
 };
@@ -464,7 +464,7 @@ export const leaveEvent = async (req, res) => {
 
         res.status(204).send();
     } catch (err) {
-        console.error(err);
+        
         res.status(500).json({ message: 'Erreur interne' });
     }
 };

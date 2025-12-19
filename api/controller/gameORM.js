@@ -38,7 +38,7 @@ export const getAllGames = async (req, res) => {
         });
         res.send(games);
     } catch (err) {
-        console.error(err);
+        
         res.sendStatus(500);
     }
 }
@@ -105,7 +105,7 @@ export const getGameById = async (req, res) => {
             res.sendStatus(404);
         }
     } catch (err) {
-        console.error(err);
+        
         res.sendStatus(500);
     }
 }
@@ -178,13 +178,13 @@ export const addGameWithPhotos = async (req, res) => {
         // Vérifier que les 3 fichiers sont présents
         if (!req.files?.banner || !req.files?.logo || !req.files?.grid) {
             return res.status(400).json({ message: 'Les 3 images (banner, logo, grid) sont requises' })
-        }
+        };
 
-        const { name, studio, publisher, release_date, description, platforms, is_approved } = req.body
+        const { name, studio, publisher, release_date, description, platforms, is_approved } = req.body;
 
         // Valider les champs requis
         if (!name || !studio || !publisher || !release_date || !platforms) {
-            return res.status(400).json({ message: 'Les champs requis sont manquants' })
+            return res.status(400).json({ message: 'Les champs requis sont manquants' });
         }
 
         // Formater les platformes
@@ -192,20 +192,20 @@ export const addGameWithPhotos = async (req, res) => {
             ? platforms.split(',').map(p => p.trim()).join(', ')
             : Array.isArray(platforms)
             ? platforms.join(', ')
-            : platforms
+            : platforms;
 
         // Transaction : créer photos + jeu ensemble
         const result = await prisma.$transaction(async (tx) => {
             // 1. Créer les 3 photos
             const bannerPhoto = await tx.photo.create({
                 data: { url: req.files.banner[0].filename }
-            })
+            });
             const logoPhoto = await tx.photo.create({
                 data: { url: req.files.logo[0].filename }
-            })
+            });
             const gridPhoto = await tx.photo.create({
                 data: { url: req.files.grid[0].filename }
-            })
+            });
 
             // 2. Créer le jeu avec les IDs des photos
             const game = await tx.game.create({
@@ -222,19 +222,18 @@ export const addGameWithPhotos = async (req, res) => {
                     grid_id: gridPhoto.id,
                 },
                 select: { id: true, name: true }
-            })
+            });
 
-            return game
-        })
+            return game;
+        });
 
         res.status(201).json({
             message: 'Jeu créé avec les images',
             game: result
-        })
+        });
 
     } catch (err) {
-        console.error('Erreur addGameNew:', err)
-        res.status(500).json({ error: err.message || 'Erreur lors de la création du jeu' })
+        res.status(500).json({ error: err.message || 'Erreur lors de la création du jeu' });
     }
 }
 
@@ -270,7 +269,7 @@ export const addGame = async (req, res) => {
         });
         res.status(201).send({id});
     } catch (err) {
-        console.error(err);
+        
         res.sendStatus(500);
     }
 }
@@ -387,7 +386,7 @@ export const updateGame = async (req, res) => {
         res.sendStatus(204);
 
     } catch (err) {
-        console.error(err);
+        
         res.sendStatus(500);
     }
 }
@@ -421,35 +420,35 @@ export const updateGame = async (req, res) => {
  */
 export const deleteGame = async (req, res) => {
     try {
-        const { id } = req.gameParamsVal
+        const { id } = req.gameParamsVal;
 
-        const existing = await prisma.game.findUnique({ where: { id: id } })
+        const existing = await prisma.game.findUnique({ where: { id: id } });
 
-        if (!existing) return res.sendStatus(404)
+        if (!existing) return res.sendStatus(404);
         if (!req.user.is_admin)
-            return res.status(403).send({ message: "Accès refusé" })
+            return res.status(403).send({ message: "Accès refusé" });
 
-        const game = await prisma.game.findUnique({ where: { id } })
+        const game = await prisma.game.findUnique({ where: { id } });
 
         // supprimer les photos associées (fichiers + entrées DB)
-        const photoIds = [game.banner_id, game.logo_id, game.grid_id].filter(Boolean)
+        const photoIds = [game.banner_id, game.logo_id, game.grid_id].filter(Boolean);
         for (const photoId of photoIds) {
             try {
-                const photo = await prisma.photo.findUnique({ where: { id: photoId } })
+                const photo = await prisma.photo.findUnique({ where: { id: photoId } });
                 if (photo?.url) {
-                    fs.unlink(`./uploads/${photo.url}`, () => { })
+                    fs.unlink(`./uploads/${photo.url}`, () => { });
                 }
-                await prisma.photo.delete({ where: { id: photoId } })
+                await prisma.photo.delete({ where: { id: photoId } });
             } catch (cleanupErr) {
-                console.error('Erreur suppression photo associée', cleanupErr)
+                console.error('Erreur suppression photo associée', cleanupErr);
             }
         }
-        await prisma.game.delete({ where: { id } })
+        await prisma.game.delete({ where: { id } });
 
-        res.sendStatus(204)
+        res.sendStatus(204);
     } catch (e) {
-        console.error(e)
-        res.sendStatus(500)
+        
+        res.sendStatus(500);
     }
 
 }
