@@ -335,7 +335,7 @@ export const updateGame = async (req, res) => {
     try {
         const { id } = req.gameParamsVal;
 
-        const existing = await prisma.event.findUnique({ where: { id: id } });
+        const existing = await prisma.game.findUnique({ where: { id: id } });
 
         if (!existing) return res.sendStatus(404);
         if (!req.user.is_admin) {
