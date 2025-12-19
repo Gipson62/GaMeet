@@ -1,11 +1,12 @@
 import { useEffect, useState, useMemo } from 'react';
-import { Card, message, Modal, Table, Button, Space, Spin, Popconfirm } from 'antd';
-import { EditOutlined, DeleteOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons';
+import { Card, message, Modal, Table, Button, Space, Spin, Popconfirm, Typography, Input } from 'antd';
+import { EditOutlined, DeleteOutlined, EyeOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
 import { fetchGames, deleteGame, addGameWithPhotos } from '../api/api';
 import GameForm from '../components/GameForm';
 import { useNavigate } from 'react-router-dom';
 
 const Game = () => {
+  const { Search } = Input;
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
@@ -148,20 +149,19 @@ const Game = () => {
     <Card style={{ margin: 24 }}>
       <Space direction="vertical" style={{ width: '100%' }}>
         <Space style={{ width: '100%', justifyContent: 'space-between' }}>
-          <div></div>
+          <Typography.Title level={3} style={{ margin: 0 }}>Jeux</Typography.Title>
           <Space>
-            <input
-              type="text"
+            <Search
               placeholder="Rechercher un jeu..."
+              allowClear
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              style={{
-                padding: '6px 12px',
-                borderRadius: '4px',
-                border: '1px solid #d9d9d9',
-                fontSize: '14px',
-              }}
+              onSearch={(val) => setQ(val)}
+              style={{ width: 260 }}
             />
+            <Button icon={<ReloadOutlined />} onClick={loadGames}>
+              Actualiser
+            </Button>
             <Button
               type="primary"
               icon={<PlusOutlined />}
