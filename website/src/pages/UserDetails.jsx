@@ -97,6 +97,8 @@ export default function UserDetails() {
     const handleEditSubmit = async (payload) => {
         try {
             setEditSaving(true);
+            console.log("Submitting edit:", payload);
+            console.log("User ID:", user.id);
             await updateUser(user.id, payload, token);
             message.success("Profil modifié");
             setEditOpen(false);
