@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import {Space, Spin, message, Button, Modal, Card, Avatar, Tag, Typography} from "antd";
+import {Space, Spin, message, Modal, Card, Avatar, Tag, Typography} from "antd";
 
 import { fetchUserById, fetchMe, deleteUser, updateUser } from "../api/api.js";
 
@@ -100,7 +100,7 @@ export default function UserDetails() {
             await updateUser(user.id, payload, token);
             message.success("Profil modifié");
             setEditOpen(false);
-            await loadUser();
+            await load();
         } catch (e) {
             message.error(e.message || "Modification impossible");
         } finally {
@@ -142,16 +142,15 @@ export default function UserDetails() {
                     />
 
                     <UserEventsCard
-                        title="Événements auxquels il a participé"
+                        title="Participations"
                         events={(user.participant || []).map((p) => p.event)}
                         navigate={navigate}
                         emptyText
                     />
 
-                    <UserReviewsCard reviews={user.review || []} navigate={navigate} />
+                    <UserReviewsCard reviews={user.review || []} />
                 </Space>
 
-                {/* Avatar affiché seulement */}
                 <Card title="Photo de profil" style={{ textAlign: "center" }}>
                     <Avatar src={photoSrc} size={240} style={{ marginBottom: 16 }} />
                 </Card>
