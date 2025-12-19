@@ -1,23 +1,32 @@
-import { Card, Space, Typography, Tag } from "antd";
-import dayjs from "dayjs";
+import { Button, Space } from 'antd';
+import { ArrowLeftOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 
+const UserHeader = ({ onEdit, onDelete}) => {
+  const navigate = useNavigate();
 
-const { Title, Text } = Typography;
+  return (
+    <div style={{ marginBottom: 16 }}>
+      <Space style={{ width: '100%' }}>
+        <Button
+          icon={<ArrowLeftOutlined />}
+          type="link"
+          onClick={() => navigate(-1)}
+        >
+          Retour à la liste
+        </Button>
 
+        <Space>
+          <Button icon={<EditOutlined />} onClick={onEdit}>
+            Modifier
+          </Button>
+          <Button danger icon={<DeleteOutlined />} onClick={onDelete}>
+            Supprimer
+          </Button>
+        </Space>
+      </Space>
+    </div>
+  );
+};
 
-const UserHeader = ({ user }) => {
-    return (
-        <Card>
-            <Space direction="vertical" size={4}>
-                <Space align="center">
-                    <Title level={3} style={{ margin: 0 }}>{user.pseudo}</Title>
-                    <Tag color="blue">{user.is_admin ? "Administrateur" : "Utilisateur"}</Tag>
-                </Space>
-                <Text type="secondary">{user.email}</Text>
-                <Text>{user.bio}</Text>
-                <Text type="secondary">Membre depuis : {dayjs(user.creation_date).format("DD/MM/YYYY")}</Text>
-            </Space>
-        </Card>
-    );
-}
 export default UserHeader;
