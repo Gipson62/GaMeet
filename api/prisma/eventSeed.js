@@ -38,7 +38,7 @@ const seedAllEvents = async (prisma, gameIds, userIds) => {
         },
         event10: {
             photo1: "event_hades_speedrun_1.avif",
-            photo2: "event_hades_speedrun_2.avif"
+            photo2: "event_hades_speedrun_2.jpg"
         },
         event11: {
             photo1: "event_fortnite_tournament_1.jpg",
