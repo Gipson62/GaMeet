@@ -6,7 +6,6 @@ import {
     deleteUser,
     getUser,
     getAllUsers,
-    updateUserAvatar
 } from '../../controller/userORM.js';
 import {checkJWT} from '../../middleware/identification/jwt.js';
 import {userValidatorMiddleware as UVM} from '../../middleware/validation.js';
@@ -22,15 +21,13 @@ router.post('/login', UVM.login, loginUser)
 
 // USER SELF
 router.get('/', checkJWT, UVM.profile, getUser)
-router.patch('/', checkJWT , UVM.update, updateUser)
+router.patch('/', checkJWT ,upload.single("avatar")  ,UVM.update, updateUser)
 router.delete('/', checkJWT, UVM.delete ,deleteUser)
-
-// PHOTO
-router.patch('/:id/avatar', checkJWT, UVM.idParam, updateUserAvatar)
 
 // ADMIN USER MANAGEMENT
 router.get("/list", checkJWT, admin, getAllUsers);
 router.get('/:id', checkJWT, admin, UVM.idParam, getUser)
+router.patch('/:id', checkJWT ,admin,upload.single("avatar"), UVM.update, updateUser)
 router.delete('/:id', checkJWT, admin, UVM.idParam, deleteUser)
 
 

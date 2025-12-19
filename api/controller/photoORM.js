@@ -14,7 +14,19 @@ const storage = multer.diskStorage({
     },
 });
 
-export const upload = multer({ storage });
+export const upload = multer({
+    limits: {
+        fileSize: 5 * 1024 * 1024, // 5MB
+    },
+    fileFilter(req, file, cb) {
+        if (!file.mimetype.startsWith("image/")) {
+        cb(new Error("Seules les images sont autorisées"));
+        } else {
+        cb(null, true);
+        }
+    },
+    storage 
+});
 
 export const getPhotoById = async (req, res)=> {
     try {
