@@ -1,5 +1,25 @@
 import prisma from '../database/databaseORM.js'
 
+/**
+ * @swagger
+ * /tag:
+ *   get:
+ *     summary: Get all tags
+ *     description: Retrieve a complete list of all available tags in the system
+ *     tags:
+ *       - Tag
+ *     responses:
+ *       200:
+ *         description: List of tags retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Tag'
+ *       500:
+ *         description: Server error
+ */
 export const getAllTags = async (req, res) => {
     try {
         const games = await prisma.tag.findMany({
@@ -14,6 +34,36 @@ export const getAllTags = async (req, res) => {
     }
 }
 
+/**
+ * @swagger
+ * /tag/game/{id}:
+ *   get:
+ *     summary: Get all tags for a game
+ *     description: Retrieve all tags associated with a specific game
+ *     tags:
+ *       - Tag
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Game ID
+ *     responses:
+ *       200:
+ *         description: Tags retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   tag_name:
+ *                     type: string
+ *       500:
+ *         description: Server error
+ */
 export const getAllTagFromGameId = async (req, res) => {
     try {
         const { id } = req.gameParamsVal
@@ -36,6 +86,48 @@ export const getAllTagFromGameId = async (req, res) => {
 
 /*
  * Associe un tag à un jeu, crée le tag s'il n'existe pas
+ */
+
+/**
+ * @swagger
+ * /tag/game/{id}:
+ *   post:
+ *     summary: Add a tag to a game
+ *     description: Associate a tag with a game. Creates the tag if it doesn't exist.
+ *     tags:
+ *       - Tag
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Game ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - tag_name
+ *             properties:
+ *               tag_name:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Tag added to game successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       500:
+ *         description: Server error
  */
 export const addTagFromGameId = async (req, res) => {
     try {
@@ -64,8 +156,41 @@ export const addTagFromGameId = async (req, res) => {
     }
 }
 
-/*
- * Retire un tag d'un jeu
+/**
+ * @swagger
+ * /tag/game/{id}:
+ *   delete:
+ *     summary: Remove a tag from a game
+ *     description: Disassociate a tag from a game by ID
+ *     tags:
+ *       - Tag
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Game ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - tag_name
+ *             properties:
+ *               tag_name:
+ *                 type: string
+ *     responses:
+ *       204:
+ *         description: Tag removed from game successfully
+ *       404:
+ *         description: Tag not found
+ *       500:
+ *         description: Server error
  */
 export const deleteTagFromGameId = async (req, res) => {
     try {
@@ -90,6 +215,40 @@ export const deleteTagFromGameId = async (req, res) => {
     }
 }
 
+/**
+ * @swagger
+ * /tag:
+ *   post:
+ *     summary: Create a new tag
+ *     description: Create a new tag in the system
+ *     tags:
+ *       - Tag
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Tag created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *       500:
+ *         description: Server error
+ */
 export const addTag = async (req, res) => {
     try {
         const {
@@ -107,6 +266,33 @@ export const addTag = async (req, res) => {
     }
 }
 
+/**
+ * @swagger
+ * /tag/{id}:
+ *   delete:
+ *     summary: Delete a tag
+ *     description: Delete a tag from the system (admin only)
+ *     tags:
+ *       - Tag
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Tag name
+ *     responses:
+ *       204:
+ *         description: Tag deleted successfully
+ *       403:
+ *         description: Unauthorized - admin access required
+ *       404:
+ *         description: Tag not found
+ *       500:
+ *         description: Server error
+ */
 export const deleteTag = async (req, res) => {
     try {
         const { name } = req.gameParamsVal

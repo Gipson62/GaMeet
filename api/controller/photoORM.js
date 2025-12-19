@@ -28,6 +28,34 @@ export const upload = multer({
     storage 
 });
 
+/**
+ * @swagger
+ * /photo/{id}:
+ *   get:
+ *     summary: Get photo file by ID
+ *     description: Retrieve a photo file from the uploads directory by its ID
+ *     tags:
+ *       - Photo
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Photo ID
+ *     responses:
+ *       200:
+ *         description: Photo file retrieved successfully
+ *         content:
+ *           image/*:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       404:
+ *         description: Photo not found
+ *       500:
+ *         description: Server error
+ */
 export const getPhotoById = async (req, res)=> {
     try {
         const { id } = req.photoParamsVal;
@@ -48,6 +76,44 @@ export const getPhotoById = async (req, res)=> {
     }
 };
 
+/**
+ * @swagger
+ * /photo:
+ *   post:
+ *     summary: Upload a new photo
+ *     description: Upload an image file and store it with a unique name in the database
+ *     tags:
+ *       - Photo
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               photo:
+ *                 type: string
+ *                 format: binary
+ *                 description: Image file (max 5MB)
+ *     responses:
+ *       201:
+ *         description: Photo uploaded successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 photo:
+ *                   $ref: '#/components/schemas/Photo'
+ *       400:
+ *         description: Invalid file or missing required fields
+ *       500:
+ *         description: Server error
+ */
 export const addPhoto = async (req, res) => {
     try {
         const { filename } = req.file;
@@ -67,7 +133,33 @@ export const addPhoto = async (req, res) => {
         res.status(500).json({ error: 'Failed to upload photo' });
     }
 };
-
+/**
+ * @swagger
+ * /photo/{id}:
+ *   delete:
+ *     summary: Delete a photo
+ *     description: Delete a photo by ID and remove associated file (admin only)
+ *     tags:
+ *       - Photo
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Photo ID
+ *     responses:
+ *       204:
+ *         description: Photo deleted successfully
+ *       403:
+ *         description: Unauthorized - admin access required
+ *       404:
+ *         description: Photo not found
+ *       500:
+ *         description: Server error
+ */
 export const updatePhoto = async (req, res) => {
     try {
         const { id } = req.photoParamsVal;

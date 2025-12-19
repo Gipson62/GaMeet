@@ -1,6 +1,26 @@
 import prisma from '../database/databaseORM.js'
 import fs from 'fs'
 
+/**
+ * @swagger
+ * /game:
+ *   get:
+ *     summary: Get all games
+ *     description: Retrieve a list of all games with basic information
+ *     tags:
+ *       - Game
+ *     responses:
+ *       200:
+ *         description: List of games retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/GameList'
+ *       500:
+ *         description: Server error
+ */
 export const getAllGames = async (req, res) => {
     try {
         // Need to get: game_id, name, platforms, release_date, logo_id, studio, approval status, publisher
@@ -23,6 +43,33 @@ export const getAllGames = async (req, res) => {
     }
 }
 
+/**
+ * @swagger
+ * /game/{id}:
+ *   get:
+ *     summary: Get game details by ID
+ *     description: Retrieve comprehensive game information including description, photos, tags, and linked events
+ *     tags:
+ *       - Game
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Game ID
+ *     responses:
+ *       200:
+ *         description: Game details retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/GameDetail'
+ *       404:
+ *         description: Game not found
+ *       500:
+ *         description: Server error
+ */
 export const getGameById = async (req, res) => {
     try {
         const  {id} = req.gameParamsVal;
@@ -63,6 +110,69 @@ export const getGameById = async (req, res) => {
     }
 }
 
+/**
+ * @swagger
+ * /game/with-photos:
+ *   post:
+ *     summary: Create a new game with photos
+ *     description: Create a game entry with banner, logo, and grid images in a single transaction
+ *     tags:
+ *       - Game
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - studio
+ *               - publisher
+ *               - release_date
+ *               - platforms
+ *               - banner
+ *               - logo
+ *               - grid
+ *             properties:
+ *               name:
+ *                 type: string
+ *               studio:
+ *                 type: string
+ *               publisher:
+ *                 type: string
+ *               release_date:
+ *                 type: string
+ *                 format: date-time
+ *               platforms:
+ *                 type: string
+ *                 description: Comma-separated platform list
+ *               description:
+ *                 type: string
+ *               is_approved:
+ *                 type: boolean
+ *               banner:
+ *                 type: string
+ *                 format: binary
+ *               logo:
+ *                 type: string
+ *                 format: binary
+ *               grid:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       201:
+ *         description: Game created successfully with photos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/GameDetail'
+ *       400:
+ *         description: Missing required fields or invalid data
+ *       500:
+ *         description: Server error
+ */
 export const addGameWithPhotos = async (req, res) => {
     try {
         // Vérifier que les 3 fichiers sont présents
@@ -128,7 +238,7 @@ export const addGameWithPhotos = async (req, res) => {
     }
 }
 
-//TODO: add photos handling
+// Add a new game without photos
 export const addGame = async (req, res) => {
     try {
         const {
@@ -165,7 +275,63 @@ export const addGame = async (req, res) => {
     }
 }
 
-//TODO: add photos handling
+/**
+ * @swagger
+ * /game/{id}:
+ *   patch:
+ *     summary: Update game information
+ *     description: Update game details including metadata and photo IDs (admin only)
+ *     tags:
+ *       - Game
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Game ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               studio:
+ *                 type: string
+ *               publisher:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               release_date:
+ *                 type: string
+ *                 format: date-time
+ *               platforms:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               banner_id:
+ *                 type: integer
+ *               logo_id:
+ *                 type: integer
+ *               grid_id:
+ *                 type: integer
+ *               is_approved:
+ *                 type: boolean
+ *     responses:
+ *       204:
+ *         description: Game updated successfully
+ *       403:
+ *         description: Unauthorized - admin access required
+ *       404:
+ *         description: Game not found
+ *       500:
+ *         description: Server error
+ */
 export const updateGame = async (req, res) => {
     try {
         const { id } = req.gameParamsVal;
@@ -226,6 +392,33 @@ export const updateGame = async (req, res) => {
     }
 }
 
+/**
+ * @swagger
+ * /game/{id}:
+ *   delete:
+ *     summary: Delete a game
+ *     description: Delete a game and all associated photos (admin only)
+ *     tags:
+ *       - Game
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Game ID
+ *     responses:
+ *       204:
+ *         description: Game deleted successfully
+ *       403:
+ *         description: Unauthorized - admin access required
+ *       404:
+ *         description: Game not found
+ *       500:
+ *         description: Server error
+ */
 export const deleteGame = async (req, res) => {
     try {
         const { id } = req.gameParamsVal
@@ -259,75 +452,4 @@ export const deleteGame = async (req, res) => {
         res.sendStatus(500)
     }
 
-}
-
-/*
- * Met à jour une photo (banner|logo|grid) d'un jeu :
- * - upload d'un nouveau fichier
- * - suppression de l'ancienne photo (DB + fichier)
- * - mise à jour du champ sur le jeu
- */
-export const updateGamePhoto = async (req, res) => {
-    try {
-        const { id, type } = req.params
-
-        if (!req.user?.is_admin) {
-            return res.status(403).json({ message: 'Accès refusé' })
-        }
-
-        if (!['banner', 'logo', 'grid'].includes(type)) {
-            return res.status(400).json({ message: 'Type de photo invalide' })
-        }
-
-        if (!req.file) {
-            return res.status(400).json({ message: 'Aucun fichier reçu' })
-        }
-
-        const numericId = Number(id)
-        const game = await prisma.game.findUnique({ where: { id: numericId } })
-        if (!game) return res.sendStatus(404)
-
-        const fieldMap = {
-            banner: 'banner_id',
-            logo: 'logo_id',
-            grid: 'grid_id'
-        }
-        const field = fieldMap[type]
-
-        // créer la nouvelle photo
-        const newPhoto = await prisma.photo.create({ data: { url: req.file.filename } })
-
-        // garder l'ancien id pour suppression
-        const oldPhotoId = game[field]
-
-        // mettre à jour le jeu
-        await prisma.game.update({
-            where: { id: numericId },
-            data: { [field]: newPhoto.id }
-        })
-
-        // supprimer l'ancienne photo (fichier + DB) si existante
-        if (oldPhotoId) {
-            try {
-                const oldPhoto = await prisma.photo.findUnique({ where: { id: oldPhotoId } })
-                if (oldPhoto?.url) {
-                    fs.unlink(`./uploads/${oldPhoto.url}`, () => {})
-                }
-                await prisma.photo.delete({ where: { id: oldPhotoId } })
-            } catch (cleanupErr) {
-                console.error('Erreur suppression ancienne photo', cleanupErr)
-            }
-        }
-
-        return res.status(200).json({
-            message: 'Photo mise à jour',
-            field,
-            photoId: newPhoto.id,
-            url: newPhoto.url
-        })
-
-    } catch (err) {
-        console.error(err)
-        res.sendStatus(500)
-    }
 }

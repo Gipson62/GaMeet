@@ -23,6 +23,26 @@ async function cleanupIfOrphan(photoId) {
   }
 }
 
+/**
+ * @swagger
+ * /event:
+ *   get:
+ *     summary: Get all events
+ *     description: Retrieve a list of all gaming events with associated games and participant count
+ *     tags:
+ *       - Event
+ *     responses:
+ *       200:
+ *         description: List of events retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/EventList'
+ *       500:
+ *         description: Server error
+ */
 export const getAllEvents = async (req, res) => {
     try {
         const events = await prisma.event.findMany({
@@ -51,6 +71,34 @@ export const getAllEvents = async (req, res) => {
         res.sendStatus(500)
     }
 }
+
+/**
+ * @swagger
+ * /event/{id}:
+ *   get:
+ *     summary: Get event details by ID
+ *     description: Retrieve comprehensive event information including organizer, games, photos, participants, and reviews
+ *     tags:
+ *       - Event
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Event ID
+ *     responses:
+ *       200:
+ *         description: Event details retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/EventDetail'
+ *       404:
+ *         description: Event not found
+ *       500:
+ *         description: Server error
+ */
 export const getEventById = async (req, res) => {
     try {
 
@@ -81,6 +129,60 @@ console.log(event.event_photo);
     }
 }
 
+/**
+ * @swagger
+ * /event:
+ *   post:
+ *     summary: Create a new event
+ *     description: Create a new gaming event with games and photos
+ *     tags:
+ *       - Event
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - scheduled_date
+ *             properties:
+ *               name:
+ *                 type: string
+ *               scheduled_date:
+ *                 type: string
+ *                 format: date-time
+ *               description:
+ *                 type: string
+ *               location:
+ *                 type: string
+ *               max_capacity:
+ *                 type: integer
+ *               game_id:
+ *                 type: array
+ *                 items:
+ *                   type: integer
+ *               photo_id:
+ *                 type: array
+ *                 items:
+ *                   type: integer
+ *     responses:
+ *       201:
+ *         description: Event created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *       401:
+ *         description: Unauthorized - user must be authenticated
+ *       500:
+ *         description: Server error
+ */
 export const addEvent = async (req, res) => {
     try {
         const { name, scheduled_date, description, location, max_capacity, game_id, photo_id } = req.val
@@ -119,6 +221,59 @@ export const addEvent = async (req, res) => {
     }
 }
 
+/**
+ * @swagger
+ * /event/{id}:
+ *   patch:
+ *     summary: Update event information
+ *     description: Update event details including games and photos (creator or admin only)
+ *     tags:
+ *       - Event
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Event ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               scheduled_date:
+ *                 type: string
+ *                 format: date-time
+ *               description:
+ *                 type: string
+ *               location:
+ *                 type: string
+ *               max_capacity:
+ *                 type: integer
+ *               game_id:
+ *                 type: array
+ *                 items:
+ *                   type: integer
+ *               photo_id:
+ *                 type: array
+ *                 items:
+ *                   type: integer
+ *     responses:
+ *       204:
+ *         description: Event updated successfully
+ *       403:
+ *         description: Unauthorized - only creator or admin can update
+ *       404:
+ *         description: Event not found
+ *       500:
+ *         description: Server error
+ */
 export const updateEvent = async (req, res) => {
   try {
     console.log('req.val:', req.val);
@@ -197,6 +352,33 @@ export const updateEvent = async (req, res) => {
   }
 };
 
+/**
+ * @swagger
+ * /event/{id}:
+ *   delete:
+ *     summary: Delete an event
+ *     description: Delete an event and associated photos (creator or admin only)
+ *     tags:
+ *       - Event
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Event ID
+ *     responses:
+ *       204:
+ *         description: Event deleted successfully
+ *       403:
+ *         description: Unauthorized - only creator or admin can delete
+ *       404:
+ *         description: Event not found
+ *       500:
+ *         description: Server error
+ */
 export const deleteEvent = async (req, res) => {
     try {
         const { id } = req.eventParamsVal
