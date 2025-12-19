@@ -56,7 +56,6 @@ const AdminEvents = () => {
   const handleAddEvent = async (eventData) => {
     try {
       const result = await addEvent(eventData, localStorage.getItem('token'));
-      console.log('Event créé !', result);
       setOpen(false);
       loadEvents();
       message.success('Événement ajouté !');

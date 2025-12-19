@@ -28,7 +28,6 @@ const GameForm = ({ onSubmit, initialValues }) => {
       logoChanged,
       gridChanged,
     };
-    console.log('Submitting game with values:', gameData);
     onSubmit(gameData);
     form.resetFields();
     setBannerFile(null);

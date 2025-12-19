@@ -48,7 +48,6 @@ export async function addEvent(eventData, token) {
     body: JSON.stringify(eventData)
     
   });
-    console.log(eventData);
   if (!res.ok) {
     const text = await res.text(); // texte brut en cas d'erreur
     throw new Error(text);
@@ -353,7 +352,6 @@ export async function uploadPhoto(file, token) {
 });
 
 const json = await res.json();
-console.log('UPLOAD RESPONSE =', json);
 // Retourner l'ID de la photo créée
 return json.photo.id;
 }

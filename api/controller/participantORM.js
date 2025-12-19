@@ -27,9 +27,6 @@ export const addParticipant = async (req, res) => {
 export const removeParticipant = async (req, res) => {
   try {
     const event_id = req.eventParamsVal.id;
-    // depuis la route /:id/participant
-    console.log(event_id);
-    console.log('req.eventParamsVal:', req.eventParamsVal);
     const { user_id } = req.val;
 
     if (!req.user.is_admin) {

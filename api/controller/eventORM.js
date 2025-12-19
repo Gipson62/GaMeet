@@ -95,9 +95,6 @@ export const getEventById = async (req, res) => {
         _count: { select: { participant: true } }
       }
     });
-
-    console.log(event.event_photo);
-
     if (event) {
       res.send(event)
     } else {
@@ -167,8 +164,6 @@ export const addEvent = async (req, res) => {
   try {
     const { name, scheduled_date, description, location, max_capacity, game_id, photo_id } = req.val
     const author = req.user?.id
-    console.log('req.body:', req.body);
-
 
     if (!author) {
       return res.status(401).send({ message: 'Utilisateur non authentifié' })
@@ -256,8 +251,6 @@ export const addEvent = async (req, res) => {
  */
 export const updateEvent = async (req, res) => {
   try {
-    console.log('req.val:', req.val);
-
     const { id } = req.eventParamsVal;
     const author = req.user?.id;
 

@@ -1,0 +1,589 @@
+{
+  "name": "Sample API Collection",
+  "version": "1",
+  "items": [
+    {
+      "type": "http",
+      "name": "delete event",
+      "filename": "delete event.bru",
+      "seq": 7,
+      "settings": {},
+      "tags": [],
+      "examples": [],
+      "request": {
+        "url": "http://localhost:3001/v1/event/{{eventId}}",
+        "method": "DELETE",
+        "headers": [],
+        "params": [],
+        "body": {
+          "mode": "json",
+          "json": "",
+          "formUrlEncoded": [],
+          "multipartForm": [],
+          "file": []
+        },
+        "script": {},
+        "vars": {},
+        "assertions": [],
+        "tests": "test(\"event deleted\", () => {\n  expect(res.status).to.equal(204);\n});\n",
+        "docs": "This request retrieves a list of users from the JSONPlaceholder API.",
+        "auth": {
+          "mode": "bearer",
+          "bearer": {
+            "token": "{{jwt}}"
+          }
+        }
+      }
+    },
+    {
+      "type": "http",
+      "name": "get event after delete",
+      "filename": "get event after delete.bru",
+      "seq": 8,
+      "settings": {},
+      "tags": [],
+      "examples": [],
+      "request": {
+        "url": "http://localhost:3001/v1/event/5555555555555555555",
+        "method": "GET",
+        "headers": [],
+        "params": [],
+        "body": {
+          "mode": "json",
+          "json": "",
+          "formUrlEncoded": [],
+          "multipartForm": [],
+          "file": []
+        },
+        "script": {},
+        "vars": {},
+        "assertions": [],
+        "tests": "test(\"event updated content valid\", () => {\n  expect(res.status).to.equal(404);\n});\n",
+        "docs": "This request retrieves a list of users from the JSONPlaceholder API.",
+        "auth": {
+          "mode": "none"
+        }
+      }
+    },
+    {
+      "type": "http",
+      "name": "get event after patch",
+      "filename": "get event after patch.bru",
+      "seq": 6,
+      "settings": {},
+      "tags": [],
+      "examples": [],
+      "request": {
+        "url": "http://localhost:3001/v1/event/{{eventId}}",
+        "method": "GET",
+        "headers": [],
+        "params": [],
+        "body": {
+          "mode": "json",
+          "json": "",
+          "formUrlEncoded": [],
+          "multipartForm": [],
+          "file": []
+        },
+        "script": {},
+        "vars": {},
+        "assertions": [],
+        "tests": "test(\"event updated content valid\", () => {\n  expect(res.status).to.equal(200);\n\n  expect(res.body.name).to.equal(bru.getVar(\"event_name\"));\n  expect(res.body.location).to.equal(bru.getVar(\"event_location\"));\n  expect(res.body.max_capacity).to.equal(bru.getVar(\"event_capacity\"));\n});\n",
+        "docs": "This request retrieves a list of users from the JSONPlaceholder API.",
+        "auth": {
+          "mode": "none"
+        }
+      }
+    },
+    {
+      "type": "http",
+      "name": "get event",
+      "filename": "get event.bru",
+      "seq": 4,
+      "settings": {},
+      "tags": [],
+      "examples": [],
+      "request": {
+        "url": "http://localhost:3001/v1/event/{{eventId}}",
+        "method": "GET",
+        "headers": [],
+        "params": [],
+        "body": {
+          "mode": "json",
+          "json": "",
+          "formUrlEncoded": [],
+          "multipartForm": [],
+          "file": []
+        },
+        "script": {},
+        "vars": {},
+        "assertions": [],
+        "tests": "test(\"event fetched\", () => {\n  expect(res.status).to.equal(200);\n\n  expect(res.body.id).to.equal(bru.getVar(\"eventId\"));\n  expect(res.body.name).to.equal(bru.getVar(\"event_name\"));\n  expect(res.body.location).to.equal(bru.getVar(\"event_location\"));\n  expect(res.body.description).to.equal(bru.getVar(\"event_description\"));\n  expect(res.body.max_capacity).to.equal(bru.getVar(\"event_capacity\"));\n  expect(res.body.scheduled_date).to.equal(bru.getVar(\"event_date\"));\n\n});\n",
+        "docs": "This request retrieves a list of users from the JSONPlaceholder API.",
+        "auth": {
+          "mode": "none"
+        }
+      }
+    },
+    {
+      "type": "http",
+      "name": "patch event",
+      "filename": "patch event.bru",
+      "seq": 5,
+      "settings": {},
+      "tags": [],
+      "examples": [],
+      "request": {
+        "url": "http://localhost:3001/v1/event/{{eventId}}",
+        "method": "PATCH",
+        "headers": [],
+        "params": [],
+        "body": {
+          "mode": "json",
+          "json": "{\n  \"name\": \"Soirée modifiée\",\n  \"location\": \"Lyon\",\n  \"max_capacity\": 20\n}",
+          "formUrlEncoded": [],
+          "multipartForm": [],
+          "file": []
+        },
+        "script": {},
+        "vars": {},
+        "assertions": [],
+        "tests": "test(\"event fetched\", () => {\n  expect(res.status).to.equal(204);\n\n  const sent = req.body;\n  bru.setVar(\"event_name\", sent.name);\n  bru.setVar(\"event_location\", sent.location);\n  bru.setVar(\"event_capacity\", sent.max_capacity);\n\n});\n",
+        "docs": "This request retrieves a list of users from the JSONPlaceholder API.",
+        "auth": {
+          "mode": "bearer",
+          "bearer": {
+            "token": "{{jwt}}"
+          }
+        }
+      }
+    },
+    {
+      "type": "http",
+      "name": "post event",
+      "filename": "post event.bru",
+      "seq": 3,
+      "settings": {},
+      "tags": [],
+      "examples": [],
+      "request": {
+        "url": "http://localhost:3001/v1/event/",
+        "method": "POST",
+        "headers": [],
+        "params": [],
+        "body": {
+          "mode": "json",
+          "json": "{\n  \"name\": \"Soirée jeux Bruno\",\n  \"scheduled_date\": \"2025-12-20T18:00:00.000Z\",\n  \"location\": \"Paris\",\n  \"description\": \"Event test CRUD Bruno\",\n  \"max_capacity\": 10,\n  \"game_id\": [1],\n  \"photo_id\": [1]\n}\n",
+          "formUrlEncoded": [],
+          "multipartForm": [],
+          "file": []
+        },
+        "script": {},
+        "vars": {
+          "res": [
+            {
+              "name": "eventId",
+              "value": "res.body.id",
+              "enabled": true,
+              "local": false
+            }
+          ]
+        },
+        "assertions": [],
+        "tests": "test(\"event created\", () => {\n  expect(res.status).to.equal(201);\n  expect(res.body.id).to.be.a(\"number\");\n\n  // Sauvegarde de l'id\n  bru.setVar(\"eventId\", res.body.id);\n\n  // Sauvegarde des données envoyées\n  const sent = req.body;\n  bru.setVar(\"event_name\", sent.name);\n  bru.setVar(\"event_date\", sent.scheduled_date);\n  bru.setVar(\"event_location\", sent.location);\n  bru.setVar(\"event_description\", sent.description);\n  bru.setVar(\"event_capacity\", sent.max_capacity);\n});\n",
+        "docs": "This request retrieves a list of users from the JSONPlaceholder API.",
+        "auth": {
+          "mode": "bearer",
+          "bearer": {
+            "token": "{{jwt}}"
+          }
+        }
+      }
+    },
+    {
+      "type": "http",
+      "name": "post user login",
+      "filename": "post user login.bru",
+      "seq": 2,
+      "settings": {},
+      "tags": [],
+      "examples": [],
+      "request": {
+        "url": "http://localhost:3001/v1/user/login",
+        "method": "POST",
+        "headers": [],
+        "params": [],
+        "body": {
+          "mode": "json",
+          "json": "{\n  \"email\": \"alice@example.com\",\n  \"password\": \"Kilou123\"\n}\n",
+          "formUrlEncoded": [],
+          "multipartForm": [],
+          "file": []
+        },
+        "script": {},
+        "vars": {
+          "res": [
+            {
+              "name": "jwt",
+              "value": "res.body.token",
+              "enabled": true,
+              "local": false
+            }
+          ]
+        },
+        "assertions": [],
+        "tests": "test(\"status 200\", () => {\n  expect(res.status).to.equal(200);\n});\ntest(\"token exists\", () => {\n  expect(res.body.token).to.be.a(\"string\");\n});\n\n\n",
+        "docs": "This request retrieves a list of users from the JSONPlaceholder API.",
+        "auth": {
+          "mode": "bearer",
+          "bearer": {
+            "token": ""
+          }
+        }
+      }
+    },
+    {
+      "type": "http",
+      "name": "post game",
+      "filename": "post game.bru",
+      "seq": 12,
+      "settings": {},
+      "tags": [],
+      "examples": [],
+      "request": {
+        "url": "http://localhost:3001/v1/game",
+        "method": "POST",
+        "headers": [],
+        "params": [],
+        "body": {
+          "mode": "json",
+          "json": "{\n  \"name\": \"The Binding of Isaac: Rebirth\",\n  \"release_date\": \"2014-11-10T00:00:00.000Z\",\n  \"platforms\": [\"PC\"],\n  \"description\": \"Game test CRUD Bruno\",\n  \"publisher\" : \"publisher test\",\n  \"studio\" : \"studio  test\",\n  \"is_approved\": true,\n  \"banner_id\" : {{bannerId}},\n  \"grid_id\" : {{gridId}},\n  \"logo_id\" : {{logoId}}\n}",
+          "formUrlEncoded": [],
+          "multipartForm": [],
+          "file": []
+        },
+        "script": {},
+        "vars": {
+          "res": [
+            {
+              "name": "gameId",
+              "value": "res.body.id",
+              "enabled": true,
+              "local": false
+            }
+          ]
+        },
+        "assertions": [],
+        "tests": "test(\"game created\", () => {\n  expect(res.status).to.equal(201);\n  expect(res.body.id).to.be.a(\"number\");\n\n  // Sauvegarde de l'id\n  bru.setVar(\"gameId\", res.body.id);\n\n  // Sauvegarde des données envoyées\n  const sent = req.body;\n  bru.setVar(\"game_name\", sent.name);\n  bru.setVar(\"game_release_date\", sent.release_date);\n  bru.setVar(\"game_description\", sent.description);\n  bru.setVar(\"game_platforms\", sent.platforms);\n  bru.setVar(\"game_is_approved\", sent.is_approved);\n  bru.setVar(\"game_studio\", sent.studio);\n  bru.setVar(\"game_publisher\", sent.publisher);\n  bru.setVar(\"game_banner_id\", sent.banner_id);\n  bru.setVar(\"game_grid_id\", sent.grid_id);\n  bru.setVar(\"game_logo_id\", sent.logo_id);\n});\n",
+        "docs": "This request retrieves a list of users from the JSONPlaceholder API.",
+        "auth": {
+          "mode": "bearer",
+          "bearer": {
+            "token": "{{jwt}}"
+          }
+        }
+      }
+    },
+    {
+      "type": "http",
+      "name": "get game",
+      "filename": "get game.bru",
+      "seq": 13,
+      "settings": {},
+      "tags": [],
+      "examples": [],
+      "request": {
+        "url": "http://localhost:3001/v1/game/{{gameId}}",
+        "method": "GET",
+        "headers": [],
+        "params": [],
+        "body": {
+          "mode": "json",
+          "json": "",
+          "formUrlEncoded": [],
+          "multipartForm": [],
+          "file": []
+        },
+        "script": {},
+        "vars": {},
+        "assertions": [],
+        "tests": "test(\"game fetched\", () => {\n  expect(res.status).to.equal(200);\n\n  expect(res.body.id).to.equal(bru.getVar(\"gameId\"));\n  expect(res.body.name).to.equal(bru.getVar(\"game_name\"));\n  expect(res.body.release_date).to.equal(bru.getVar(\"game_release_date\"));\n  expect(res.body.platforms).to.equal(bru.getVar(\"game_platforms\")[0]);\n  expect(res.body.is_approved).to.equal(bru.getVar(\"game_is_approved\"));\n  expect(res.body.studio).to.equal(bru.getVar(\"game_studio\"));\n  expect(res.body.publisher).to.equal(bru.getVar(\"game_publisher\"));\n  expect(res.body.banner_id).to.equal(bru.getVar(\"game_banner_id\"));\n  expect(res.body.grid_id).to.equal(bru.getVar(\"game_grid_id\"));\n  expect(res.body.logo_id).to.equal(bru.getVar(\"game_logo_id\"));\n\n});",
+        "docs": "This request retrieves a list of users from the JSONPlaceholder API.",
+        "auth": {
+          "mode": "none"
+        }
+      }
+    },
+    {
+      "type": "http",
+      "name": "patch game",
+      "filename": "patch game.bru",
+      "seq": 15,
+      "settings": {},
+      "tags": [],
+      "examples": [],
+      "request": {
+        "url": "http://localhost:3001/v1/game/{{gameId}}",
+        "method": "PATCH",
+        "headers": [],
+        "params": [],
+        "body": {
+          "mode": "json",
+          "json": "{\n  \"name\": \"The Binding of Isaac: modifié\",\n  \"description\": \"Game test CRUD Bruno modifié\",\n  \"is_approved\": true\n}",
+          "formUrlEncoded": [],
+          "multipartForm": [],
+          "file": []
+        },
+        "script": {},
+        "vars": {},
+        "assertions": [],
+        "tests": "test(\"game fetched\", () => {\n  expect(res.status).to.equal(204);\n\n  const sent = req.body;\n  bru.setVar(\"game_name\", sent.name);\n  bru.setVar(\"game_description\", sent.description);\n  bru.setVar(\"game_is_approved\", sent.is_approved);\n\n});\n",
+        "docs": "This request retrieves a list of users from the JSONPlaceholder API.",
+        "auth": {
+          "mode": "bearer",
+          "bearer": {
+            "token": "{{jwt}}"
+          }
+        }
+      }
+    },
+    {
+      "type": "http",
+      "name": "get game after patch",
+      "filename": "get game after patch.bru",
+      "seq": 14,
+      "settings": {},
+      "tags": [],
+      "examples": [],
+      "request": {
+        "url": "http://localhost:3001/v1/game/{{gameId}}",
+        "method": "GET",
+        "headers": [],
+        "params": [],
+        "body": {
+          "mode": "json",
+          "json": "",
+          "formUrlEncoded": [],
+          "multipartForm": [],
+          "file": []
+        },
+        "script": {},
+        "vars": {},
+        "assertions": [],
+        "tests": "test(\"game updated content valid\", () => {\n  expect(res.status).to.equal(200);\n\n  expect(res.body.name).to.equal(bru.getVar(\"game_name\"));\n  expect(res.body.description).to.equal(bru.getVar(\"game_description\"));\n  expect(res.body.is_approved).to.equal(bru.getVar(\"game_is_approved\"));\n});\n",
+        "docs": "This request retrieves a list of users from the JSONPlaceholder API.",
+        "auth": {
+          "mode": "none"
+        }
+      }
+    },
+    {
+      "type": "http",
+      "name": "delete game copy",
+      "filename": "delete game copy.bru",
+      "seq": 16,
+      "settings": {},
+      "tags": [],
+      "examples": [],
+      "request": {
+        "url": "http://localhost:3001/v1/game/{{gameId}}",
+        "method": "DELETE",
+        "headers": [],
+        "params": [],
+        "body": {
+          "mode": "json",
+          "json": "",
+          "formUrlEncoded": [],
+          "multipartForm": [],
+          "file": []
+        },
+        "script": {},
+        "vars": {},
+        "assertions": [],
+        "tests": "test(\"game deleted\", () => {\n  expect(res.status).to.equal(204);\n});\n",
+        "docs": "This request retrieves a list of users from the JSONPlaceholder API.",
+        "auth": {
+          "mode": "bearer",
+          "bearer": {
+            "token": "{{jwt}}"
+          }
+        }
+      }
+    },
+    {
+      "type": "http",
+      "name": "get game after delete",
+      "filename": "get game after delete.bru",
+      "seq": 17,
+      "settings": {},
+      "tags": [],
+      "examples": [],
+      "request": {
+        "url": "http://localhost:3001/v1/game/{{gameId}}",
+        "method": "GET",
+        "headers": [],
+        "params": [],
+        "body": {
+          "mode": "json",
+          "json": "",
+          "formUrlEncoded": [],
+          "multipartForm": [],
+          "file": []
+        },
+        "script": {},
+        "vars": {},
+        "assertions": [],
+        "tests": "test(\"game updated content valid\", () => {\n  expect(res.status).to.equal(404);\n});\n",
+        "docs": "This request retrieves a list of users from the JSONPlaceholder API.",
+        "auth": {
+          "mode": "none"
+        }
+      }
+    },
+    {
+      "type": "http",
+      "name": "post logo",
+      "filename": "post logo.bru",
+      "seq": 10,
+      "settings": {},
+      "tags": [],
+      "examples": [],
+      "request": {
+        "url": "http://localhost:3001/v1/photo",
+        "method": "POST",
+        "headers": [],
+        "params": [],
+        "body": {
+          "mode": "multipartForm",
+          "json": "\n",
+          "formUrlEncoded": [],
+          "multipartForm": [
+            {
+              "type": "file",
+              "name": "photo",
+              "value": [
+                "C:\\Users\\Enzo\\Pictures\\22770803578ef3fbf8de139f5923b513.jpg"
+              ],
+              "enabled": true
+            }
+          ],
+          "file": []
+        },
+        "script": {},
+        "vars": {},
+        "assertions": [],
+        "tests": "test(\"event created\", () => {\n  expect(res.status).to.equal(201);\n  expect(res.body.photo.id).to.be.a(\"number\");\n\n  // Sauvegarde de l'id\n  bru.setVar(\"logoId\", res.body.photo.id);\n});\n",
+        "docs": "This request retrieves a list of users from the JSONPlaceholder API.",
+        "auth": {
+          "mode": "bearer",
+          "bearer": {
+            "token": "{{jwt}}"
+          }
+        }
+      }
+    },
+    {
+      "type": "http",
+      "name": "post banner",
+      "filename": "post banner.bru",
+      "seq": 9,
+      "settings": {},
+      "tags": [],
+      "examples": [],
+      "request": {
+        "url": "http://localhost:3001/v1/photo",
+        "method": "POST",
+        "headers": [],
+        "params": [],
+        "body": {
+          "mode": "multipartForm",
+          "json": "\n",
+          "formUrlEncoded": [],
+          "multipartForm": [
+            {
+              "type": "file",
+              "name": "photo",
+              "value": [
+                "C:\\Users\\Enzo\\Pictures\\22770803578ef3fbf8de139f5923b513.jpg"
+              ],
+              "enabled": true
+            }
+          ],
+          "file": []
+        },
+        "script": {},
+        "vars": {},
+        "assertions": [],
+        "tests": "test(\"event created\", () => {\n  expect(res.status).to.equal(201);\n  expect(res.body.photo.id).to.be.a(\"number\");\n\n  // Sauvegarde de l'id\n  bru.setVar(\"bannerId\", res.body.photo.id);\n});\n",
+        "docs": "This request retrieves a list of users from the JSONPlaceholder API.",
+        "auth": {
+          "mode": "bearer",
+          "bearer": {
+            "token": "{{jwt}}"
+          }
+        }
+      }
+    },
+    {
+      "type": "http",
+      "name": "post grid",
+      "filename": "post grid.bru",
+      "seq": 11,
+      "settings": {},
+      "tags": [],
+      "examples": [],
+      "request": {
+        "url": "http://localhost:3001/v1/photo",
+        "method": "POST",
+        "headers": [],
+        "params": [],
+        "body": {
+          "mode": "multipartForm",
+          "json": "\n",
+          "formUrlEncoded": [],
+          "multipartForm": [
+            {
+              "type": "file",
+              "name": "photo",
+              "value": [
+                "C:\\Users\\Enzo\\Pictures\\22770803578ef3fbf8de139f5923b513.jpg"
+              ],
+              "enabled": true
+            }
+          ],
+          "file": []
+        },
+        "script": {},
+        "vars": {},
+        "assertions": [],
+        "tests": "test(\"event created\", () => {\n  expect(res.status).to.equal(201);\n  expect(res.body.photo.id).to.be.a(\"number\");\n\n  // Sauvegarde de l'id\n  bru.setVar(\"gridId\", res.body.photo.id);\n});\n",
+        "docs": "This request retrieves a list of users from the JSONPlaceholder API.",
+        "auth": {
+          "mode": "bearer",
+          "bearer": {
+            "token": "{{jwt}}"
+          }
+        }
+      }
+    }
+  ],
+  "environments": [],
+  "root": {
+    "request": {
+      "auth": {
+        "mode": "none"
+      }
+    }
+  },
+  "brunoConfig": {
+    "version": "1",
+    "name": "Sample API Collection",
+    "type": "collection",
+    "ignore": [
+      "node_modules",
+      ".git"
+    ],
+    "size": 0.003996849060058594,
+    "filesCount": 8
+  }
+}

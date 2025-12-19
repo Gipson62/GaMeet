@@ -143,7 +143,6 @@ const GameDetails = () => {
   const handleEditSubmit = async (values) => {
     setEditSaving(true);
     try {
-      console.log('Submitting edit with values:', values);
 
       // Upload new photos if changed, otherwise keep existing photo IDs
       let banner_id = game.banner_id;
@@ -182,7 +181,6 @@ const GameDetails = () => {
         logo_id,
         grid_id,
       }
-      console.log('Updating game with data:', updated_data);
       await updateGame(id, updated_data, token);
       message.success('Jeu mis à jour');
       setEditOpen(false);
