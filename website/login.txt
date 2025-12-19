@@ -1,0 +1,8 @@
+ADMINISTRATEUR:
+
+email        : alice@example.com
+mot_de_passe : Kilou123
+
+UTILISATEUR:
+email        : bob@example.com
+mot_de_passe : Kilou123
