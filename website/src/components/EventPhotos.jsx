@@ -4,7 +4,7 @@ import { PlusOutlined } from '@ant-design/icons';
 const EventPhotos = ({ photos = [] }) => {
   return (
     <Card
-      title="📸 Photos de l'événement"
+      title="Photos de l'événement"
       
       style={{ marginTop: 24 }}
     >

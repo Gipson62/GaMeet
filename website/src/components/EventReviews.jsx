@@ -7,7 +7,7 @@ const { Text } = Typography;
 const EventReviews = ({ reviews = [], onAdd, onDelete }) => {
   return (
     <Card
-      title="💬 Avis / Reviews"
+      title="Avis / Reviews"
       style={{ marginTop: 24 }}
     >
       {reviews.length === 0 ? (
