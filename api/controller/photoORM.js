@@ -73,7 +73,7 @@ export const updatePhoto = async (req, res) => {
             return res.sendStatus(404);
         }
 
-        fs.unlink("./uploads/" + existingPhoto.file_name, async (err) => {
+        fs.unlink("./uploads/" + existingPhoto.url, async (err) => {
             if (err) {
                 console.error(err);
                 res.sendStatus(500);
@@ -113,7 +113,7 @@ export const deletePhoto = async (req, res) => {
             return res.sendStatus(404);
         }
 
-        fs.unlink("./uploads/" + existingPhoto.file_name, async (err) => {
+        fs.unlink("./uploads/" + existingPhoto.url, async (err) => {
             if (err) {
                 console.error(err);
                 res.sendStatus(500);

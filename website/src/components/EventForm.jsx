@@ -49,7 +49,13 @@ export default function EventForm({ onSubmit, initialValues }) {
       const uploadedPhotoIds = [];
       for (const file of photoFiles.filter(f => f.originFileObj)) {
         const uploaded = await uploadPhoto(file.originFileObj, token);
-        if (uploaded?.photo?.id) uploadedPhotoIds.push(uploaded.photo.id);
+        // uploadPhoto returns the new photo id (number)
+        if (typeof uploaded === 'number') {
+          uploadedPhotoIds.push(uploaded);
+        } else if (uploaded?.photo?.id) {
+          // backward compatibility with older shape
+          uploadedPhotoIds.push(uploaded.photo.id);
+        }
       }
 
       const finalPhotoIds = [...existingPhotoIds, ...uploadedPhotoIds];

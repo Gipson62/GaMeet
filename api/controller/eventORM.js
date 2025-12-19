@@ -1,4 +1,27 @@
 import prisma from '../database/databaseORM.js'
+import fs from 'fs'
+
+async function cleanupIfOrphan(photoId) {
+  try {
+    if (!photoId) return;
+    const [eventCount, gameCount, reviewCount, userCount] = await Promise.all([
+      prisma.event_photo.count({ where: { photo_id: photoId } }),
+      prisma.game.count({ where: { OR: [{ banner_id: photoId }, { logo_id: photoId }, { grid_id: photoId }] } }),
+      prisma.review.count({ where: { photo_id: photoId } }),
+      prisma.user.count({ where: { photo_id: photoId } }),
+    ]);
+    const total = eventCount + gameCount + reviewCount + userCount;
+    if (total === 0) {
+      const photo = await prisma.photo.findUnique({ where: { id: photoId } });
+      if (photo?.url) {
+        fs.unlink(`./uploads/${photo.url}`, (err) => { if (err) console.error('unlink error', err); });
+      }
+      await prisma.photo.delete({ where: { id: photoId } });
+    }
+  } catch (err) {
+    console.error('cleanupIfOrphan error', err);
+  }
+}
 
 export const getAllEvents = async (req, res) => {
     try {
@@ -121,6 +144,12 @@ export const updateEvent = async (req, res) => {
       updateData.scheduled_date = new Date(updateData.scheduled_date);
     }
 
+    // Capture old photo ids for cleanup later
+    const oldEventPhotos = await prisma.event_photo.findMany({ where: { event_id: id }, select: { photo_id: true } });
+    const oldPhotoIds = oldEventPhotos.map(p => p.photo_id);
+
+    const newPhotoIds = Array.isArray(req.val.photo_id) ? req.val.photo_id : null;
+
     await prisma.$transaction(async (tx) => {
       // 🎮 games
       if (Array.isArray(updateData.game_id)) {
@@ -152,6 +181,14 @@ export const updateEvent = async (req, res) => {
       });
     });
 
+    // Cleanup orphan photos that were removed from this event
+    if (Array.isArray(newPhotoIds)) {
+      const removed = oldPhotoIds.filter(pid => !newPhotoIds.includes(pid));
+      for (const pid of removed) {
+        await cleanupIfOrphan(pid);
+      }
+    }
+
     res.sendStatus(204);
 
   } catch (e) {
@@ -171,7 +208,17 @@ export const deleteEvent = async (req, res) => {
         if (existing.author !== author && !req.user.is_admin)
             return res.status(403).send({ message: "Accès refusé" })
 
+        // gather photo ids associated to this event before deletion
+        const eventPhotos = await prisma.event_photo.findMany({ where: { event_id: id }, select: { photo_id: true } })
+        const photoIds = eventPhotos.map(p => p.photo_id)
+
+        // delete the event (cascade will remove event_photo entries)
         await prisma.event.delete({ where: { id } })
+
+        // cleanup orphan photos
+        for (const pid of photoIds) {
+          await cleanupIfOrphan(pid)
+        }
 
         res.sendStatus(204)
     } catch (e) {
