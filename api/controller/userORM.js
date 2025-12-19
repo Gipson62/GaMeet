@@ -127,7 +127,7 @@ export const addUser = async (req, res) => {
                 photoId = photo.id;
             }
 
-            return await tx.user.create({
+            return tx.user.create({
                 data: {
                     pseudo: pseudo,
                     email: email,
@@ -152,88 +152,83 @@ export const addUser = async (req, res) => {
 
 export const updateUser = async (req, res) => {
     const uploadedFilename = req.file?.filename;
+    const cleanupUpload = () => safeUnlink(uploadedFilename);
 
     try {
-        const { id, pseudo, birth_date, bio, email } = req.val;
+        const { pseudo, birth_date, bio, email } = req.val;
+        // id provient du paramètre si admin, sinon du token utilisateur
+        const targetId = req.params?.id ? parseInt(req.params.id, 10) : req.user?.id;
 
         if (!req.user) {
-            safeUnlink(uploadedFilename);
+            cleanupUpload();
             return res.status(401).json({ message: "Non authentifié" });
         }
 
-        if (!req.user.is_admin && req.user.id !== id) {
-            safeUnlink(uploadedFilename);
+        if (!targetId || Number.isNaN(targetId)) {
+            cleanupUpload();
+            return res.status(400).json({ message: "Identifiant utilisateur manquant" });
+        }
+
+        const isSelfUpdate = req.user.id === targetId;
+
+        if (!req.user.is_admin && !isSelfUpdate) {
+            cleanupUpload();
             return res.status(403).json({ message: "Accès refusé" });
         }
 
         const target = await prisma.user.findUnique({
-            where: { id },
+            where: { id: targetId },
             select: { is_admin: true, photo: { select: { id: true, url: true } } },
         });
 
         if (!target) {
-            safeUnlink(uploadedFilename);
+            cleanupUpload();
             return res.sendStatus(404);
         }
 
         // admin ne modifie pas un autre admin
-        if (target.is_admin && req.user.id !== id) {
-            safeUnlink(uploadedFilename);
+        if (target.is_admin && !isSelfUpdate) {
+            cleanupUpload();
             return res.status(403).json({ message: "Impossible de modifier un autre administrateur" });
         }
 
         const oldPhotoId = target.photo?.id ?? null;
         const oldPhotoUrl = target.photo?.url ?? null;
 
-        const tx = await prisma.$transaction(async (tx) => {
-            let newPhotoId = oldPhotoId;
+        let newPhotoId = oldPhotoId;
 
-            if (uploadedFilename) {
-                const newPhoto = await tx.photo.create({
-                    data: { url: uploadedFilename },
-                    select: { id: true },
-                });
-                newPhotoId = newPhoto.id;
-            }
-
-            await tx.user.update({
-                where: { id },
-                data: {
-                    pseudo,
-                    email,
-                    birth_date: birth_date ? new Date(birth_date) : undefined,
-                    bio,
-                    photo_id: newPhotoId,
-                },
+        if (uploadedFilename) {
+            const newPhoto = await prisma.photo.create({
+                data: { url: uploadedFilename },
+                select: { id: true },
             });
+            newPhotoId = newPhoto.id;
+        }
 
-            let deletedOldPhoto = false;
-
-            // Supprimer l’ancienne photo DB seulement si:
-            // - on a uploadé une nouvelle
-            // - l’ancienne existe
-            // - ce n’est pas la photo par défaut
-            // - plus personne ne l’utilise
-            if (uploadedFilename && oldPhotoId && oldPhotoUrl !== DEFAULT_AVATAR_URL) {
-                const stillUsed = await tx.user.count({ where: { photo_id: oldPhotoId } });
-                if (stillUsed === 0) {
-                    await tx.photo.delete({ where: { id: oldPhotoId } });
-                    deletedOldPhoto = true;
-                }
-            }
-
-            return { deletedOldPhoto, oldPhotoUrl };
+        await prisma.user.update({
+            where: { id: targetId },
+            data: {
+                pseudo,
+                email,
+                birth_date: birth_date ? new Date(birth_date) : undefined,
+                bio,
+                photo_id: newPhotoId,
+            },
         });
 
-        // Supprimer le fichier de l’ancienne photo après commit
-        if (tx.deletedOldPhoto && tx.oldPhotoUrl) {
-            safeUnlink(tx.oldPhotoUrl);
+        // Supprime l’ancienne photo si elle est remplacée, non par défaut et plus utilisée
+        if (uploadedFilename && oldPhotoId && oldPhotoUrl !== DEFAULT_AVATAR_URL) {
+            const stillUsed = await prisma.user.count({ where: { photo_id: oldPhotoId } });
+            if (stillUsed === 0) {
+                await prisma.photo.delete({ where: { id: oldPhotoId } });
+                safeUnlink(oldPhotoUrl);
+            }
         }
 
         return res.sendStatus(204);
     } catch (e) {
 
-        safeUnlink(uploadedFilename);
+        cleanupUpload();
         return res.sendStatus(500);
     }
 };
@@ -318,7 +313,7 @@ export const loginUser = async (req, res) => {
             {
                 id: user.id,
                 email: user.email,
-                is_admin: user.is_admin
+                //is_admin: user.is_admin
             },
             { expiresIn: '2h' }
         )

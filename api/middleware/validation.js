@@ -33,9 +33,19 @@ export const userValidatorMiddleware = {
     update: async (req, res, next) => {
         try {
             req.val = await userValidator.update.validate(req.body);
-            req.val.id = req.user.id;
+            req.val.id = req.params.id;
+            //req.val.id = req.user.id;
             next();
         } catch (e) {
+            res.status(400).send(e.message);
+        }
+    },
+    updateAdmin: async (req, res, next) => {
+        try {
+            req.val = await userValidator.update.validate(req.body);
+            next();
+        }
+        catch (e) {
             res.status(400).send(e.message);
         }
     },
