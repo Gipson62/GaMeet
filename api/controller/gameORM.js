@@ -248,7 +248,9 @@ export const addGame = async (req, res) => {
             banner_id,
             logo_id,
             grid_id,
-            is_approved
+            is_approved,
+            studio,
+            publisher
         } = req.val;
         //Platforms Should just be a string. Join them with commas.
         const formatted_platforms = platforms.join(', ');
@@ -261,7 +263,9 @@ export const addGame = async (req, res) => {
                 banner_id,
                 logo_id,
                 grid_id,
-                is_approved
+                is_approved,
+                studio,
+                publisher
             },
             select: {
                 id: true
