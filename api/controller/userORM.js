@@ -3,7 +3,7 @@ import { hash, compare } from '../util/index.js'
 import { sign } from '../util/jwt.js'
 import fs from "fs";
 
-const DEFAULT_AVATAR_URL = "default_pfp.png";
+const DEFAULT_AVATAR_URL = "default_pfp.jpg";
 
 
 const safeUnlink = (filename) => {
@@ -117,7 +117,7 @@ export const addUser = async (req, res) => {
 
         // transaction: si avatar => créer photo + user, sinon juste user
         const created = await prisma.$transaction(async (tx) => {
-            let photoId = defaultPhoto.id;
+            let photoId = defaultPhoto?.id; // Peut être undefined si pas de photo par défaut
 
             if (req.file?.filename) {
                 const photo = await tx.photo.create({
@@ -135,7 +135,7 @@ export const addUser = async (req, res) => {
                     birth_date: new Date(birth_date),
                     bio: bio,
                     is_admin: false,
-                    photo_id: photoId,
+                    photo_id: photoId, // Peut être null si photoId est undefined
                 },
                 select: { id: true },
             });
@@ -329,8 +329,7 @@ export const loginUser = async (req, res) => {
             }
         })
     } catch (err) {
+        console.error(err); // Log l'erreur pour le debug
         res.sendStatus(500)
     }
 }
-
-
