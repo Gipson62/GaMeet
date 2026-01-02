@@ -1,0 +1,219 @@
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, Modal, Button, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import * as Location from 'expo-location';
+import { useNavigation } from '@react-navigation/native';
+import { API_URL } from '../config';
+import { COLORS, theme } from '../constants/theme';
+
+export default function EventList() {
+  const navigation = useNavigation();
+  const [events, setEvents] = useState([]);
+  const [filteredEvents, setFilteredEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
+  // Filtres
+  const [searchText, setSearchText] = useState('');
+  const [selectedGame, setSelectedGame] = useState(null);
+  const [maxDistance, setMaxDistance] = useState(50); // km par défaut
+  const [userLocation, setUserLocation] = useState(null);
+  
+  // Modal
+  const [modalVisible, setModalVisible] = useState(false);
+  const [availableGames, setAvailableGames] = useState([]);
+
+  useEffect(() => {
+    fetchEvents();
+    getUserLocation();
+  }, []);
+
+  useEffect(() => {
+    applyFilters();
+  }, [searchText, selectedGame, maxDistance, events, userLocation]);
+
+  const fetchEvents = async () => {
+    try {
+      console.log('Tentative de connexion vers :', `${API_URL}/event`);
+      const response = await fetch(`${API_URL}/event`);
+      const rawData = await response.json();
+      
+      // Garder uniquement les événements futurs
+      // const futureEvents = data.filter(event => new Date(event.scheduled_date) > new Date());
+      // Conversion des adresses en coordonnées (Géocodage)
+      const data = await Promise.all(rawData.map(async (event) => {
+        let coords = null;
+        if (event.location) {
+          const parts = event.location.split(',');
+          // 1. Si c'est déjà des coordonnées "lat,long"
+          if (parts.length === 2 && !isNaN(parseFloat(parts[0]))) {
+             coords = { lat: parseFloat(parts[0]), lng: parseFloat(parts[1]) };
+          } 
+          // 2. Sinon, on essaie de convertir l'adresse en GPS
+          else {
+             try {
+               // On vérifie qu'on a la permission (nécessaire pour geocodeAsync)
+               const { status } = await Location.getForegroundPermissionsAsync();
+               if (status === 'granted') {
+                 const geocoded = await Location.geocodeAsync(event.location);
+                 if (geocoded.length > 0) {
+                   coords = { lat: geocoded[0].latitude, lng: geocoded[0].longitude };
+                 }
+               }
+             } catch (err) {
+               console.log("Géocodage impossible pour:", event.location);
+             }
+          }
+        }
+        return { ...event, _coords: coords };
+      }));
+      
+      // TEMPORAIRE : On affiche tout pour tester (même les événements passés)
+      setEvents(data);
+      
+      // Extraire les jeux pour le filtre
+      const games = new Set();
+      data.forEach(event => {
+        if (event.event_game) {
+          event.event_game.forEach(eg => {
+            if (eg.game) games.add(eg.game.name);
+          });
+        }
+      });
+      setAvailableGames(Array.from(games));
+      setLoading(false);
+    } catch (error) {
+      console.error("Erreur chargement events:", error);
+      Alert.alert("Erreur", "Impossible de contacter le serveur. Vérifie l'IP dans config.js");
+      Alert.alert("Erreur", error.message);
+      setLoading(false);
+    }
+  };
+
+  const getUserLocation = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      console.log('Permission localisation refusée');
+      return;
+    }
+    let location = await Location.getCurrentPositionAsync({});
+    console.log('Position utilisateur trouvée:', location.coords.latitude, location.coords.longitude);
+    setUserLocation(location.coords);
+  };
+
+  const getDistanceFromLatLonInKm = (lat1, lon1, lat2, lon2) => {
+    var R = 6371; 
+    var dLat = (lat2 - lat1) * (Math.PI / 180);
+    var dLon = (lon2 - lon1) * (Math.PI / 180);
+    var a = 
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) * 
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  }
+
+  const applyFilters = () => {
+    let result = events;
+
+    // Recherche textuelle
+    if (searchText) {
+      const lower = searchText.toLowerCase();
+      result = result.filter(e => e.name.toLowerCase().includes(lower) || (e.description && e.description.toLowerCase().includes(lower)));
+    }
+
+    // Filtre Jeu
+    if (selectedGame) {
+      result = result.filter(e => e.event_game && e.event_game.some(eg => eg.game.name === selectedGame));
+    }
+
+    // Filtre Distance (si location est "lat,long")
+    if (userLocation && maxDistance < 1000) {
+      result = result.filter(e => {
+        // Si on a réussi à obtenir des coordonnées (via DB ou géocodage)
+        if (e._coords && e._coords.lat !== null) {
+            const dist = getDistanceFromLatLonInKm(userLocation.latitude, userLocation.longitude, e._coords.lat, e._coords.lng);
+            console.log(`[Distance] ${e.name}: ${dist.toFixed(1)} km (Max: ${maxDistance})`);
+            return dist <= maxDistance;
+        }
+        return true; // On garde l'événement si on n'a pas pu le localiser
+      });
+    }
+
+    setFilteredEvents(result);
+  };
+
+  return (
+    <View style={styles.container}>
+      <TextInput
+        style={styles.searchBar}
+        placeholder="Rechercher..."
+        value={searchText}
+        onChangeText={setSearchText}
+        placeholderTextColor={COLORS.formLabel}
+      />
+
+      <View style={styles.filters}>
+        <TouchableOpacity style={styles.btnFilter} onPress={() => setModalVisible(true)}>
+          <Text style={styles.btnText}>{selectedGame || "Jeu"}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.btnFilter} onPress={() => setMaxDistance(prev => prev === 50 ? 5000 : 50)}>
+          <Text style={styles.btnText}>{maxDistance < 1000 ? `< ${maxDistance} km` : "Distance: Tout"}</Text>
+        </TouchableOpacity>
+      </View>
+
+      {loading ? <ActivityIndicator size="large" color={COLORS.button} /> : (
+        filteredEvents.length === 0 ? (
+          <Text style={{ textAlign: 'center', marginTop: 20, color: 'gray' }}>Aucun événement trouvé.</Text>
+        ) : (
+        <FlatList
+          data={filteredEvents}
+          keyExtractor={item => item.id.toString()}
+          renderItem={({ item }) => (
+            <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('EventDetails', { id: item.id })}>
+              <Text style={styles.title}>{item.name}</Text>
+              <Text>{new Date(item.scheduled_date).toLocaleDateString()}</Text>
+              <Text style={styles.games}>{item.event_game?.map(g => g.game.name).join(', ')}</Text>
+              <Text style={styles.loc}>{item.location}</Text>
+            </TouchableOpacity>
+          )}
+        />
+        )
+      )}
+
+      <Modal visible={modalVisible} animationType="slide">
+        <View style={styles.modalContent}>
+          <Button title="Tout afficher" color={COLORS.button} onPress={() => { setSelectedGame(null); setModalVisible(false); }} />
+          <FlatList 
+            data={availableGames}
+            keyExtractor={item => item}
+            renderItem={({ item }) => (
+              <TouchableOpacity onPress={() => { setSelectedGame(item); setModalVisible(false); }} style={styles.modalItem}>
+                <Text style={styles.modalText}>{item}</Text>
+              </TouchableOpacity>
+            )}
+          />
+          <Button title="Fermer" color={COLORS.error || "red"} onPress={() => setModalVisible(false)} />
+        </View>
+      </Modal>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: theme.padding,
+    paddingTop: 50,
+    backgroundColor: COLORS.background,
+  },
+  searchBar: { backgroundColor: COLORS.card, padding: 10, borderRadius: theme.radius, marginBottom: 10, color: COLORS.text },
+  filters: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, gap: 10 },
+  btnFilter: { backgroundColor: COLORS.button, padding: 10, borderRadius: 20, flex: 1, alignItems: 'center', justifyContent: 'center' },
+  btnText: { color: COLORS.text, fontWeight: 'bold', fontSize: 12 },
+  card: { backgroundColor: COLORS.card, padding: 15, borderRadius: theme.radius, marginBottom: 10 },
+  title: { fontSize: 18, fontWeight: 'bold', color: COLORS.text },
+  games: { color: COLORS.button, marginTop: 5, fontWeight: '600' },
+  loc: { fontStyle: 'italic', color: COLORS.formLabel, marginTop: 5 },
+  modalContent: { flex: 1, padding: 20, marginTop: 50, backgroundColor: COLORS.background },
+  modalItem: { padding: 15, borderBottomWidth: 1, borderColor: COLORS.border || '#eee' },
+  modalText: { fontSize: 16, color: COLORS.text }
+});

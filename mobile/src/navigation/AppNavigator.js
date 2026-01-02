@@ -1,14 +1,13 @@
-<<<<<<< HEAD
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialIcons } from '@expo/vector-icons';
+import { COLORS } from '../constants/theme';
 
 // Import des écrans
-import Login from '../screens/Login';
-import Register from '../screens/Register';
-import Home from '../screens/Home';
+import Login from '../screens/LoginScreen';
+import Home from '../screens/HomeScreen';
 import GameList from '../screens/GameList';
 import EventList from '../screens/EventList';
 import Map from '../screens/Map';
@@ -18,11 +17,21 @@ import EventDetails from '../screens/EventDetails';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+const EventStack = createNativeStackNavigator();
+
+function EventStackScreen() {
+  return (
+    <EventStack.Navigator>
+      <EventStack.Screen name="EventList" component={EventList} options={{ headerShown: false }} />
+      <EventStack.Screen name="EventDetails" component={EventDetails} />
+    </EventStack.Navigator>
+  );
+}
 
 function HomeTabs() {
   return (
     <Tab.Navigator
-      initialRouteName="Event"
+      initialRouteName="Accueil"
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarIcon: ({ color, size }) => {
@@ -42,13 +51,26 @@ function HomeTabs() {
 
           return <MaterialIcons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#6200ee',
-        tabBarInactiveTintColor: 'gray',
+        tabBarActiveTintColor: COLORS.button,
+        tabBarInactiveTintColor: COLORS.formLabel,
+        tabBarStyle: {
+          backgroundColor: COLORS.background
+        },
       })}
     >
-      <Tab.Screen name="Accueil" component={Home} />
+      <Tab.Screen 
+        name="Accueil" 
+        component={Home} 
+        options={{
+          headerShown: true,
+          title: 'GaMeet',
+          headerStyle: { backgroundColor: COLORS.background },
+          headerTintColor: COLORS.text,
+          headerShadowVisible: false,
+        }}
+      />
       <Tab.Screen name="Jeux" component={GameList} />
-      <Tab.Screen name="Event" component={EventList} />
+      <Tab.Screen name="Event" component={EventStackScreen} />
       <Tab.Screen name="Carte" component={Map} />
       <Tab.Screen name="Profile" component={Profile} />
     </Tab.Navigator>
@@ -60,25 +82,9 @@ export default function AppNavigator() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Main">
         <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
-        <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />
         <Stack.Screen name="Main" component={HomeTabs} options={{ headerShown: false }} />
         <Stack.Screen name="GameDetails" component={GameDetails} />
-        <Stack.Screen name="EventDetails" component={EventDetails} />
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
-=======
-// src/navigation/AppNavigator.js
-import React from "react";
-import { NavigationContainer } from "@react-navigation/native";
-import RootStack from "./RootStack";
-
-export default function AppNavigator() {
-    return (
-        <NavigationContainer>
-            <RootStack />
-        </NavigationContainer>
-    );
-}
->>>>>>> c0da939c4d64542fe6e57b74975042783ff91071
