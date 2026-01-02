@@ -2,5 +2,5 @@
 // Pour l'émulateur Android, localhost est accessible via 10.0.2.2
 // Pour un appareil physique, utilisez l'adresse IP locale de votre machine (ex: 192.168.1.x)
 
-export const API_URL = 'http://10.0.2.2:3001/api/v1';
-export const BASE_URL = 'http://10.0.2.2:3001';
+// Configuration pour gsm perso (indiquer l'adresse IP de votre ordi)
+export const API_URL = "http://192.168.1.45:3001/v1";

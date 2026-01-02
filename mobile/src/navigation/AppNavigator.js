@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -67,3 +68,17 @@ export default function AppNavigator() {
     </NavigationContainer>
   );
 }
+=======
+// src/navigation/AppNavigator.js
+import React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import RootStack from "./RootStack";
+
+export default function AppNavigator() {
+    return (
+        <NavigationContainer>
+            <RootStack />
+        </NavigationContainer>
+    );
+}
+>>>>>>> c0da939c4d64542fe6e57b74975042783ff91071

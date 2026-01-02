@@ -21,10 +21,21 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/img.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.gameet.app"
     },
     "web": {
       "favicon": "./assets/img.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ]
+    ]
   }
 }
