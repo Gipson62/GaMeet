@@ -8,7 +8,7 @@ import * as Location from 'expo-location';
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useSelector } from 'react-redux';
-import { API_URL } from '../config';
+import {API_URL, BASE_URL} from '../config';
 
 const { width } = Dimensions.get('window');
 
@@ -196,7 +196,7 @@ export default function EventDetails() {
   // Construction de l'URL de l'image
   const mainGame = event.event_game?.[0]?.game;
   const bannerUrl = mainGame?.banner?.url 
-    ? `${API_URL.replace('/v1', '')}/uploads/${mainGame.banner.url}`
+    ? `${BASE_URL}/uploads/${mainGame.banner.url}`
     : (event.event_photo?.[0]?.photo?.url ? `${API_URL.replace('/v1', '')}/uploads/${event.event_photo[0].photo.url}` : null);
 
   const date = new Date(event.scheduled_date);

@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useSelector, useDispatch } from "react-redux";
 import AuthStack from "./stacks/AuthStack";
 import MainTabs from "./stacks/MainTabs";
+import EditProfileScreen from "../screens/EditProfileScreen";
 import { loadUserSession } from "../store/slices/authSlice";
 import { COLORS } from "../constants/theme";
 import EventDetails from "../screens/EventDetails";
@@ -15,12 +16,10 @@ export default function RootStack() {
     const dispatch = useDispatch();
     const { token, isInitialized } = useSelector((state) => state.auth);
     
-    // Charger la session au démarrage
     useEffect(() => {
         dispatch(loadUserSession());
     }, [dispatch]);
 
-    // Écran de chargement pendant la vérification du token
     if (!isInitialized) {
         return (
             <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: COLORS.background }}>
