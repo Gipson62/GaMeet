@@ -6,6 +6,8 @@ import AuthStack from "./stacks/AuthStack";
 import MainTabs from "./stacks/MainTabs";
 import { loadUserSession } from "../store/slices/authSlice";
 import { COLORS } from "../constants/theme";
+import EventDetails from "../screens/EventDetails";
+import AddEvent from "../screens/AddEvent";
 
 const Stack = createNativeStackNavigator();
 
@@ -32,7 +34,19 @@ export default function RootStack() {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false, animation: "none" }}>
             {isAuthenticated ? (
-                <Stack.Screen name="MainTabs" component={MainTabs} />
+                <Stack.Group>
+                    <Stack.Screen name="MainTabs" component={MainTabs} />
+                    <Stack.Screen 
+                        name="EventDetails" 
+                        component={EventDetails} 
+                        options={{ headerShown: true }} 
+                    />
+                    <Stack.Screen 
+                        name="AddEvent" 
+                        component={AddEvent} 
+                        options={{ headerShown: true, title: 'Créer un événement', headerTintColor: COLORS.text, headerStyle: { backgroundColor: COLORS.background }, headerShadowVisible: false }} 
+                    />
+                </Stack.Group>
             ) : (
                 <Stack.Screen name="AuthStack" component={AuthStack} />
             )}

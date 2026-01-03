@@ -33,11 +33,13 @@ export const getAllEvents = async (req, res) => {
         location: true,
         description: true,
         max_capacity: true,
+        author: true,
         event_game: {
           include: {
             game: true
           }
         },
+        event_photo: { include: { photo: true } },
         _count: {
           select: { participant: true } // récupère le nombre d'inscrits
         }
@@ -87,7 +89,7 @@ export const getEventById = async (req, res) => {
     const event = await prisma.event.findUnique({
       where: { id },
       include: {
-        User: { select: { id: true, pseudo: true, email: true } },
+        User: { select: { id: true, pseudo: true, email: true, photo: true } },
         event_game: { include: { game: true } },
         event_photo: { include: { photo: true } },
         participant: { include: { User: { select: { id: true, pseudo: true } } } },

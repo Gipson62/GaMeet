@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, Modal, Button, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, Modal, Button, ScrollView, ActivityIndicator, Alert, Image } from 'react-native';
 import * as Location from 'expo-location';
-import { useNavigation } from '@react-navigation/native';
+import { MaterialIcons } from '@expo/vector-icons';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
 import { API_URL } from '../config';
 import { COLORS, theme } from '../constants/theme';
 
 export default function EventList() {
   const navigation = useNavigation();
+  const user = useSelector(state => state.auth.user);
   const [events, setEvents] = useState([]);
   const [filteredEvents, setFilteredEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -16,19 +19,25 @@ export default function EventList() {
   const [selectedGame, setSelectedGame] = useState(null);
   const [maxDistance, setMaxDistance] = useState(50); // km par défaut
   const [userLocation, setUserLocation] = useState(null);
+  const [showMyEvents, setShowMyEvents] = useState(false);
   
   // Modal
   const [modalVisible, setModalVisible] = useState(false);
   const [availableGames, setAvailableGames] = useState([]);
 
   useEffect(() => {
-    fetchEvents();
     getUserLocation();
   }, []);
 
+  useFocusEffect(
+    useCallback(() => {
+      fetchEvents();
+    }, [])
+  );
+
   useEffect(() => {
     applyFilters();
-  }, [searchText, selectedGame, maxDistance, events, userLocation]);
+  }, [searchText, selectedGame, maxDistance, events, userLocation, showMyEvents]);
 
   const fetchEvents = async () => {
     try {
@@ -138,6 +147,11 @@ export default function EventList() {
       });
     }
 
+    // Filtre Mes événements
+    if (showMyEvents && user) {
+      result = result.filter(e => e.author === user.id);
+    }
+
     setFilteredEvents(result);
   };
 
@@ -158,6 +172,11 @@ export default function EventList() {
         <TouchableOpacity style={styles.btnFilter} onPress={() => setMaxDistance(prev => prev === 50 ? 5000 : 50)}>
           <Text style={styles.btnText}>{maxDistance < 1000 ? `< ${maxDistance} km` : "Distance: Tout"}</Text>
         </TouchableOpacity>
+        {user && (
+          <TouchableOpacity style={[styles.btnFilter, showMyEvents && { backgroundColor: '#10b981' }]} onPress={() => setShowMyEvents(!showMyEvents)}>
+            <Text style={styles.btnText}>Mes events</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       {loading ? <ActivityIndicator size="large" color={COLORS.button} /> : (
@@ -167,14 +186,29 @@ export default function EventList() {
         <FlatList
           data={filteredEvents}
           keyExtractor={item => item.id.toString()}
-          renderItem={({ item }) => (
+          renderItem={({ item }) => {
+            const mainGame = item.event_game?.[0]?.game;
+            const bannerUrl = mainGame?.banner?.url 
+              ? `${API_URL.replace('/v1', '')}/uploads/${mainGame.banner.url}`
+              : (item.event_photo?.[0]?.photo?.url ? `${API_URL.replace('/v1', '')}/uploads/${item.event_photo[0].photo.url}` : null);
+
+            return (
             <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('EventDetails', { id: item.id })}>
-              <Text style={styles.title}>{item.name}</Text>
-              <Text>{new Date(item.scheduled_date).toLocaleDateString()}</Text>
-              <Text style={styles.games}>{item.event_game?.map(g => g.game.name).join(', ')}</Text>
-              <Text style={styles.loc}>{item.location}</Text>
+              {bannerUrl ? (
+                <Image source={{ uri: bannerUrl }} style={styles.cardImage} resizeMode="cover" />
+              ) : (
+                <View style={[styles.cardImage, { backgroundColor: 'rgba(0,0,0,0.2)', justifyContent: 'center', alignItems: 'center' }]}>
+                  <MaterialIcons name="image" size={40} color={COLORS.formLabel} />
+                </View>
+              )}
+              <View style={styles.cardContent}>
+                <Text style={styles.title}>{item.name}</Text>
+                <Text style={{color: COLORS.formLabel}}>{new Date(item.scheduled_date).toLocaleDateString()}</Text>
+                <Text style={styles.games}>{item.event_game?.map(g => g.game.name).join(', ')}</Text>
+                <Text style={styles.loc}>{item.location}</Text>
+              </View>
             </TouchableOpacity>
-          )}
+          )}}
         />
         )
       )}
@@ -194,6 +228,12 @@ export default function EventList() {
           <Button title="Fermer" color={COLORS.error || "red"} onPress={() => setModalVisible(false)} />
         </View>
       </Modal>
+
+      {user && (
+        <TouchableOpacity style={styles.fab} onPress={() => navigation.navigate('AddEvent')}>
+          <MaterialIcons name="add" size={30} color="white" />
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -209,11 +249,29 @@ const styles = StyleSheet.create({
   filters: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, gap: 10 },
   btnFilter: { backgroundColor: COLORS.button, padding: 10, borderRadius: 20, flex: 1, alignItems: 'center', justifyContent: 'center' },
   btnText: { color: COLORS.text, fontWeight: 'bold', fontSize: 12 },
-  card: { backgroundColor: COLORS.card, padding: 15, borderRadius: theme.radius, marginBottom: 10 },
+  card: { backgroundColor: COLORS.card, borderRadius: theme.radius, marginBottom: 10, overflow: 'hidden' },
+  cardImage: { width: '100%', height: 150 },
+  cardContent: { padding: 15 },
   title: { fontSize: 18, fontWeight: 'bold', color: COLORS.text },
   games: { color: COLORS.button, marginTop: 5, fontWeight: '600' },
   loc: { fontStyle: 'italic', color: COLORS.formLabel, marginTop: 5 },
-  modalContent: { flex: 1, padding: 20, marginTop: 50, backgroundColor: COLORS.background },
+  modalContent: { flex: 1, padding: 20, paddingTop: 50, backgroundColor: COLORS.background },
   modalItem: { padding: 15, borderBottomWidth: 1, borderColor: COLORS.border || '#eee' },
-  modalText: { fontSize: 16, color: COLORS.text }
+  modalText: { fontSize: 16, color: COLORS.text },
+  fab: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    backgroundColor: COLORS.button,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  }
 });

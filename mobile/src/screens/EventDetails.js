@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useCallback } from 'react';
 import { 
   View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, 
-  ActivityIndicator, Alert, Dimensions 
+  ActivityIndicator, Alert, Dimensions, Modal, TextInput
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useSelector } from 'react-redux';
 import { API_URL } from '../config';
@@ -26,6 +26,13 @@ export default function EventDetails() {
   const [joining, setJoining] = useState(false);
   const [coords, setCoords] = useState(null);
 
+  const [reviewModalVisible, setReviewModalVisible] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [reviewComment, setReviewComment] = useState("");
+  const [submittingReview, setSubmittingReview] = useState(false);
+
+  const isOrganizer = user && event && user.id === event.User?.id;
+
   // Configuration du header pour qu'il se fonde dans le design sombre
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -33,12 +40,19 @@ export default function EventDetails() {
       headerTintColor: '#fff',
       headerTitle: '',
       headerShadowVisible: false,
+      headerRight: () => isOrganizer ? (
+        <TouchableOpacity onPress={() => navigation.navigate('AddEvent', { eventToEdit: event })} style={{ marginRight: 10 }}>
+            <MaterialIcons name="edit" size={24} color="white" />
+        </TouchableOpacity>
+      ) : null,
     });
-  }, [navigation]);
+  }, [navigation, isOrganizer, event]);
 
-  useEffect(() => {
-    fetchEventDetails();
-  }, [id]);
+  useFocusEffect(
+    useCallback(() => {
+      fetchEventDetails();
+    }, [id])
+  );
 
   const fetchEventDetails = async () => {
     try {
@@ -114,6 +128,53 @@ export default function EventDetails() {
     }
   };
 
+  const handleOpenReview = () => {
+    if (!user) return Alert.alert("Erreur", "Vous devez être connecté");
+    
+    const isPart = event.participant?.some(p => p.User.id === user.id);
+    if (!isPart) {
+        return Alert.alert("Accès refusé", "Vous devez avoir participé à l'événement pour laisser un avis.");
+    }
+
+    const eventDate = new Date(event.scheduled_date);
+    if (new Date() < eventDate) {
+        return Alert.alert("Trop tôt", "L'événement n'est pas encore passé.");
+    }
+
+    setReviewModalVisible(true);
+  };
+
+  const submitReview = async () => {
+    if (rating === 0) return Alert.alert("Note manquante", "Veuillez sélectionner une note.");
+    
+    setSubmittingReview(true);
+    try {
+        const response = await fetch(`${API_URL}/event/${id}/review`, {
+            method: 'POST',
+            headers: { 
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ note: rating, description: reviewComment })
+        });
+
+        if (response.ok) {
+            Alert.alert("Succès", "Votre avis a été publié !");
+            setReviewModalVisible(false);
+            setRating(0);
+            setReviewComment("");
+            fetchEventDetails();
+        } else {
+            const data = await response.json();
+            Alert.alert("Erreur", data.message || "Impossible de publier l'avis");
+        }
+    } catch (error) {
+        Alert.alert("Erreur", "Erreur réseau");
+    } finally {
+        setSubmittingReview(false);
+    }
+  };
+
   if (loading) {
     return (
       <View style={[styles.container, styles.center]}>
@@ -141,9 +202,14 @@ export default function EventDetails() {
   const date = new Date(event.scheduled_date);
   const formattedDate = date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
 
+  // Avatar de l'organisateur
+  const organizerAvatarUrl = event.User?.photo?.url 
+    ? `${API_URL.replace('/v1', '')}/uploads/${event.User.photo.url}` 
+    : null;
+
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 0 }}>
         
         {/* 1. Header Card */}
         <View style={styles.headerContainer}>
@@ -189,9 +255,13 @@ export default function EventDetails() {
 
                 <Text style={[styles.label, { marginTop: 16 }]}>ORGANISATEUR</Text>
                 <View style={styles.organizerRow}>
-                    <View style={styles.avatarPlaceholder}>
-                        <Text style={{ fontSize: 18 }}>👤</Text>
-                    </View>
+                    {organizerAvatarUrl ? (
+                        <Image source={{ uri: organizerAvatarUrl }} style={styles.organizerAvatar} />
+                    ) : (
+                        <View style={styles.avatarPlaceholder}>
+                            <Text style={{ fontSize: 18 }}>👤</Text>
+                        </View>
+                    )}
                     <Text style={styles.organizerName}>{event.User?.pseudo || "Inconnu"}</Text>
                 </View>
             </View>
@@ -230,7 +300,7 @@ export default function EventDetails() {
         <View style={styles.section}>
             <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12}}>
                 <Text style={styles.label}>AVIS ({reviews.length})</Text>
-                <TouchableOpacity onPress={() => Alert.alert("Avis", "Fonctionnalité à venir")}>
+                <TouchableOpacity onPress={handleOpenReview}>
                     <Text style={{color: '#3b82f6', fontSize: 12, fontWeight: 'bold'}}>ÉCRIRE UN AVIS</Text>
                 </TouchableOpacity>
             </View>
@@ -304,6 +374,49 @@ export default function EventDetails() {
         </View>
 
       </ScrollView>
+
+      <Modal
+        visible={reviewModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setReviewModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+                <Text style={styles.modalTitle}>Noter l'événement</Text>
+                
+                <View style={styles.starsContainer}>
+                    {[1, 2, 3, 4, 5].map(star => (
+                        <TouchableOpacity key={star} onPress={() => setRating(star)}>
+                            <MaterialIcons 
+                                name="star" 
+                                size={32} 
+                                color={star <= rating ? "#fbbf24" : "#4b5563"} 
+                            />
+                        </TouchableOpacity>
+                    ))}
+                </View>
+
+                <TextInput
+                    style={styles.inputReview}
+                    placeholder="Votre commentaire..."
+                    placeholderTextColor="#9ca3af"
+                    multiline
+                    value={reviewComment}
+                    onChangeText={setReviewComment}
+                />
+
+                <View style={styles.modalButtons}>
+                    <TouchableOpacity style={[styles.modalBtn, styles.cancelBtn]} onPress={() => setReviewModalVisible(false)}>
+                        <Text style={styles.btnText}>Annuler</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.modalBtn, styles.submitBtn]} onPress={submitReview} disabled={submittingReview}>
+                        {submittingReview ? <ActivityIndicator color="white" size="small" /> : <Text style={styles.btnText}>Envoyer</Text>}
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -392,6 +505,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 12,
   },
+  organizerAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 12,
+  },
   organizerName: {
     color: 'white',
     fontWeight: '500',
@@ -436,7 +555,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   mapContainer: {
-    height: 200,
+    height: 300,
     backgroundColor: '#1e293b', // bg-slate-800
     borderTopLeftRadius: 24, // rounded-t-3xl
     borderTopRightRadius: 24,
@@ -508,5 +627,58 @@ const styles = StyleSheet.create({
     color: '#d1d5db',
     fontSize: 14,
     lineHeight: 20,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    backgroundColor: '#1a2c3d',
+    borderRadius: 16,
+    padding: 20,
+  },
+  modalTitle: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  starsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 20,
+    gap: 8,
+  },
+  inputReview: {
+    backgroundColor: '#0b1622',
+    color: 'white',
+    borderRadius: 8,
+    padding: 12,
+    height: 100,
+    textAlignVertical: 'top',
+    marginBottom: 20,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  modalBtn: {
+    flex: 1,
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  cancelBtn: {
+    backgroundColor: '#374151',
+  },
+  submitBtn: {
+    backgroundColor: '#3b82f6',
+  },
+  btnText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 });
