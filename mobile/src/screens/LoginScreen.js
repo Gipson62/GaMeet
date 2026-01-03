@@ -48,7 +48,6 @@ export default function LoginScreen({ navigation }) {
                 email: safeTrim(email).toLowerCase(),
                 password,
             })).unwrap();
-            navigation.navigate("Main");
 
         } catch (err) {
             Alert.alert("Erreur", err || "Impossible de se connecter.");

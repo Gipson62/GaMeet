@@ -3,7 +3,7 @@ import { View, ActivityIndicator } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useSelector, useDispatch } from "react-redux";
 import AuthStack from "./stacks/AuthStack";
-import AppStack from "./stacks/AppStack";
+import MainTabs from "./stacks/MainTabs";
 import { loadUserSession } from "../store/slices/authSlice";
 import { COLORS } from "../constants/theme";
 
@@ -32,7 +32,7 @@ export default function RootStack() {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false, animation: "none" }}>
             {isAuthenticated ? (
-                <Stack.Screen name="AppStack" component={AppStack} />
+                <Stack.Screen name="MainTabs" component={MainTabs} />
             ) : (
                 <Stack.Screen name="AuthStack" component={AuthStack} />
             )}
