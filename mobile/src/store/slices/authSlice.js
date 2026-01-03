@@ -79,9 +79,19 @@ const authSlice = createSlice({
     isLoading: true,
     error: null,
     language: 'fr',
-    isInitialized: false, // Pour savoir si on a fini de vérifier le stockage
+    isInitialized: false,
   },
-  reducers: {},
+  reducers: {
+    clearAuthError: (state) => {
+      state.error = null;
+    },
+    // Nouvelle action pour mettre à jour l'utilisateur dans le store
+    updateUser: (state, action) => {
+      state.user = action.payload;
+      // On met aussi à jour le stockage persistant
+      AsyncStorage.setItem(USER_KEY, JSON.stringify(action.payload)).catch(err => console.error("Erreur sauvegarde user", err));
+    },
+  },
   extraReducers: (builder) => {
     builder
       // Load Session
@@ -98,6 +108,7 @@ const authSlice = createSlice({
       .addCase(loadUserSession.rejected, (state) => {
         state.isLoading = false;
         state.isInitialized = true;
+        state.token = null;
       })
       
       // Login
@@ -129,4 +140,5 @@ const authSlice = createSlice({
   },
 });
 
+export const { clearAuthError, updateUser } = authSlice.actions;
 export default authSlice.reducer;

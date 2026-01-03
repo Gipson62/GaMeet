@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import {
     View,
     Text,
@@ -18,7 +18,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import { COLORS, theme } from "../constants/theme";
-import { login } from "../store/slices/authSlice";
+import { login, clearAuthError } from "../store/slices/authSlice";
 
 function isEmailValid(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).trim());
@@ -28,19 +28,37 @@ export default function LoginScreen({ navigation }) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
     
     const dispatch = useDispatch();
     const { isLoading, error: authError } = useSelector((state) => state.auth);
 
+    // Nettoyer l'erreur API quand on change les champs
+    useEffect(() => {
+        if (authError) {
+            dispatch(clearAuthError());
+        }
+    }, [email, password]);
+
+    // Nettoyer l'erreur API quand on quitte l'écran
+    useEffect(() => {
+        return () => {
+            dispatch(clearAuthError());
+        };
+    }, []);
+
     const safeTrim = (v) => (typeof v === "string" ? v.trim() : "");
 
     const validationError = useMemo(() => {
+        if (!safeTrim(email)) return "Email requis.";
         if (!isEmailValid(email)) return "Email invalide.";
         if (!password) return "Mot de passe requis.";
         return null;
     }, [email, password]);
 
     const onSubmit = async () => {
+        setSubmitted(true);
+        
         if (validationError) return;
 
         try {
@@ -53,6 +71,11 @@ export default function LoginScreen({ navigation }) {
             Alert.alert("Erreur", err || "Impossible de se connecter.");
         }
     };
+
+    // Logique d'affichage de l'erreur :
+    // 1. Si validation locale échoue ET qu'on a soumis -> Erreur locale
+    // 2. Sinon, si erreur API existe -> Erreur API
+    const displayError = (submitted && validationError) ? validationError : authError;
 
     return (
         <SafeAreaView style={styles.safe}>
@@ -100,13 +123,13 @@ export default function LoginScreen({ navigation }) {
                             </TouchableOpacity>
                         </View>
 
-                        {validationError ? <Text style={styles.error}>{validationError}</Text> : null}
-                        {authError ? <Text style={styles.error}>{authError}</Text> : null}
+                        {/* Affichage unique de l'erreur */}
+                        {displayError ? <Text style={styles.error}>{displayError}</Text> : null}
 
                         <TouchableOpacity
-                            style={[styles.button, (isLoading || !!validationError) && { opacity: 0.7 }]}
+                            style={[styles.button, isLoading && { opacity: 0.7 }]}
                             onPress={onSubmit}
-                            disabled={isLoading || !!validationError}
+                            disabled={isLoading}
                         >
                             {isLoading ? (
                                 <ActivityIndicator />

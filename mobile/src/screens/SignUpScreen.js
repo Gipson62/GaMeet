@@ -33,6 +33,7 @@ export default function SignUpScreen({ navigation }) {
     const [password, setPassword] = useState("");
     const [confirm, setConfirm] = useState("");
     const [loading, setLoading] = useState(false);
+    const [submitted, setSubmitted] = useState(false); // Nouvel état pour savoir si on a cliqué
     
     // États pour la visibilité des mots de passe
     const [showPassword, setShowPassword] = useState(false);
@@ -43,6 +44,7 @@ export default function SignUpScreen({ navigation }) {
     const error = useMemo(() => {
         if (!safeTrim(pseudo)) return "Nom d’utilisateur requis.";
         if (!birthDateObj) return "Date de naissance requise";
+        if (!safeTrim(email)) return "Email requis.";
         if (!isEmailValid(email)) return "Email invalide.";
         if (!password || password.length < 8) return "Mot de passe trop court (min 8).";
         if (password !== confirm) return "Les mots de passe ne correspondent pas.";
@@ -64,6 +66,8 @@ export default function SignUpScreen({ navigation }) {
     }
 
     const onSubmit = async () => {
+        setSubmitted(true); // On marque le formulaire comme soumis
+        
         if (error) return;
 
         try {
@@ -191,12 +195,13 @@ export default function SignUpScreen({ navigation }) {
                             </TouchableOpacity>
                         </View>
 
-                        {error ? <Text style={styles.error}>{error}</Text> : null}
+                        {/* On affiche l'erreur seulement si submitted est true */}
+                        {submitted && error ? <Text style={styles.error}>{error}</Text> : null}
 
                         <TouchableOpacity
-                            style={[styles.button, (loading || !!error) && { opacity: 0.7 }]}
+                            style={[styles.button, (loading) && { opacity: 0.7 }]}
                             onPress={onSubmit}
-                            disabled={loading || !!error}
+                            disabled={loading}
                         >
                             {loading ? <ActivityIndicator /> : <Text style={styles.buttonText}>Créer le compte</Text>}
                         </TouchableOpacity>
