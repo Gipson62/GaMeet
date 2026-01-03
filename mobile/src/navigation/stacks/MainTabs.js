@@ -10,12 +10,14 @@ import GameList from '../../screens/GameList';
 import EventList from '../../screens/EventList';
 import Map from '../../screens/Map';
 import Profile from '../../screens/Profile';
+import EditProfileScreen from '../../screens/EditProfileScreen';
 import EventDetails from '../../screens/EventDetails';
 import GameDetails from '../../screens/GameDetails';
 
 const Tab = createBottomTabNavigator();
 const EventStack = createNativeStackNavigator();
 const GameStack = createNativeStackNavigator();
+const ProfileStack = createNativeStackNavigator();
 
 function EventStackScreen() {
   return (
@@ -34,6 +36,15 @@ function GameStackScreen() {
       </GameStack.Navigator>
     );
   }
+
+function ProfileStackScreen() {
+    return (
+        <ProfileStack.Navigator screenOptions={{ headerShown: false }}>
+            <ProfileStack.Screen name="ProfileMain" component={Profile} />
+            <ProfileStack.Screen name="EditProfile" component={EditProfileScreen} />
+        </ProfileStack.Navigator>
+    );
+}
 
 export default function MainTabs() {
   return (
@@ -79,7 +90,7 @@ export default function MainTabs() {
       <Tab.Screen name="Jeux" component={GameStackScreen} />
       <Tab.Screen name="Event" component={EventStackScreen} />
       <Tab.Screen name="Carte" component={Map} />
-      <Tab.Screen name="Profile" component={Profile} />
+      <Tab.Screen name="Profile" component={ProfileStackScreen} />
     </Tab.Navigator>
   );
 }

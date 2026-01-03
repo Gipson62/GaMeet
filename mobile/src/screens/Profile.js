@@ -14,38 +14,48 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { COLORS, theme } from "../constants/theme";
 import { fetchMe, deleteMyAccount } from "../services/api";
-import { logout, setLanguage } from "../store/slices/authSlice";
-import { API_URL } from "../config";
+import { logout, setLanguage, updateUser } from "../store/slices/authSlice";
+import { API_URL, BASE_URL } from "../config";
 import { TRANSLATIONS } from "../constants/translations";
 
-export default function Profile() {
+export default function Profile({ navigation }) {
     const [loading, setLoading] = useState(true);
-    const [me, setMe] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
     
     const dispatch = useDispatch();
-    const language = useSelector((state) => state.auth.language || 'fr');
-    const t = TRANSLATIONS[language];
+    const { user: me, language } = useSelector((state) => state.auth);
+    const t = TRANSLATIONS[language || 'fr'];
 
+    // Fonction pour recharger les données
+    const loadProfile = async () => {
+        try {
+            setLoading(true);
+            const data = await fetchMe();
+            // Mise à jour du store Redux avec les données fraîches
+            dispatch(updateUser(data));
+        } catch (e) {
+            const msg = e?.response?.data?.message || "Impossible de charger le profil.";
+            Alert.alert(t.error, msg);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Charger au montage
     useEffect(() => {
-        (async () => {
-            try {
-                setLoading(true);
-                const data = await fetchMe();
-                setMe(data);
-            } catch (e) {
-                const msg =
-                    e?.response?.data?.message ||
-                    "Impossible de charger le profil.";
-                Alert.alert(t.error, msg);
-            } finally {
-                setLoading(false);
-            }
-        })();
+        loadProfile();
     }, [language]);
 
+    // Recharger quand on revient sur l'écran (focus)
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            loadProfile();
+        });
+        return unsubscribe;
+    }, [navigation]);
+
     const onEditProfile = () => {
-        Alert.alert("Info", "TODO: écran d’édition du profil.");
+        navigation.navigate("EditProfile");
     };
 
     const onLanguage = () => {
@@ -81,7 +91,7 @@ export default function Profile() {
         ]);
     };
 
-    if (loading) {
+    if (loading && !me) {
         return (
             <SafeAreaView style={styles.safe}>
                 <View style={styles.center}>
@@ -96,11 +106,9 @@ export default function Profile() {
     const bio = me?.bio ?? t.bioPlaceholder;
 
     // Construction de l'URL de l'avatar
-    const baseUrl = API_URL.replace("/v1", "");
-    
     // On affiche l'image si elle existe (même si c'est l'image par défaut)
     const avatarUri = me?.photo?.url 
-        ? `${baseUrl}/uploads/${me.photo.url}` 
+        ? `${BASE_URL}/uploads/${me.photo.url}`
         : null;
 
     return (
