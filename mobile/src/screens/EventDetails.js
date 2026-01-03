@@ -131,6 +131,15 @@ export default function EventDetails() {
   const handleOpenReview = () => {
     if (!user) return Alert.alert("Erreur", "Vous devez être connecté");
     
+    if (isOrganizer) {
+        return Alert.alert("Action impossible", "Vous ne pouvez pas noter votre propre événement.");
+    }
+
+    const hasReviewed = event.review?.some(r => r.User?.id === user.id);
+    if (hasReviewed) {
+        return Alert.alert("Déjà noté", "Vous avez déjà laissé un avis pour cet événement.");
+    }
+
     const isPart = event.participant?.some(p => p.User.id === user.id);
     if (!isPart) {
         return Alert.alert("Accès refusé", "Vous devez avoir participé à l'événement pour laisser un avis.");
@@ -173,6 +182,39 @@ export default function EventDetails() {
     } finally {
         setSubmittingReview(false);
     }
+  };
+
+  const handleDeleteReview = (reviewId) => {
+    Alert.alert(
+      "Supprimer l'avis",
+      "Êtes-vous sûr de vouloir supprimer votre avis ?",
+      [
+        { text: "Annuler", style: "cancel" },
+        { 
+          text: "Supprimer", 
+          style: "destructive",
+          onPress: async () => {
+            try {
+              const response = await fetch(`${API_URL}/review/${reviewId}`, {
+                method: 'DELETE',
+                headers: { 
+                  'Authorization': `Bearer ${token}`
+                }
+              });
+              
+              if (response.ok || response.status === 204) {
+                Alert.alert("Succès", "Avis supprimé");
+                fetchEventDetails();
+              } else {
+                Alert.alert("Erreur", "Impossible de supprimer l'avis");
+              }
+            } catch (error) {
+              Alert.alert("Erreur", "Erreur réseau");
+            }
+          }
+        }
+      ]
+    );
   };
 
   if (loading) {
@@ -300,9 +342,11 @@ export default function EventDetails() {
         <View style={styles.section}>
             <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12}}>
                 <Text style={styles.label}>AVIS ({reviews.length})</Text>
-                <TouchableOpacity onPress={handleOpenReview}>
-                    <Text style={{color: '#3b82f6', fontSize: 12, fontWeight: 'bold'}}>ÉCRIRE UN AVIS</Text>
-                </TouchableOpacity>
+                {!isOrganizer && (
+                    <TouchableOpacity onPress={handleOpenReview}>
+                        <Text style={{color: '#3b82f6', fontSize: 12, fontWeight: 'bold'}}>ÉCRIRE UN AVIS</Text>
+                    </TouchableOpacity>
+                )}
             </View>
             
             {reviews.length === 0 ? (
@@ -322,6 +366,11 @@ export default function EventDetails() {
                                     ))}
                                 </View>
                             </View>
+                            {user && review.User?.id === user.id && (
+                                <TouchableOpacity onPress={() => handleDeleteReview(review.id)} style={{ marginRight: 10 }}>
+                                    <MaterialIcons name="delete" size={20} color="#ef4444" />
+                                </TouchableOpacity>
+                            )}
                             <Text style={styles.reviewTime}>{new Date(review.createdAt || Date.now()).toLocaleDateString('fr-FR')}</Text>
                         </View>
                         <Text style={styles.reviewContent}>{review.comment}</Text>
@@ -357,19 +406,21 @@ export default function EventDetails() {
             </View>
             
             <View style={styles.buttonContainer}>
-                <TouchableOpacity 
-                    style={[styles.joinButton, isParticipant && styles.leaveButton]} 
-                    onPress={handleJoin}
-                    disabled={joining}
-                >
-                    {joining ? (
-                        <ActivityIndicator color="white" />
-                    ) : (
-                        <Text style={styles.joinButtonText}>
-                            {isParticipant ? "Se désinscrire" : "S'inscrire à l'évènement"}
-                        </Text>
-                    )}
-                </TouchableOpacity>
+                {!isOrganizer && (
+                    <TouchableOpacity 
+                        style={[styles.joinButton, isParticipant && styles.leaveButton]} 
+                        onPress={handleJoin}
+                        disabled={joining}
+                    >
+                        {joining ? (
+                            <ActivityIndicator color="white" />
+                        ) : (
+                            <Text style={styles.joinButtonText}>
+                                {isParticipant ? "Se désinscrire" : "S'inscrire à l'évènement"}
+                            </Text>
+                        )}
+                    </TouchableOpacity>
+                )}
             </View>
         </View>
 
