@@ -75,7 +75,8 @@ export default function EventList() {
         return { ...event, _coords: coords };
       }));
       
-      // TEMPORAIRE : On affiche tout pour tester (même les événements passés)
+      // Tri du plus récent au plus ancien (Décroissant)
+      data.sort((a, b) => new Date(b.scheduled_date) - new Date(a.scheduled_date));
       setEvents(data);
       
       // Extraire les jeux pour le filtre

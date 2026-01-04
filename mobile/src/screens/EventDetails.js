@@ -32,6 +32,7 @@ export default function EventDetails() {
   const [submittingReview, setSubmittingReview] = useState(false);
 
   const isOrganizer = user && event && user.id === event.User?.id;
+  const isEventPassed = event && new Date(event.scheduled_date) < new Date();
 
   // Configuration du header pour qu'il se fonde dans le design sombre
   useLayoutEffect(() => {
@@ -97,6 +98,14 @@ export default function EventDetails() {
         Alert.alert("Erreur", "Vous devez être connecté");
         return;
     }
+
+    const isParticipant = event.participant.some(p => p.User.id === user.id);
+
+    if (isEventPassed && !isParticipant) {
+        Alert.alert("Impossible", "Vous ne pouvez pas vous inscrire à un événement passé.");
+        return;
+    }
+
     setJoining(true);
     try {
         // Vérifier si déjà inscrit
@@ -233,7 +242,7 @@ export default function EventDetails() {
     rating: r.note ?? r.rating ?? 0,
     comment: r.description ?? r.comment ?? r.content ?? "",
     createdAt: r.created_at ?? r.createdAt ?? Date.now(),
-  }));
+  })).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   
   // Construction de l'URL de l'image
   const mainGame = event.event_game?.[0]?.game;
@@ -408,15 +417,20 @@ export default function EventDetails() {
             <View style={styles.buttonContainer}>
                 {!isOrganizer && (
                     <TouchableOpacity 
-                        style={[styles.joinButton, isParticipant && styles.leaveButton]} 
+                        style={[
+                            styles.joinButton, 
+                            isParticipant && styles.leaveButton,
+                            (isEventPassed && !isParticipant) && { backgroundColor: '#4b5563' }
+                        ]} 
                         onPress={handleJoin}
-                        disabled={joining}
+                        disabled={joining || (isEventPassed && !isParticipant)}
                     >
                         {joining ? (
                             <ActivityIndicator color="white" />
                         ) : (
                             <Text style={styles.joinButtonText}>
                                 {isParticipant ? "Se désinscrire" : "S'inscrire à l'évènement"}
+                                {isParticipant ? "Se désinscrire" : (isEventPassed ? "Événement passé" : "S'inscrire à l'évènement")}
                             </Text>
                         )}
                     </TouchableOpacity>
