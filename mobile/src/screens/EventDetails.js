@@ -9,6 +9,7 @@ import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/nativ
 import { MaterialIcons } from '@expo/vector-icons';
 import { useSelector } from 'react-redux';
 import {API_URL, BASE_URL} from '../config';
+import { TRANSLATIONS } from '../constants/translations';
 
 const { width } = Dimensions.get('window');
 
@@ -20,6 +21,8 @@ export default function EventDetails() {
   // Récupération du token et user depuis Redux
   const user = useSelector(state => state.auth.user);
   const token = useSelector(state => state.auth.token);
+  const language = useSelector(state => state.auth.language);
+  const t = TRANSLATIONS[language || 'fr'];
 
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -81,12 +84,12 @@ export default function EventDetails() {
           }
         }
       } else {
-        Alert.alert("Erreur", "Impossible de charger l'événement");
+        Alert.alert(t.error, t.unableToLoadEvent);
         navigation.goBack();
       }
     } catch (error) {
       console.error(error);
-      Alert.alert("Erreur", "Erreur réseau");
+      Alert.alert(t.error, t.networkError);
       navigation.goBack();
     } finally {
       setLoading(false);
@@ -95,14 +98,14 @@ export default function EventDetails() {
 
   const handleJoin = async () => {
     if (!user) {
-        Alert.alert("Erreur", "Vous devez être connecté");
+        Alert.alert(t.error, t.mustBeLoggedIn);
         return;
     }
 
     const isParticipant = event.participant.some(p => p.User.id === user.id);
 
     if (isEventPassed && !isParticipant) {
-        Alert.alert("Impossible", "Vous ne pouvez pas vous inscrire à un événement passé.");
+        Alert.alert(t.impossible, t.cannotJoinPastEvent);
         return;
     }
 
@@ -124,46 +127,46 @@ export default function EventDetails() {
         });
 
         if (response.ok || response.status === 201 || response.status === 204) {
-            Alert.alert("Succès", isParticipant ? "Désinscription réussie" : "Inscription réussie");
+            Alert.alert(t.success, isParticipant ? t.unsubscribeSuccess : t.subscribeSuccess);
             fetchEventDetails(); // Rafraîchir les données
         } else {
             const errData = await response.json();
-            Alert.alert("Erreur", errData.message || "Une erreur est survenue");
+            Alert.alert(t.error, errData.message || t.errorOccurred);
         }
     } catch (error) {
-        Alert.alert("Erreur", "Erreur réseau");
+        Alert.alert(t.error, t.networkError);
     } finally {
         setJoining(false);
     }
   };
 
   const handleOpenReview = () => {
-    if (!user) return Alert.alert("Erreur", "Vous devez être connecté");
+    if (!user) return Alert.alert(t.error, t.mustBeLoggedIn);
     
     if (isOrganizer) {
-        return Alert.alert("Action impossible", "Vous ne pouvez pas noter votre propre événement.");
+        return Alert.alert(t.actionImpossible, t.cannotReviewOwnEvent);
     }
 
     const hasReviewed = event.review?.some(r => r.User?.id === user.id);
     if (hasReviewed) {
-        return Alert.alert("Déjà noté", "Vous avez déjà laissé un avis pour cet événement.");
+        return Alert.alert(t.alreadyReviewed, t.alreadyReviewedBody);
     }
 
     const isPart = event.participant?.some(p => p.User.id === user.id);
     if (!isPart) {
-        return Alert.alert("Accès refusé", "Vous devez avoir participé à l'événement pour laisser un avis.");
+        return Alert.alert(t.accessDenied, t.mustParticipateToReview);
     }
 
     const eventDate = new Date(event.scheduled_date);
     if (new Date() < eventDate) {
-        return Alert.alert("Trop tôt", "L'événement n'est pas encore passé.");
+        return Alert.alert(t.tooEarly, t.eventNotPassed);
     }
 
     setReviewModalVisible(true);
   };
 
   const submitReview = async () => {
-    if (rating === 0) return Alert.alert("Note manquante", "Veuillez sélectionner une note.");
+    if (rating === 0) return Alert.alert(t.missingRating, t.selectRating);
     
     setSubmittingReview(true);
     try {
@@ -177,17 +180,17 @@ export default function EventDetails() {
         });
 
         if (response.ok) {
-            Alert.alert("Succès", "Votre avis a été publié !");
+            Alert.alert(t.success, t.reviewPublished);
             setReviewModalVisible(false);
             setRating(0);
             setReviewComment("");
             fetchEventDetails();
         } else {
             const data = await response.json();
-            Alert.alert("Erreur", data.message || "Impossible de publier l'avis");
+            Alert.alert(t.error, data.message || t.unableToPublishReview);
         }
     } catch (error) {
-        Alert.alert("Erreur", "Erreur réseau");
+        Alert.alert(t.error, t.networkError);
     } finally {
         setSubmittingReview(false);
     }
@@ -195,12 +198,12 @@ export default function EventDetails() {
 
   const handleDeleteReview = (reviewId) => {
     Alert.alert(
-      "Supprimer l'avis",
-      "Êtes-vous sûr de vouloir supprimer votre avis ?",
+      t.deleteReview,
+      t.deleteReviewConfirm,
       [
-        { text: "Annuler", style: "cancel" },
+        { text: t.cancel, style: "cancel" },
         { 
-          text: "Supprimer", 
+          text: t.delete, 
           style: "destructive",
           onPress: async () => {
             try {
@@ -212,13 +215,13 @@ export default function EventDetails() {
               });
               
               if (response.ok || response.status === 204) {
-                Alert.alert("Succès", "Avis supprimé");
+                Alert.alert(t.success, t.reviewDeleted);
                 fetchEventDetails();
               } else {
-                Alert.alert("Erreur", "Impossible de supprimer l'avis");
+                Alert.alert(t.error, t.unableToDeleteReview);
               }
             } catch (error) {
-              Alert.alert("Erreur", "Erreur réseau");
+              Alert.alert(t.error, t.networkError);
             }
           }
         }
@@ -287,12 +290,12 @@ export default function EventDetails() {
                                             <MaterialIcons name="sports-esports" size={16} color="#d1d5db" />
                                         </View>
                                     )}
-                                    <Text style={styles.gameTitle}>{g?.name || "Jeu inconnu"}</Text>
+                                    <Text style={styles.gameTitle}>{g?.name || t.unknownGame}</Text>
                                 </View>
                             );
                         })
                     ) : (
-                        <Text style={[styles.gameTitle, { marginTop: 4 }]}>Jeu non spécifié</Text>
+                        <Text style={[styles.gameTitle, { marginTop: 4 }]}>{t.unspecifiedGame}</Text>
                     )}
                 </View>
             </View>
@@ -301,10 +304,10 @@ export default function EventDetails() {
         {/* 2. Infos Section */}
         <View style={styles.infoSection}>
             <View style={{ flex: 1 }}>
-                <Text style={styles.label}>DATE DE L'ÉVÈNEMENT</Text>
+                <Text style={styles.label}>{t.eventDate ? t.eventDate.toUpperCase() : "DATE DE L'ÉVÈNEMENT"}</Text>
                 <Text style={styles.value}>{formattedDate}</Text>
 
-                <Text style={[styles.label, { marginTop: 16 }]}>ORGANISATEUR</Text>
+                <Text style={[styles.label, { marginTop: 16 }]}>{t.organizer ? t.organizer.toUpperCase() : "ORGANISATEUR"}</Text>
                 <View style={styles.organizerRow}>
                     {organizerAvatarUrl ? (
                         <Image source={{ uri: organizerAvatarUrl }} style={styles.organizerAvatar} />
@@ -313,7 +316,7 @@ export default function EventDetails() {
                             <Text style={{ fontSize: 18 }}>👤</Text>
                         </View>
                     )}
-                    <Text style={styles.organizerName}>{event.User?.pseudo || "Inconnu"}</Text>
+                    <Text style={styles.organizerName}>{event.User?.pseudo || t.unknown}</Text>
                 </View>
             </View>
             
@@ -325,16 +328,16 @@ export default function EventDetails() {
 
         {/* 3. Description */}
         <View style={styles.section}>
-            <Text style={styles.label}>DESCRIPTION</Text>
+            <Text style={styles.label}>{t.description ? t.description.toUpperCase() : "DESCRIPTION"}</Text>
             <Text style={styles.description}>
-                {event.description || "Aucune description fournie."}
+                {event.description || t.noDescription}
             </Text>
         </View>
 
         {/* Photos de l'événement */}
         {event.event_photo && event.event_photo.length > 0 && (
             <View style={styles.section}>
-                <Text style={styles.label}>PHOTOS</Text>
+                <Text style={styles.label}>{t.photos ? t.photos.toUpperCase() : "PHOTOS"}</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 8 }}>
                     {event.event_photo.map((ep, index) => (
                         <Image 
@@ -350,16 +353,16 @@ export default function EventDetails() {
         {/* 3.5 Reviews Section */}
         <View style={styles.section}>
             <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12}}>
-                <Text style={styles.label}>AVIS ({reviews.length})</Text>
+                <Text style={styles.label}>{t.reviews ? t.reviews.toUpperCase() : "AVIS"} ({reviews.length})</Text>
                 {!isOrganizer && (
                     <TouchableOpacity onPress={handleOpenReview}>
-                        <Text style={{color: '#3b82f6', fontSize: 12, fontWeight: 'bold'}}>ÉCRIRE UN AVIS</Text>
+                        <Text style={{color: '#3b82f6', fontSize: 12, fontWeight: 'bold'}}>{t.writeReview ? t.writeReview.toUpperCase() : "ÉCRIRE UN AVIS"}</Text>
                     </TouchableOpacity>
                 )}
             </View>
             
             {reviews.length === 0 ? (
-                <Text style={{ color: '#9ca3af', fontStyle: 'italic' }}>Aucun avis pour le moment.</Text>
+                <Text style={{ color: '#9ca3af', fontStyle: 'italic' }}>{t.noReviews}</Text>
             ) : (
                 reviews.map((review, index) => (
                     <View key={review.id || index} style={[styles.reviewCard, index > 0 && { marginTop: 10 }]}>
@@ -368,7 +371,7 @@ export default function EventDetails() {
                                 <Text>👤</Text>
                             </View>
                             <View style={{marginLeft: 10, flex: 1}}>
-                                <Text style={styles.reviewUser}>{review.User?.pseudo || "Utilisateur"}</Text>
+                                <Text style={styles.reviewUser}>{review.User?.pseudo || t.user}</Text>
                                 <View style={{flexDirection: 'row'}}>
                                     {[1,2,3,4,5].map(i => (
                                         <MaterialIcons key={i} name="star" size={14} color={i <= (review.rating || 0) ? "#fbbf24" : "#4b5563"} />
@@ -408,7 +411,7 @@ export default function EventDetails() {
                 ) : (
                     <View style={styles.mapPlaceholder}>
                         <MaterialIcons name="map" size={40} color="gray" />
-                        <Text style={{ color: 'gray', marginTop: 10 }}>Carte non disponible</Text>
+                        <Text style={{ color: 'gray', marginTop: 10 }}>{t.mapUnavailable}</Text>
                         <Text style={{ color: 'gray', fontSize: 12 }}>{event.location}</Text>
                     </View>
                 )}
@@ -429,8 +432,7 @@ export default function EventDetails() {
                             <ActivityIndicator color="white" />
                         ) : (
                             <Text style={styles.joinButtonText}>
-                                {isParticipant ? "Se désinscrire" : "S'inscrire à l'évènement"}
-                                {isParticipant ? "Se désinscrire" : (isEventPassed ? "Événement passé" : "S'inscrire à l'évènement")}
+                                {isParticipant ? t.unsubscribe : (isEventPassed ? t.eventPassed : t.subscribe)}
                             </Text>
                         )}
                     </TouchableOpacity>
@@ -448,7 +450,7 @@ export default function EventDetails() {
       >
         <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
-                <Text style={styles.modalTitle}>Noter l'événement</Text>
+                <Text style={styles.modalTitle}>{t.rateEvent}</Text>
                 
                 <View style={styles.starsContainer}>
                     {[1, 2, 3, 4, 5].map(star => (
@@ -464,7 +466,7 @@ export default function EventDetails() {
 
                 <TextInput
                     style={styles.inputReview}
-                    placeholder="Votre commentaire..."
+                    placeholder={t.yourComment}
                     placeholderTextColor="#9ca3af"
                     multiline
                     value={reviewComment}
@@ -473,10 +475,10 @@ export default function EventDetails() {
 
                 <View style={styles.modalButtons}>
                     <TouchableOpacity style={[styles.modalBtn, styles.cancelBtn]} onPress={() => setReviewModalVisible(false)}>
-                        <Text style={styles.btnText}>Annuler</Text>
+                        <Text style={styles.btnText}>{t.cancel}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={[styles.modalBtn, styles.submitBtn]} onPress={submitReview} disabled={submittingReview}>
-                        {submittingReview ? <ActivityIndicator color="white" size="small" /> : <Text style={styles.btnText}>Envoyer</Text>}
+                        {submittingReview ? <ActivityIndicator color="white" size="small" /> : <Text style={styles.btnText}>{t.send}</Text>}
                     </TouchableOpacity>
                 </View>
             </View>

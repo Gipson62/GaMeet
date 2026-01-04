@@ -6,10 +6,13 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { API_URL } from '../config';
 import { COLORS, theme } from '../constants/theme';
+import { TRANSLATIONS } from '../constants/translations';
 
 export default function EventList() {
   const navigation = useNavigation();
   const user = useSelector(state => state.auth.user);
+  const language = useSelector(state => state.auth.language);
+  const t = TRANSLATIONS[language || 'fr'];
   const [events, setEvents] = useState([]);
   const [filteredEvents, setFilteredEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -92,8 +95,8 @@ export default function EventList() {
       setLoading(false);
     } catch (error) {
       console.error("Erreur chargement events:", error);
-      Alert.alert("Erreur", "Impossible de contacter le serveur. Vérifie l'IP dans config.js");
-      Alert.alert("Erreur", error.message);
+      Alert.alert(t.error, t.serverError || "Impossible de contacter le serveur");
+      Alert.alert(t.error, error.message);
       setLoading(false);
     }
   };
@@ -160,7 +163,7 @@ export default function EventList() {
     <View style={styles.container}>
       <TextInput
         style={styles.searchBar}
-        placeholder="Rechercher..."
+        placeholder={t.searchPlaceholder || "Rechercher..."}
         value={searchText}
         onChangeText={setSearchText}
         placeholderTextColor={COLORS.formLabel}
@@ -168,21 +171,21 @@ export default function EventList() {
 
       <View style={styles.filters}>
         <TouchableOpacity style={styles.btnFilter} onPress={() => setModalVisible(true)}>
-          <Text style={styles.btnText}>{selectedGame || "Jeu"}</Text>
+          <Text style={styles.btnText}>{selectedGame || t.game || "Jeu"}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.btnFilter} onPress={() => setMaxDistance(prev => prev === 50 ? 5000 : 50)}>
-          <Text style={styles.btnText}>{maxDistance < 1000 ? `< ${maxDistance} km` : "Distance: Tout"}</Text>
+          <Text style={styles.btnText}>{maxDistance < 1000 ? `< ${maxDistance} km` : (t.distanceAll || "Distance: Tout")}</Text>
         </TouchableOpacity>
         {user && (
           <TouchableOpacity style={[styles.btnFilter, showMyEvents && { backgroundColor: '#10b981' }]} onPress={() => setShowMyEvents(!showMyEvents)}>
-            <Text style={styles.btnText}>Mes events</Text>
+            <Text style={styles.btnText}>{t.myEvents || "Mes events"}</Text>
           </TouchableOpacity>
         )}
       </View>
 
       {loading ? <ActivityIndicator size="large" color={COLORS.button} /> : (
         filteredEvents.length === 0 ? (
-          <Text style={{ textAlign: 'center', marginTop: 20, color: 'gray' }}>Aucun événement trouvé.</Text>
+          <Text style={{ textAlign: 'center', marginTop: 20, color: 'gray' }}>{t.noEventsFound || "Aucun événement trouvé."}</Text>
         ) : (
         <FlatList
           data={filteredEvents}
@@ -216,7 +219,7 @@ export default function EventList() {
 
       <Modal visible={modalVisible} animationType="slide">
         <View style={styles.modalContent}>
-          <Button title="Tout afficher" color={COLORS.button} onPress={() => { setSelectedGame(null); setModalVisible(false); }} />
+          <Button title={t.showAll || "Tout afficher"} color={COLORS.button} onPress={() => { setSelectedGame(null); setModalVisible(false); }} />
           <FlatList 
             data={availableGames}
             keyExtractor={item => item}
@@ -226,7 +229,7 @@ export default function EventList() {
               </TouchableOpacity>
             )}
           />
-          <Button title="Fermer" color={COLORS.error || "red"} onPress={() => setModalVisible(false)} />
+          <Button title={t.close || "Fermer"} color={COLORS.error || "red"} onPress={() => setModalVisible(false)} />
         </View>
       </Modal>
 

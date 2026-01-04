@@ -10,12 +10,15 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { API_URL } from '../config';
 import { COLORS, theme } from '../constants/theme';
+import { TRANSLATIONS } from '../constants/translations';
 
 export default function AddEvent() {
     const navigation = useNavigation();
     const route = useRoute();
     const { eventToEdit } = route.params || {};
     const token = useSelector(state => state.auth.token);
+    const language = useSelector(state => state.auth.language);
+    const t = TRANSLATIONS[language || 'fr'];
 
     // États du formulaire
     const [name, setName] = useState('');
@@ -54,9 +57,9 @@ export default function AddEvent() {
                 })));
             }
             // Mise à jour du titre de la page via la navigation
-            navigation.setOptions({ title: "Modifier l'événement" });
+            navigation.setOptions({ title: t.editEventTitle });
         }
-    }, [eventToEdit]);
+    }, [eventToEdit, t]);
 
     const fetchGames = async () => {
         try {
@@ -72,7 +75,7 @@ export default function AddEvent() {
 
     const handleCreate = async () => {
         if (!name || !location) {
-            Alert.alert("Erreur", "Veuillez remplir les champs obligatoires (Nom, Lieu)");
+            Alert.alert(t.error, t.fillRequiredFieldsEvent);
             return;
         }
 
@@ -130,15 +133,15 @@ export default function AddEvent() {
             });
 
             if (response.ok) {
-                Alert.alert("Succès", eventToEdit ? "Événement modifié !" : "Événement créé !");
+                Alert.alert(t.success, eventToEdit ? t.eventModified : t.eventCreated);
                 navigation.goBack();
                 // Idéalement, déclencher un rafraîchissement de la liste ici
             } else {
                 const err = await response.json();
-                Alert.alert("Erreur", err.message || "Impossible de créer l'événement");
+                Alert.alert(t.error, err.message || t.unableToCreateEvent);
             }
         } catch (error) {
-            Alert.alert("Erreur", "Erreur réseau");
+            Alert.alert(t.error, t.networkError);
         } finally {
             setLoading(false);
         }
@@ -171,7 +174,7 @@ export default function AddEvent() {
     };
 
     const getSelectedGameNames = () => {
-        if (selectedGames.length === 0) return "Sélectionner des jeux";
+        if (selectedGames.length === 0) return t.selectGames;
         const names = allGames.filter(g => selectedGames.includes(g.id)).map(g => g.name);
         return names.join(', ');
     };
@@ -199,25 +202,25 @@ export default function AddEvent() {
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scroll}>
 
-                <Text style={styles.label}>Nom de l'événement *</Text>
+                <Text style={styles.label}>{t.eventNameLabel}</Text>
                 <TextInput 
                     style={styles.input} 
-                    placeholder="Soirée Jeux..." 
+                    placeholder={t.eventNamePlaceholder} 
                     placeholderTextColor={COLORS.formLabel}
                     value={name}
                     onChangeText={setName}
                 />
 
-                <Text style={styles.label}>Lieu *</Text>
+                <Text style={styles.label}>{t.locationLabel}</Text>
                 <TextInput 
                     style={styles.input} 
-                    placeholder="Adresse ou ville" 
+                    placeholder={t.locationPlaceholder} 
                     placeholderTextColor={COLORS.formLabel}
                     value={location}
                     onChangeText={setLocation}
                 />
 
-                <Text style={styles.label}>Date et Heure *</Text>
+                <Text style={styles.label}>{t.dateTimeLabel}</Text>
                 <View style={styles.dateRow}>
                     <TouchableOpacity style={styles.dateBtn} onPress={() => setShowDatePicker(true)}>
                         <Text style={styles.dateText}>{date.toLocaleDateString()}</Text>
@@ -247,27 +250,27 @@ export default function AddEvent() {
                     />
                 )}
 
-                <Text style={styles.label}>Jeux</Text>
+                <Text style={styles.label}>{t.gamesLabel}</Text>
                 <TouchableOpacity style={styles.input} onPress={() => setGameModalVisible(true)}>
                     <Text style={{color: selectedGames.length ? COLORS.text : COLORS.formLabel}}>
                         {getSelectedGameNames()}
                     </Text>
                 </TouchableOpacity>
 
-                <Text style={styles.label}>Capacité max (optionnel)</Text>
+                <Text style={styles.label}>{t.capacityLabel}</Text>
                 <TextInput 
                     style={styles.input} 
-                    placeholder="Ex: 10" 
+                    placeholder={t.capacityPlaceholder} 
                     placeholderTextColor={COLORS.formLabel}
                     value={capacity}
                     onChangeText={setCapacity}
                     keyboardType="numeric"
                 />
 
-                <Text style={styles.label}>Description</Text>
+                <Text style={styles.label}>{t.descriptionLabel || "Description"}</Text>
                 <TextInput 
                     style={[styles.input, styles.textArea]} 
-                    placeholder="Détails de l'événement..." 
+                    placeholder={t.eventDescriptionPlaceholder} 
                     placeholderTextColor={COLORS.formLabel}
                     value={description}
                     onChangeText={setDescription}
@@ -275,7 +278,7 @@ export default function AddEvent() {
                     numberOfLines={4}
                 />
 
-                <Text style={styles.label}>Photos</Text>
+                <Text style={styles.label}>{t.photosLabel || t.photos || "Photos"}</Text>
                 <View style={styles.photosContainer}>
                     {photos.map((p, index) => (
                         <View key={index} style={styles.photoWrapper}>
@@ -291,14 +294,14 @@ export default function AddEvent() {
                 </View>
 
                 <TouchableOpacity style={styles.submitBtn} onPress={handleCreate} disabled={loading}>
-                    {loading ? <ActivityIndicator color="white" /> : <Text style={styles.submitText}>{eventToEdit ? "Modifier l'événement" : "Créer l'événement"}</Text>}
+                    {loading ? <ActivityIndicator color="white" /> : <Text style={styles.submitText}>{eventToEdit ? t.editEventTitle : t.addEventTitle}</Text>}
                 </TouchableOpacity>
             </ScrollView>
 
             <Modal visible={gameModalVisible} animationType="slide" transparent={true}>
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>Sélectionner les jeux</Text>
+                        <Text style={styles.modalTitle}>{t.selectGamesTitle}</Text>
                         <FlatList
                             data={allGames}
                             keyExtractor={item => item.id.toString()}
@@ -312,7 +315,7 @@ export default function AddEvent() {
                             )}
                         />
                         <TouchableOpacity style={styles.closeBtn} onPress={() => setGameModalVisible(false)}>
-                            <Text style={styles.closeText}>Valider</Text>
+                            <Text style={styles.closeText}>{t.validate}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
