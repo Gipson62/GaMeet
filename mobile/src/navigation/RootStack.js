@@ -9,6 +9,7 @@ import { loadUserSession } from "../store/slices/authSlice";
 import { COLORS } from "../constants/theme";
 import EventDetails from "../screens/EventDetails";
 import AddEvent from "../screens/AddEvent";
+import AddGame from "../screens/AddGame";
 
 const Stack = createNativeStackNavigator();
 
@@ -44,6 +45,11 @@ export default function RootStack() {
                         name="AddEvent" 
                         component={AddEvent} 
                         options={{ headerShown: true, title: 'Créer un événement', headerTintColor: COLORS.text, headerStyle: { backgroundColor: COLORS.background }, headerShadowVisible: false }} 
+                    />
+                    <Stack.Screen 
+                        name="AddGame" 
+                        component={AddGame} 
+                        options={{ headerShown: true, title: 'Ajouter un jeu', headerTintColor: COLORS.text, headerStyle: { backgroundColor: COLORS.background }, headerShadowVisible: false }} 
                     />
                 </Stack.Group>
             ) : (

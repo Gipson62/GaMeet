@@ -1,5 +1,6 @@
 export const TRANSLATIONS = {
   fr: {
+    // Profile
     header: "Mon Profil",
     editProfile: "Éditer le profil",
     language: "Langue",
@@ -15,8 +16,21 @@ export const TRANSLATIONS = {
     bioPlaceholder: "Aucune bio renseignée.",
     userPlaceholder: "Utilisateur",
     selectLanguage: "Choisir la langue",
+    
+    // GameList
+    library: "Tous les jeux",
+    searchGames: "Rechercher des jeux...",
+    sortBy: "TRIER PAR:",
+    platforms: "Plateformes",
+    tags: "Tags",
+    clearAll: "Tout effacer",
+    noGamesFound: "Aucun jeu trouvé",
+    done: "Terminé",
+    loadingLibrary: "Chargement de tous les jeux...",
+    unableToLoadGames: "Impossible de charger les jeux.",
   },
   en: {
+    // Profile
     header: "My Profile",
     editProfile: "Edit Profile",
     language: "Language",
@@ -32,5 +46,17 @@ export const TRANSLATIONS = {
     bioPlaceholder: "No bio provided.",
     userPlaceholder: "User",
     selectLanguage: "Select Language",
+    
+    // GameList
+    library: "All games",
+    searchGames: "Search games...",
+    sortBy: "SORT BY:",
+    platforms: "Platforms",
+    tags: "Tags",
+    clearAll: "Clear all",
+    noGamesFound: "No games found",
+    done: "Done",
+    loadingLibrary: "Loading all games...",
+    unableToLoadGames: "Unable to load games.",
   },
 };

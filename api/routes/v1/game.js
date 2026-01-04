@@ -33,6 +33,10 @@ import { upload } from '../../controller/photoORM.js';
  *           format: date-time
  *         logo_id:
  *           type: integer
+ *         grid_id:
+ *           type: integer
+ *         banner_id:
+ *          type: integer
  *         is_approved:
  *           type: boolean
  *       example:

@@ -33,6 +33,8 @@ export const getAllGames = async (req, res) => {
                 studio: true,
                 publisher: true,
                 logo_id: true,
+                grid_id: true,
+                banner_id: true,
                 is_approved: true,
             },
         });
@@ -194,6 +196,11 @@ export const addGameWithPhotos = async (req, res) => {
                 ? platforms.join(', ')
                 : platforms;
 
+        // Si l'utilsateur n'est pas admin, is_approved doit être false
+        if (!req.user.is_admin) {
+            is_approved = false;
+        }
+
         // Transaction : créer photos + jeu ensemble
         const result = await prisma.$transaction(async (tx) => {
             // 1. Créer les 3 photos
@@ -252,6 +259,12 @@ export const addGame = async (req, res) => {
             studio,
             publisher
         } = req.val;
+
+        // Si l'utilsateur n'est pas admin, is_approved doit être false
+        if (!req.user.is_admin) {
+            is_approved = false;
+        }
+
         //Platforms Should just be a string. Join them with commas.
         const formatted_platforms = platforms.join(', ');
         const { id } = await prisma.game.create({

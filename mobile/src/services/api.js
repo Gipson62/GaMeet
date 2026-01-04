@@ -12,6 +12,8 @@ export const setAuthToken = (token) => {
     else delete api.defaults.headers.common.Authorization;
 };
 
+export const buildPhotoUrl = (id) => `${API_URL}/photo/${id}`;
+
 // ------- Calls API -------
 
 export async function registerUser({ pseudo, birth_date, email, password }) {
@@ -39,5 +41,25 @@ export async function fetchMe() {
 
 export async function deleteMyAccount() {
     const res = await api.delete("/user/");
+    return res.data;
+}
+
+export async function fetchGames() {
+    const res = await api.get("/game");
+    return res.data;
+}
+
+export async function fetchTags() {
+    const res = await api.get("/tag");
+    return res.data;
+}
+
+export const fetchTagsByGame = async (gameId) => {
+  const res = await api.get(`/tag/game/${gameId}`);
+  return res.data;
+};
+
+export const fetchGame = async (gameId) => {
+    const res = await api.get(`/game/${gameId}`);
     return res.data;
 }
