@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux';
 import { BASE_URL } from '../config';
 import { COLORS } from '../constants/theme';
 import { api, buildPhotoUrl, fetchGame } from '../services/api';
+import { TRANSLATIONS } from '../constants/translations';
 
 const { width } = Dimensions.get('window');
 
@@ -19,6 +20,8 @@ export default function GameDetails() {
   
   const user = useSelector(state => state.auth.user);
   const token = useSelector(state => state.auth.token);
+  const language = useSelector(state => state.auth.language);
+  const t = TRANSLATIONS[language || 'fr'];
 
   const [game, setGame] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -44,7 +47,7 @@ export default function GameDetails() {
       setGame(response);
     } catch (error) {
       console.error("Error loading game:", error);
-      Alert.alert("Error", "Unable to load game details");
+      Alert.alert(t.error, t.unableToLoadGameDetails);
       navigation.goBack();
     } finally {
       setLoading(false);
@@ -99,13 +102,13 @@ export default function GameDetails() {
         {/* Info Section */}
         <View style={styles.infoSection}>
           <View style={{ flex: 1 }}>
-            <Text style={styles.label}>STUDIO</Text>
-            <Text style={styles.value}>{game.studio || 'Unknown'}</Text>
+            <Text style={styles.label}>{t.studio}</Text>
+            <Text style={styles.value}>{game.studio || t.unknown}</Text>
 
-            <Text style={[styles.label, { marginTop: 16 }]}>PUBLISHER</Text>
-            <Text style={styles.value}>{game.publisher || 'Unknown'}</Text>
+            <Text style={[styles.label, { marginTop: 16 }]}>{t.publisher}</Text>
+            <Text style={styles.value}>{game.publisher || t.unknown}</Text>
             
-            <Text style={[styles.label, { marginTop: 16 }]}>RELEASE DATE</Text>
+            <Text style={[styles.label, { marginTop: 16 }]}>{t.releaseDate}</Text>
             <Text style={styles.value}>{releaseDate}</Text>
           </View>
           
@@ -117,7 +120,7 @@ export default function GameDetails() {
         {/* Platforms */}
         {platforms.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.label}>PLATFORMS</Text>
+            <Text style={styles.label}>{t.platforms.toUpperCase()}</Text>
             <View style={styles.tagsContainer}>
               {platforms.map((platform, index) => (
                 <View key={index} style={styles.tag}>
@@ -131,7 +134,7 @@ export default function GameDetails() {
         {/* Tags */}
         {tags.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.label}>TAGS</Text>
+            <Text style={styles.label}>{t.tags.toUpperCase()}</Text>
             <View style={styles.tagsContainer}>
               {tags.map((tag, index) => (
                 <View key={index} style={[styles.tag, styles.tagAccent]}>
@@ -145,7 +148,7 @@ export default function GameDetails() {
         {/* Description */}
         {game.description && (
           <View style={styles.section}>
-            <Text style={styles.label}>DESCRIPTION</Text>
+            <Text style={styles.label}>{t.description}</Text>
             <Text style={styles.description}>{game.description}</Text>
           </View>
         )}
@@ -153,7 +156,7 @@ export default function GameDetails() {
         {/* Related Events */}
         {relatedEvents.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.label}>RELATED EVENTS ({relatedEvents.length})</Text>
+            <Text style={styles.label}>{t.relatedEvents} ({relatedEvents.length})</Text>
             {relatedEvents.map((eg, index) => {
               const event = eg.event;
               const eventDate = new Date(event.scheduled_date).toLocaleDateString('fr-FR', {

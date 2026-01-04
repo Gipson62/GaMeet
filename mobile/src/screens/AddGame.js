@@ -10,11 +10,14 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { API_URL } from '../config';
 import { COLORS, theme } from '../constants/theme';
+import { TRANSLATIONS } from '../constants/translations';
 
 export default function AddGame() {
     const navigation = useNavigation();
     const route = useRoute();
     const token = useSelector(state => state.auth.token);
+    const language = useSelector(state => state.auth.language);
+    const t = TRANSLATIONS[language || 'fr'];
 
     // États du formulaire
     const [name, setName] = useState('');
@@ -38,12 +41,12 @@ export default function AddGame() {
 
     const handleCreate = async () => {
         if (!name || !studio || !publisher || selectedPlatforms.length === 0) {
-            Alert.alert("Error", "Please fill in all required fields (Name, Studio, Publisher, Platforms)");
+            Alert.alert(t.error, t.requiredFieldsError);
             return;
         }
 
         if (!banner || !logo || !grid) {
-            Alert.alert("Error", "All three images (Banner, Logo, Grid) are required");
+            Alert.alert(t.error, t.allImagesRequired);
             return;
         }
 
@@ -90,15 +93,15 @@ export default function AddGame() {
 
             if (response.ok) {
                 const data = await response.json();
-                Alert.alert("Success", "Game submitted for approval!");
+                Alert.alert(t.success, t.gameSubmittedSuccess);
                 navigation.goBack();
             } else {
                 const err = await response.json();
-                Alert.alert("Error", err.message || "Unable to create game");
+                Alert.alert(t.error, err.message || t.unableToCreateGame);
             }
         } catch (error) {
             console.error("Error creating game:", error);
-            Alert.alert("Error", "Network error");
+            Alert.alert(t.error, t.networkError);
         } finally {
             setLoading(false);
         }
@@ -137,41 +140,41 @@ export default function AddGame() {
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scroll}>
 
-                <Text style={styles.label}>Game Name *</Text>
+                <Text style={styles.label}>{t.gameName}</Text>
                 <TextInput 
                     style={styles.input} 
-                    placeholder="Elden Ring..." 
+                    placeholder={t.gameNamePlaceholder} 
                     placeholderTextColor={COLORS.formLabel}
                     value={name}
                     onChangeText={setName}
                 />
 
-                <Text style={styles.label}>Studio *</Text>
+                <Text style={styles.label}>{t.studioLabel}</Text>
                 <TextInput 
                     style={styles.input} 
-                    placeholder="FromSoftware" 
+                    placeholder={t.studioPlaceholder} 
                     placeholderTextColor={COLORS.formLabel}
                     value={studio}
                     onChangeText={setStudio}
                 />
 
-                <Text style={styles.label}>Publisher *</Text>
+                <Text style={styles.label}>{t.publisherLabel}</Text>
                 <TextInput 
                     style={styles.input} 
-                    placeholder="Bandai Namco" 
+                    placeholder={t.publisherPlaceholder} 
                     placeholderTextColor={COLORS.formLabel}
                     value={publisher}
                     onChangeText={setPublisher}
                 />
 
-                <Text style={styles.label}>Platforms *</Text>
+                <Text style={styles.label}>{t.platformsLabel}</Text>
                 <TouchableOpacity style={styles.input} onPress={() => setShowPlatformModal(true)}>
                     <Text style={{color: selectedPlatforms.length > 0 ? COLORS.text : COLORS.formLabel}}>
-                        {selectedPlatforms.length > 0 ? selectedPlatforms.join(', ') : 'Select platforms...'}
+                        {selectedPlatforms.length > 0 ? selectedPlatforms.join(', ') : t.selectPlatforms}
                     </Text>
                 </TouchableOpacity>
 
-                <Text style={styles.label}>Release Date *</Text>
+                <Text style={styles.label}>{t.releaseDateLabel}</Text>
                 <TouchableOpacity style={styles.input} onPress={() => setShowDatePicker(true)}>
                     <Text style={{color: COLORS.text}}>{release_date.toLocaleDateString()}</Text>
                 </TouchableOpacity>
@@ -186,10 +189,10 @@ export default function AddGame() {
                     />
                 )}
 
-                <Text style={styles.label}>Description</Text>
+                <Text style={styles.label}>{t.descriptionLabel}</Text>
                 <TextInput 
                     style={[styles.input, styles.textArea]} 
-                    placeholder="Game description..." 
+                    placeholder={t.descriptionPlaceholder} 
                     placeholderTextColor={COLORS.formLabel}
                     value={description}
                     onChangeText={setDescription}
@@ -197,38 +200,38 @@ export default function AddGame() {
                     numberOfLines={4}
                 />
 
-                <Text style={styles.label}>Banner Image * (31:10)</Text>
+                <Text style={styles.label}>{t.bannerImage}</Text>
                 <TouchableOpacity style={styles.imagePickerBtn} onPress={() => pickImage('banner')}>
                     {banner ? (
                         <Image source={{ uri: banner }} style={styles.imagePreview} />
                     ) : (
                         <View style={styles.imagePlaceholder}>
                             <MaterialIcons name="add-photo-alternate" size={40} color={COLORS.formLabel} />
-                            <Text style={styles.imagePlaceholderText}>Select Banner</Text>
+                            <Text style={styles.imagePlaceholderText}>{t.selectBanner}</Text>
                         </View>
                     )}
                 </TouchableOpacity>
 
-                <Text style={styles.label}>Logo Image * (1:1)</Text>
+                <Text style={styles.label}>{t.logoImage}</Text>
                 <TouchableOpacity style={styles.imagePickerBtn} onPress={() => pickImage('logo')}>
                     {logo ? (
                         <Image source={{ uri: logo }} style={styles.imagePreview} />
                     ) : (
                         <View style={styles.imagePlaceholder}>
                             <MaterialIcons name="add-photo-alternate" size={40} color={COLORS.formLabel} />
-                            <Text style={styles.imagePlaceholderText}>Select Logo</Text>
+                            <Text style={styles.imagePlaceholderText}>{t.selectLogo}</Text>
                         </View>
                     )}
                 </TouchableOpacity>
 
-                <Text style={styles.label}>Grid Image * (3:4)</Text>
+                <Text style={styles.label}>{t.gridImage}</Text>
                 <TouchableOpacity style={styles.imagePickerBtn} onPress={() => pickImage('grid')}>
                     {grid ? (
                         <Image source={{ uri: grid }} style={styles.imagePreview} />
                     ) : (
                         <View style={styles.imagePlaceholder}>
                             <MaterialIcons name="add-photo-alternate" size={40} color={COLORS.formLabel} />
-                            <Text style={styles.imagePlaceholderText}>Select Grid</Text>
+                            <Text style={styles.imagePlaceholderText}>{t.selectGrid}</Text>
                         </View>
                     )}
                 </TouchableOpacity>
@@ -237,7 +240,7 @@ export default function AddGame() {
                     {loading ? (
                         <ActivityIndicator color="white" />
                     ) : (
-                        <Text style={styles.submitText}>Submit Game</Text>
+                        <Text style={styles.submitText}>{t.submitGame}</Text>
                     )}
                 </TouchableOpacity>
             </ScrollView>
@@ -246,7 +249,7 @@ export default function AddGame() {
             <Modal visible={showPlatformModal} animationType="slide" transparent={true}>
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>Select Platforms</Text>
+                        <Text style={styles.modalTitle}>{t.selectPlatformsTitle}</Text>
                         <ScrollView>
                             {availablePlatforms.map((platform) => (
                                 <TouchableOpacity
@@ -264,7 +267,7 @@ export default function AddGame() {
                             ))}
                         </ScrollView>
                         <TouchableOpacity style={styles.closeBtn} onPress={() => setShowPlatformModal(false)}>
-                            <Text style={styles.closeText}>Done</Text>
+                            <Text style={styles.closeText}>{t.done}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>

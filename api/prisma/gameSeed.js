@@ -11,7 +11,7 @@ const THE_WITCHER_3 = {
     banner_id: null,
     logo_id: null,
     grid: "the_witcher_3_grid.png",
-    banner: "the_witcher_3_banner.png",
+    banner: "the_witcher_3_banner.jpg",
     logo: "the_witcher_3_logo.png"
 }
 const DESTINY_2 = {
