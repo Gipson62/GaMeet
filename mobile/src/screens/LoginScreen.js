@@ -90,9 +90,9 @@ export default function LoginScreen({ navigation }) {
                         keyboardShouldPersistTaps="handled"
                         showsVerticalScrollIndicator={false}
                     >
-                        <Text style={styles.title}>Connexion</Text>
+                        <Text style={globalStyles.title}>Connexion</Text>
 
-                        <Text style={styles.formLabel}>Email</Text>
+                        <Text style={globalStyles.formLabel}>Email</Text>
                         <View style={styles.inputContainer}>
                             <TextInput
                                 value={email}
@@ -106,7 +106,7 @@ export default function LoginScreen({ navigation }) {
                             />
                         </View>
 
-                        <Text style={styles.formLabel}>Mot de passe</Text>
+                        <Text style={globalStyles.formLabel}>Mot de passe</Text>
                         <View style={styles.inputContainer}>
                             <TextInput
                                 value={password}
@@ -127,14 +127,14 @@ export default function LoginScreen({ navigation }) {
                         {displayError ? <Text style={styles.error}>{displayError}</Text> : null}
 
                         <TouchableOpacity
-                            style={[styles.primaryButton, isLoading && { opacity: 0.7 }]}
+                            style={[globalStyles.submitBtn, isLoading && { opacity: 0.7 }]}
                             onPress={onSubmit}
                             disabled={isLoading}
                         >
                             {isLoading ? (
                                 <ActivityIndicator />
                             ) : (
-                                <Text style={styles.buttonText}>Se connecter</Text>
+                                <Text style={globalStyles.buttonText}>Se connecter</Text>
                             )}
                         </TouchableOpacity>
 
@@ -153,7 +153,6 @@ export default function LoginScreen({ navigation }) {
 }
 
 const styles = {
-    ...globalStyles,
     safe: {
         flex: 1,
         backgroundColor: COLORS.background,
