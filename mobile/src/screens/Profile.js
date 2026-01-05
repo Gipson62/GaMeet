@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { COLORS } from "../constants/theme";
-import { fetchMe, deleteMyAccount, buildPhotoUrl, buildPhotoUploadUrl } from "../services/api";
+import { fetchMe, deleteMyAccount, buildPhotoUploadUrl } from "../services/api";
 import { logout, setLanguage, updateUser } from "../store/slices/authSlice";
 import { TRANSLATIONS } from "../constants/translations";
 import { globalStyles } from '../styles/globalStyles';

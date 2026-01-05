@@ -17,7 +17,6 @@ export default function AddEvent() {
     const navigation = useNavigation();
     const route = useRoute();
     const { eventToEdit } = route.params || {};
-    const token = useSelector(state => state.auth.token);
     const language = useSelector(state => state.auth.language);
     const t = TRANSLATIONS[language || 'fr'];
 

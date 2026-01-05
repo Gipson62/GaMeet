@@ -1,7 +1,7 @@
 import { useState, useLayoutEffect, useCallback } from 'react';
 import { 
   View, Text, Image, ScrollView, TouchableOpacity, 
-  ActivityIndicator, Alert, Dimensions, Modal, TextInput
+  ActivityIndicator, Alert, Modal, TextInput
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
@@ -19,7 +19,6 @@ export default function EventDetails() {
   
   // Récupération du token et user depuis Redux
   const user = useSelector(state => state.auth.user);
-  const token = useSelector(state => state.auth.token);
   const language = useSelector(state => state.auth.language);
   const t = TRANSLATIONS[language || 'fr'];
 

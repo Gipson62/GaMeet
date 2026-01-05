@@ -16,8 +16,6 @@ export default function GameDetails() {
   const route = useRoute();
   const { gameId } = route.params;
   
-  const user = useSelector(state => state.auth.user);
-  const token = useSelector(state => state.auth.token);
   const language = useSelector(state => state.auth.language);
   const t = TRANSLATIONS[language || 'fr'];
 
