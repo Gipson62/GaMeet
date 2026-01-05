@@ -206,7 +206,13 @@ export default function EventList() {
             style={globalStyles.filterBtn}
             onPress={() => setShowMyEventsModal(true)}
           >
-            <Text style={[globalStyles.filterBtnText, myEventsFilter && { color: COLORS.text }]}>{myEventsFilter === 'history' ? (t.history || "Historique") : (t.myEvents || "Mes events")}</Text>
+            <Text style={[globalStyles.filterBtnText, myEventsFilter && { color: COLORS.text }]}>
+              {myEventsFilter === 'history' 
+                ? (t.history || "Historique") 
+                : (myEventsFilter === 'created' 
+                    ? (t.myEvents || "Mes events") 
+                    : (t.myActivities || "Mes activités"))}
+            </Text>
             {myEventsFilter && (
               <View style={globalStyles.badge}>
                 <Text style={globalStyles.badgeText}>✓</Text>
@@ -306,7 +312,7 @@ export default function EventList() {
         <View style={globalStyles.modalOverlayBottom}>
           <View style={globalStyles.modal}>
             <View style={globalStyles.modalHeader}>
-              <Text style={globalStyles.modalTitle}>{t.myEvents || "Mes events"}</Text>
+              <Text style={globalStyles.modalTitle}>{t.myActivities || "Mes activités"}</Text>
               <TouchableOpacity onPress={() => setShowMyEventsModal(false)}>
                 <MaterialIcons name="close" size={24} color={COLORS.text} />
               </TouchableOpacity>
