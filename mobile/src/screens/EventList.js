@@ -104,11 +104,9 @@ export default function EventList() {
   const getUserLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
-      console.log('Permission localisation refusée');
       return;
     }
     let location = await Location.getCurrentPositionAsync({});
-    console.log('Position utilisateur trouvée:', location.coords.latitude, location.coords.longitude);
     setUserLocation(location.coords);
   };
 
@@ -144,7 +142,6 @@ export default function EventList() {
         // Si on a réussi à obtenir des coordonnées (via DB ou géocodage)
         if (e._coords && e._coords.lat !== null) {
             const dist = getDistanceFromLatLonInKm(userLocation.latitude, userLocation.longitude, e._coords.lat, e._coords.lng);
-            console.log(`[Distance] ${e.name}: ${dist.toFixed(1)} km (Max: ${maxDistance})`);
             return dist <= maxDistance;
         }
         return true; // On garde l'événement si on n'a pas pu le localiser

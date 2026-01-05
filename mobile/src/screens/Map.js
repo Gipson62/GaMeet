@@ -122,7 +122,6 @@ export default function Map() {
         }, 1000);
       }
     } catch (error) {
-      console.log("Erreur localisation", error);
       // 3. Fallback sur la position initiale si tout échoue
       if (location && mapRef.current) {
         mapRef.current.animateToRegion(location, 1000);
