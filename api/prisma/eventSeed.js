@@ -107,7 +107,7 @@ const seedAllEvents = async (prisma, gameIds, userIds) => {
             name: "VALORANT LAN Party",
             description: "Tactical FPS showdown! 5v5 VALORANT matches with LAN setup for zero-latency competitive gameplay. Cash prizes for winners.",
             location: "Iesn - Henallux",
-            scheduled_date: new Date("2025-02-22T14:00:00"),
+            scheduled_date: new Date("2026-02-22T14:00:00"),
             max_capacity: 40,
             author: userIds[1], // BobGamer
             event_game: {
@@ -139,7 +139,7 @@ const seedAllEvents = async (prisma, gameIds, userIds) => {
             name: "Elden Ring Speedrun Challenge",
             description: "Test your skills in this Elden Ring speedrun competition! Categories: Any% and 100%. See who can beat the game the fastest!",
             location: "Gaming Café Bordeaux",
-            scheduled_date: new Date("2025-03-01T16:00:00"),
+            scheduled_date: new Date("2026-03-01T16:00:00"),
             max_capacity: 30,
             author: userIds[2], // Charlotte
             event_game: {
@@ -171,7 +171,7 @@ const seedAllEvents = async (prisma, gameIds, userIds) => {
             name: "Minecraft Creative Building Competition",
             description: "Show off your building skills! participant have 2 hours to create the best structure. Judged by community vote and creativity.",
             location: "Online Event",
-            scheduled_date: new Date("2025-03-08T18:00:00"),
+            scheduled_date: new Date("2026-03-08T18:00:00"),
             max_capacity: 100,
             author: userIds[3], // David
             event_game: {
@@ -204,7 +204,7 @@ const seedAllEvents = async (prisma, gameIds, userIds) => {
             name: "Overwatch 2 Championship Series",
             description: "6v6 competitive Overwatch 2 action! Teams battle through group stages to reach the finals. Huge prize pool and sponsorships!",
             location: "AccorHotels Arena Paris",
-            scheduled_date: new Date("2025-03-15T10:00:00"),
+            scheduled_date: new Date("2026-03-15T10:00:00"),
             max_capacity: 72,
             author: userIds[0], // Alice
             event_game: {
@@ -237,7 +237,7 @@ const seedAllEvents = async (prisma, gameIds, userIds) => {
             name: "CS2 Competitive Bootcamp",
             description: "Intensive 3-day Counter-Strike 2 training bootcamp with professional coaches. Improve your skills and compete in finals tournament.",
             location: "E-Sports Academy Marseille",
-            scheduled_date: new Date("2025-03-22T09:00:00"),
+            scheduled_date: new Date("2026-03-22T09:00:00"),
             max_capacity: 35,
             author: userIds[1], // BobGamer
             event_game: {
@@ -269,7 +269,7 @@ const seedAllEvents = async (prisma, gameIds, userIds) => {
             name: "FFXIV Ultimate Raid Showcase",
             description: "Join our community raid nights! Tackle challenging Ultimate raids in FFXIV with coordinated teams. All skill levels welcome!",
             location: "Discord/In-Game",
-            scheduled_date: new Date("2025-03-29T20:00:00"),
+            scheduled_date: new Date("2026-03-29T20:00:00"),
             max_capacity: 80,
             author: userIds[2], // Charlotte
             event_game: {
@@ -301,7 +301,7 @@ const seedAllEvents = async (prisma, gameIds, userIds) => {
             name: "The Desert Perpetual Destiny Raid Prog",
             description: "The new Destiny 2 raid is out! Join us to tackle the raid together. Beginners welcome, let's learn the mechanics as a team!",
             location: "Discord Server/ In-Game",
-            scheduled_date: new Date("2025-07-15T15:00:00"),
+            scheduled_date: new Date("2026-07-15T15:00:00"),
             max_capacity: 60,
             author: userIds[3], // David
             event_game: {

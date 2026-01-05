@@ -200,6 +200,12 @@ const styles = {
         flex: 1,
         backgroundColor: COLORS.background,
     },
+    container: {
+        flex: 1,
+        backgroundColor: COLORS.background,
+        paddingTop: 60,
+        paddingHorizontal: 16,
+    },
     profile: {
         alignItems: "center",
         marginBottom: 24,

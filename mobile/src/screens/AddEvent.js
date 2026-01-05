@@ -200,28 +200,28 @@ export default function AddEvent() {
     };
 
     return (
-        <View style={styles.container}>
-            <ScrollView contentContainerStyle={styles.scroll}>
+        <View style={globalStyles.container}>
+            <ScrollView contentContainerStyle={globalStyles.scroll}>
 
-                <Text style={styles.formLabel}>{t.eventNameLabel}</Text>
+                <Text style={globalStyles.formLabel}>{t.eventNameLabel}</Text>
                 <TextInput 
-                    style={styles.textInput} 
+                    style={globalStyles.input} 
                     placeholder={t.eventNamePlaceholder} 
                     placeholderTextColor={COLORS.formLabel}
                     value={name}
                     onChangeText={setName}
                 />
 
-                <Text style={styles.formLabel}>{t.locationLabel}</Text>
+                <Text style={globalStyles.formLabel}>{t.locationLabel}</Text>
                 <TextInput 
-                    style={styles.textInput} 
+                    style={globalStyles.input} 
                     placeholder={t.locationPlaceholder} 
                     placeholderTextColor={COLORS.formLabel}
                     value={location}
                     onChangeText={setLocation}
                 />
 
-                <Text style={styles.formLabel}>{t.dateTimeLabel}</Text>
+                <Text style={globalStyles.formLabel}>{t.dateTimeLabel}</Text>
                 <View style={styles.dateRow}>
                     <TouchableOpacity style={styles.dateBtn} onPress={() => setShowDatePicker(true)}>
                         <Text style={styles.dateText}>{date.toLocaleDateString()}</Text>
@@ -251,16 +251,16 @@ export default function AddEvent() {
                     />
                 )}
 
-                <Text style={styles.formLabel}>{t.gamesLabel}</Text>
-                <TouchableOpacity style={styles.textInput} onPress={() => setGameModalVisible(true)}>
+                <Text style={globalStyles.formLabel}>{t.gamesLabel}</Text>
+                <TouchableOpacity style={globalStyles.input} onPress={() => setGameModalVisible(true)}>
                     <Text style={{color: selectedGames.length ? COLORS.text : COLORS.formLabel}}>
                         {getSelectedGameNames()}
                     </Text>
                 </TouchableOpacity>
 
-                <Text style={styles.formLabel}>{t.capacityLabel}</Text>
+                <Text style={globalStyles.formLabel}>{t.capacityLabel}</Text>
                 <TextInput 
-                    style={styles.textInput} 
+                    style={globalStyles.input} 
                     placeholder={t.capacityPlaceholder} 
                     placeholderTextColor={COLORS.formLabel}
                     value={capacity}
@@ -268,9 +268,9 @@ export default function AddEvent() {
                     keyboardType="numeric"
                 />
 
-                <Text style={styles.formLabel}>{t.descriptionLabel || "Description"}</Text>
+                <Text style={globalStyles.formLabel}>{t.descriptionLabel || "Description"}</Text>
                 <TextInput 
-                    style={[styles.textInput, styles.textArea]} 
+                    style={[globalStyles.input, globalStyles.textArea]} 
                     placeholder={t.eventDescriptionPlaceholder} 
                     placeholderTextColor={COLORS.formLabel}
                     value={description}
@@ -279,7 +279,7 @@ export default function AddEvent() {
                     numberOfLines={4}
                 />
 
-                <Text style={styles.formLabel}>{t.photosLabel || t.photos || "Photos"}</Text>
+                <Text style={globalStyles.formLabel}>{t.photosLabel || t.photos || "Photos"}</Text>
                 <View style={styles.photosContainer}>
                     {photos.map((p, index) => (
                         <View key={index} style={styles.photoWrapper}>
@@ -294,15 +294,15 @@ export default function AddEvent() {
                     </TouchableOpacity>
                 </View>
 
-                <TouchableOpacity style={styles.submitBtn} onPress={handleCreate} disabled={loading}>
-                    {loading ? <ActivityIndicator color="white" /> : <Text style={styles.submitText}>{eventToEdit ? t.editEventTitle : t.addEventTitle}</Text>}
+                <TouchableOpacity style={globalStyles.submitBtn} onPress={handleCreate} disabled={loading}>
+                    {loading ? <ActivityIndicator color="white" /> : <Text style={globalStyles.buttonText}>{eventToEdit ? t.editEventTitle : t.addEventTitle}</Text>}
                 </TouchableOpacity>
             </ScrollView>
 
             <Modal visible={gameModalVisible} animationType="slide" transparent={true}>
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>{t.selectGamesTitle}</Text>
+                <View style={globalStyles.modalOverlay}>
+                    <View style={globalStyles.modalContent}>
+                        <Text style={globalStyles.modalTitle}>{t.selectGamesTitle}</Text>
                         <FlatList
                             data={allGames}
                             keyExtractor={item => item.id.toString()}
@@ -315,8 +315,8 @@ export default function AddEvent() {
                                 </TouchableOpacity>
                             )}
                         />
-                        <TouchableOpacity style={styles.closeBtn} onPress={() => setGameModalVisible(false)}>
-                            <Text style={styles.closeText}>{t.validate}</Text>
+                        <TouchableOpacity style={globalStyles.closeBtn} onPress={() => setGameModalVisible(false)}>
+                            <Text style={globalStyles.closeText}>{t.validate}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -326,9 +326,6 @@ export default function AddEvent() {
 }
 
 const styles = {
-    ...globalStyles,
-    scroll: { padding: 20 },
-    header: { fontSize: 24, fontWeight: 'bold', color: COLORS.text, marginBottom: 20, textAlign: 'center' },
     dateRow: { flexDirection: 'row', gap: 10 },
     dateBtn: {
         flex: 1,
@@ -342,21 +339,9 @@ const styles = {
         borderColor: COLORS.border
     },
     dateText: { color: COLORS.text },
-    submitBtn: {
-        backgroundColor: COLORS.button,
-        padding: 16,
-        borderRadius: 12,
-        alignItems: 'center',
-        marginTop: 30,
-        marginBottom: 20
-    },
-    submitText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
-    modalTitle: { color: COLORS.text, fontSize: 18, fontWeight: 'bold', marginBottom: 15, textAlign: 'center' },
     gameItem: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 12, borderBottomWidth: 1, borderColor: COLORS.border },
     gameText: { color: COLORS.text, fontSize: 16 },
     selectedGameText: { color: COLORS.button, fontWeight: 'bold' },
-    closeBtn: { backgroundColor: COLORS.button, padding: 12, borderRadius: 8, alignItems: 'center', marginTop: 15 },
-    closeText: { color: 'white', fontWeight: 'bold' },
     photosContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 5 },
     photoWrapper: { position: 'relative' },
     photoThumb: { width: 80, height: 80, borderRadius: 8 },
