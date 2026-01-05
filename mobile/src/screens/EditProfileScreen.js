@@ -114,13 +114,13 @@ export default function EditProfileScreen({ navigation }) {
     };
 
     return (
-        <SafeAreaView style={styles.safe}>
+        <SafeAreaView style={globalStyles.container}>
             <KeyboardAvoidingView
                 style={{ flex: 1 }}
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
             >
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                    <ScrollView contentContainerStyle={styles.scroll}>
+                    <ScrollView contentContainerStyle={[globalStyles.scroll, { paddingTop: 60 }]}>
                         <View style={styles.headerRow}>
                             <TouchableOpacity onPress={() => navigation.goBack()}>
                                 <Text style={styles.cancelText}>{t.cancel}</Text>
@@ -152,18 +152,18 @@ export default function EditProfileScreen({ navigation }) {
                         </View>
 
                         <View style={styles.form}>
-                            <Text style={styles.formLabel}>Pseudo</Text>
+                            <Text style={globalStyles.formLabel}>Pseudo</Text>
                             <TextInput
-                                style={styles.textInput}
+                                style={globalStyles.input}
                                 value={pseudo}
                                 onChangeText={setPseudo}
                                 placeholder="Pseudo"
                                 placeholderTextColor={COLORS.formLabel}
                             />
 
-                            <Text style={styles.formLabel}>Bio</Text>
+                            <Text style={globalStyles.formLabel}>Bio</Text>
                             <TextInput
-                                style={[styles.textInput, styles.textArea]}
+                                style={[globalStyles.input, globalStyles.textArea]}
                                 value={bio}
                                 onChangeText={setBio}
                                 placeholder="Parlez-nous de vous..."
@@ -181,11 +181,6 @@ export default function EditProfileScreen({ navigation }) {
 }
 
 const styles = {
-    ...globalStyles,
-    safe: {
-        flex: 1,
-        backgroundColor: COLORS.background,
-    },
     headerRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -256,8 +251,5 @@ const styles = {
     },
     form: {
         gap: 15,
-    },
-    textArea: {
-        minHeight: 100,
     },
 };

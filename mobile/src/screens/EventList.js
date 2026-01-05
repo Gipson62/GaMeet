@@ -181,10 +181,10 @@ export default function EventList() {
       </View>
 
       <View style={styles.filterBar}>
-        <Text style={styles.filterLabel}>{t.filters || "Filtres"}</Text>
+        <Text style={styles.filterLabel}>{t.sortBy || "Filtres"}</Text>
         
         <TouchableOpacity style={globalStyles.filterBtn} onPress={() => setModalVisible(true)}>
-          <Text style={globalStyles.filterBtnText}>{selectedGame ? selectedGame : (t.game || "Jeu")}</Text>
+          <Text style={globalStyles.filterBtnText}>{(t.game || "Jeu")}</Text>
           {selectedGame && (
             <View style={globalStyles.badge}>
               <Text style={globalStyles.badgeText}>1</Text>

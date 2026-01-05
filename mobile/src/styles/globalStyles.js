@@ -273,21 +273,6 @@ export const globalStyles = StyleSheet.create({
     color: COLORS.text,
     fontWeight: '600',
   },
-  chip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: COLORS.button,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 16,
-    marginRight: 8,
-    gap: 6,
-  },
-  chipText: {
-    color: COLORS.text,
-    fontSize: 12,
-    fontWeight: '600',
-  },
   badge: {
     backgroundColor: COLORS.button,
     borderRadius: 10,
