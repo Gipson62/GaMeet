@@ -40,6 +40,7 @@ export const getAllEvents = async (req, res) => {
           }
         },
         event_photo: { include: { photo: true } },
+        participant: { include: { User: { select: { id: true } } } },
         _count: {
           select: { participant: true } // récupère le nombre d'inscrits
         }

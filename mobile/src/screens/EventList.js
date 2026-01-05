@@ -23,10 +23,11 @@ export default function EventList() {
   const [selectedGame, setSelectedGame] = useState(null);
   const [maxDistance, setMaxDistance] = useState(50); // km par défaut
   const [userLocation, setUserLocation] = useState(null);
-  const [showMyEvents, setShowMyEvents] = useState(false);
+  const [myEventsFilter, setMyEventsFilter] = useState(null); // 'created', 'history', null
   
   // Modal
   const [modalVisible, setModalVisible] = useState(false);
+  const [showMyEventsModal, setShowMyEventsModal] = useState(false);
   const [availableGames, setAvailableGames] = useState([]);
 
   useEffect(() => {
@@ -41,7 +42,7 @@ export default function EventList() {
 
   useEffect(() => {
     applyFilters();
-  }, [searchText, selectedGame, maxDistance, events, userLocation, showMyEvents]);
+  }, [searchText, selectedGame, maxDistance, events, userLocation, myEventsFilter]);
 
   const loadEvents = async () => {
     try {
@@ -150,9 +151,21 @@ export default function EventList() {
       });
     }
 
-    // Filtre Mes événements
-    if (showMyEvents && user) {
-      result = result.filter(e => e.author === user.id);
+    // Filtre Mes événements / Historique
+    if (user && myEventsFilter) {
+      if (myEventsFilter === 'created') {
+        // Mes événements (Créés)
+        result = result.filter(e => e.author === user.id);
+      } else if (myEventsFilter === 'history') {
+        // Mon historique (Participations passées)
+        const now = new Date();
+        result = result.filter(e => {
+          const isPast = new Date(e.scheduled_date) < now;
+          const isParticipant = e.participant && e.participant.some(p => p.User && p.User.id === user.id);
+          const isAuthor = e.author === user.id;
+          return isPast && (isParticipant || isAuthor);
+        });
+      }
     }
 
     setFilteredEvents(result);
@@ -197,10 +210,10 @@ export default function EventList() {
         {user && (
           <TouchableOpacity 
             style={globalStyles.filterBtn}
-            onPress={() => setShowMyEvents(!showMyEvents)}
+            onPress={() => setShowMyEventsModal(true)}
           >
-            <Text style={[globalStyles.filterBtnText, showMyEvents && { color: COLORS.text }]}>{t.myEvents || "Mes events"}</Text>
-            {showMyEvents && (
+            <Text style={[globalStyles.filterBtnText, myEventsFilter && { color: COLORS.text }]}>{myEventsFilter === 'history' ? (t.history || "Historique") : (t.myEvents || "Mes events")}</Text>
+            {myEventsFilter && (
               <View style={globalStyles.badge}>
                 <Text style={globalStyles.badgeText}>✓</Text>
               </View>
@@ -285,6 +298,39 @@ export default function EventList() {
             <TouchableOpacity style={globalStyles.doneBtn} onPress={() => setModalVisible(false)}>
               <Text style={globalStyles.doneBtnText}>{t.done || "Terminé"}</Text>
             </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* My Events Filter Modal */}
+      <Modal
+        visible={showMyEventsModal}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowMyEventsModal(false)}
+      >
+        <View style={globalStyles.modalOverlayBottom}>
+          <View style={globalStyles.modal}>
+            <View style={globalStyles.modalHeader}>
+              <Text style={globalStyles.modalTitle}>{t.myEvents || "Mes events"}</Text>
+              <TouchableOpacity onPress={() => setShowMyEventsModal(false)}>
+                <MaterialIcons name="close" size={24} color={COLORS.text} />
+              </TouchableOpacity>
+            </View>
+            <View style={{ paddingBottom: 20 }}>
+              <TouchableOpacity style={[globalStyles.option, !myEventsFilter && globalStyles.optionActive, { paddingHorizontal: 20 }]} onPress={() => { setMyEventsFilter(null); setShowMyEventsModal(false); }}>
+                <Text style={globalStyles.optionText}>{t.showAll || "Tout afficher"}</Text>
+                {!myEventsFilter && <MaterialIcons name="check" size={20} color={COLORS.button} />}
+              </TouchableOpacity>
+              <TouchableOpacity style={[globalStyles.option, myEventsFilter === 'created' && globalStyles.optionActive, { paddingHorizontal: 20 }]} onPress={() => { setMyEventsFilter('created'); setShowMyEventsModal(false); }}>
+                <Text style={globalStyles.optionText}>{t.myEvents || "Mes événements"}</Text>
+                {myEventsFilter === 'created' && <MaterialIcons name="check" size={20} color={COLORS.button} />}
+              </TouchableOpacity>
+              <TouchableOpacity style={[globalStyles.option, myEventsFilter === 'history' && globalStyles.optionActive, { paddingHorizontal: 20 }]} onPress={() => { setMyEventsFilter('history'); setShowMyEventsModal(false); }}>
+                <Text style={globalStyles.optionText}>{t.history || "Mon historique"}</Text>
+                {myEventsFilter === 'history' && <MaterialIcons name="check" size={20} color={COLORS.button} />}
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
