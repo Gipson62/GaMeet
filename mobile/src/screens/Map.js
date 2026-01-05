@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { 
   View, 
   StyleSheet, 
@@ -14,8 +14,8 @@ import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { API_URL } from '../config';
 import { COLORS } from '../constants/theme';
+import { buildPhotoUploadUrl, fetchEvents } from '../services/api';
 
 const { height } = Dimensions.get('window');
 
@@ -44,7 +44,7 @@ export default function Map() {
       };
       setLocation(userCoords);
 
-      fetchEvents(userCoords);
+      loadEvents(userCoords);
     })();
   }, []);
 
@@ -60,10 +60,9 @@ export default function Map() {
     return R * c;
   }
 
-  const fetchEvents = async (userLoc) => {
+  const loadEvents = async (userLoc) => {
     try {
-      const response = await fetch(`${API_URL}/event`);
-      const rawData = await response.json();
+      const rawData = await fetchEvents();
 
       const data = await Promise.all(rawData.map(async (event) => {
         let coords = null;
@@ -145,8 +144,8 @@ export default function Map() {
   const renderEventItem = ({ item }) => {
     const mainGame = item.event_game?.[0]?.game;
     const imageUrl = mainGame?.logo?.url 
-        ? `${API_URL.replace('/v1', '')}/uploads/${mainGame.logo.url}`
-        : (item.event_photo?.[0]?.photo?.url ? `${API_URL.replace('/v1', '')}/uploads/${item.event_photo[0].photo.url}` : null);
+        ? buildPhotoUploadUrl(mainGame.logo.url)
+        : (item.event_photo?.[0]?.photo?.url ? buildPhotoUploadUrl(item.event_photo[0].photo.url) : null);
 
     return (
         <TouchableOpacity 

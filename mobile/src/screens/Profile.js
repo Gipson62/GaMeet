@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
     View,
     Text,
@@ -12,9 +12,8 @@ import {
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { COLORS } from "../constants/theme";
-import { fetchMe, deleteMyAccount } from "../services/api";
+import { fetchMe, deleteMyAccount, buildPhotoUrl, buildPhotoUploadUrl } from "../services/api";
 import { logout, setLanguage, updateUser } from "../store/slices/authSlice";
-import { API_URL, BASE_URL } from "../config";
 import { TRANSLATIONS } from "../constants/translations";
 import { globalStyles } from '../styles/globalStyles';
 
@@ -108,7 +107,7 @@ export default function Profile({ navigation }) {
     // Construction de l'URL de l'avatar
     // On affiche l'image si elle existe (même si c'est l'image par défaut)
     const avatarUri = me?.photo?.url 
-        ? `${BASE_URL}/uploads/${me.photo.url}`
+        ? buildPhotoUploadUrl(me.photo.url)
         : null;
 
     return (

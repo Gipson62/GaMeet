@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect, useCallback } from 'react';
+import { useState, useLayoutEffect, useCallback } from 'react';
 import { 
   View, Text, Image, ScrollView, TouchableOpacity, 
   ActivityIndicator, Alert
@@ -6,9 +6,8 @@ import {
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useSelector } from 'react-redux';
-import { BASE_URL } from '../config';
 import { COLORS } from '../constants/theme';
-import { api, buildPhotoUrl, fetchGame } from '../services/api';
+import { buildPhotoUrl, fetchGame } from '../services/api';
 import { TRANSLATIONS } from '../constants/translations';
 import { globalStyles } from '../styles/globalStyles';
 

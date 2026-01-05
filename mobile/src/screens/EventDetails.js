@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect, useCallback } from 'react';
+import { useState, useLayoutEffect, useCallback } from 'react';
 import { 
   View, Text, Image, ScrollView, TouchableOpacity, 
   ActivityIndicator, Alert, Dimensions, Modal, TextInput
@@ -8,10 +8,9 @@ import * as Location from 'expo-location';
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useSelector } from 'react-redux';
-import {API_URL, BASE_URL} from '../config';
 import { TRANSLATIONS } from '../constants/translations';
-import { COLORS } from '../constants/theme';
 import { globalStyles } from '../styles/globalStyles';
+import { fetchEventById, joinEvent, leaveEvent, addReview, deleteReview, buildPhotoUrl, buildPhotoUploadUrl } from '../services/api';
 
 const { width } = Dimensions.get('window');
 
@@ -62,12 +61,8 @@ export default function EventDetails() {
 
   const fetchEventDetails = async () => {
     try {
-      const response = await fetch(`${API_URL}/event/${id}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setEvent(data);
+      const data = await fetchEventById(id);
+      setEvent(data);
         
         // Géocodage de l'adresse pour la carte
         if (data.location) {
@@ -85,10 +80,6 @@ export default function EventDetails() {
              }
           }
         }
-      } else {
-        Alert.alert(t.error, t.unableToLoadEvent);
-        navigation.goBack();
-      }
     } catch (error) {
       console.error(error);
       Alert.alert(t.error, t.networkError);
@@ -116,25 +107,14 @@ export default function EventDetails() {
         // Vérifier si déjà inscrit
         const isParticipant = event.participant.some(p => p.User.id === user.id);
         
-        // Détermine la méthode et l'endpoint (POST pour rejoindre, DELETE pour quitter)
-        const method = isParticipant ? 'DELETE' : 'POST';
-        const endpoint = isParticipant ? 'leave' : 'join';
-        
-        const response = await fetch(`${API_URL}/event/${id}/${endpoint}`, {
-            method: method, 
-            headers: { 
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (response.ok || response.status === 201 || response.status === 204) {
-            Alert.alert(t.success, isParticipant ? t.unsubscribeSuccess : t.subscribeSuccess);
-            fetchEventDetails(); // Rafraîchir les données
+        if (isParticipant) {
+            await leaveEvent(id);
+            Alert.alert(t.success, t.unsubscribeSuccess);
         } else {
-            const errData = await response.json();
-            Alert.alert(t.error, errData.message || t.errorOccurred);
+            await joinEvent(id);
+            Alert.alert(t.success, t.subscribeSuccess);
         }
+        fetchEventDetails();
     } catch (error) {
         Alert.alert(t.error, t.networkError);
     } finally {
@@ -172,25 +152,12 @@ export default function EventDetails() {
     
     setSubmittingReview(true);
     try {
-        const response = await fetch(`${API_URL}/event/${id}/review`, {
-            method: 'POST',
-            headers: { 
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ note: rating, description: reviewComment })
-        });
-
-        if (response.ok) {
-            Alert.alert(t.success, t.reviewPublished);
-            setReviewModalVisible(false);
-            setRating(0);
-            setReviewComment("");
-            fetchEventDetails();
-        } else {
-            const data = await response.json();
-            Alert.alert(t.error, data.message || t.unableToPublishReview);
-        }
+        await addReview(id, { note: rating, description: reviewComment });
+        Alert.alert(t.success, t.reviewPublished);
+        setReviewModalVisible(false);
+        setRating(0);
+        setReviewComment("");
+        fetchEventDetails();
     } catch (error) {
         Alert.alert(t.error, t.networkError);
     } finally {
@@ -209,19 +176,9 @@ export default function EventDetails() {
           style: "destructive",
           onPress: async () => {
             try {
-              const response = await fetch(`${API_URL}/review/${reviewId}`, {
-                method: 'DELETE',
-                headers: { 
-                  'Authorization': `Bearer ${token}`
-                }
-              });
-              
-              if (response.ok || response.status === 204) {
-                Alert.alert(t.success, t.reviewDeleted);
-                fetchEventDetails();
-              } else {
-                Alert.alert(t.error, t.unableToDeleteReview);
-              }
+              await deleteReview(reviewId);
+              Alert.alert(t.success, t.reviewDeleted);
+              fetchEventDetails();
             } catch (error) {
               Alert.alert(t.error, t.networkError);
             }
@@ -251,16 +208,16 @@ export default function EventDetails() {
   
   // Construction de l'URL de l'image
   const mainGame = event.event_game?.[0]?.game;
-  const bannerUrl = mainGame?.banner?.url 
-    ? `${BASE_URL}/uploads/${mainGame.banner.url}`
-    : (event.event_photo?.[0]?.photo?.url ? `${API_URL.replace('/v1', '')}/uploads/${event.event_photo[0].photo.url}` : null);
+  const bannerUrl = mainGame?.banner?.id 
+    ? buildPhotoUrl(mainGame.banner.id)
+    : (event.event_photo?.[0]?.photo?.id ? buildPhotoUrl(event.event_photo[0].photo.id) : null);
 
   const date = new Date(event.scheduled_date);
   const formattedDate = date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
 
   // Avatar de l'organisateur
   const organizerAvatarUrl = event.User?.photo?.url 
-    ? `${API_URL.replace('/v1', '')}/uploads/${event.User.photo.url}` 
+    ? buildPhotoUploadUrl(event.User.photo.url)
     : null;
 
   return (
@@ -282,7 +239,7 @@ export default function EventDetails() {
                     {event.event_game && event.event_game.length > 0 ? (
                         event.event_game.map((eg, index) => {
                             const g = eg.game;
-                            const logoUrl = g?.logo?.url ? `${API_URL.replace('/v1', '')}/uploads/${g.logo.url}` : null;
+                            const logoUrl = g?.logo?.id ? buildPhotoUrl(g.logo.id) : null;
                             return (
                                 <View key={index} style={styles.gameContainer}>
                                     {logoUrl ? (
@@ -344,7 +301,7 @@ export default function EventDetails() {
                     {event.event_photo.map((ep, index) => (
                         <Image 
                             key={index}
-                            source={{ uri: `${API_URL.replace('/v1', '')}/uploads/${ep.photo.url}` }}
+                            source={{ uri: buildPhotoUrl(ep.photo.id) }}
                             style={styles.eventPhoto}
                         />
                     ))}

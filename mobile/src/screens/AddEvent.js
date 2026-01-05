@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { 
     View, Text, TextInput, ScrollView, TouchableOpacity, 
     Alert, ActivityIndicator, Modal, FlatList, Platform, Image
@@ -8,7 +8,6 @@ import * as ImagePicker from 'expo-image-picker';
 import { useSelector } from 'react-redux';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { API_URL } from '../config';
 import { COLORS } from '../constants/theme';
 import { TRANSLATIONS } from '../constants/translations';
 import { globalStyles } from '../styles/globalStyles';

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { API_URL } from "../config";
+import { API_URL, BASE_URL } from "../config";
 
 export const api = axios.create({
     baseURL: API_URL,
@@ -13,6 +13,7 @@ export const setAuthToken = (token) => {
 };
 
 export const buildPhotoUrl = (id) => `${API_URL}/photo/${id}`;
+export const buildPhotoUploadUrl = (url) => `${BASE_URL}/uploads/${url}`;
 
 // ------- Calls API -------
 
@@ -85,5 +86,35 @@ export const updateEvent = async (eventData) => {
 
 export const addEvent = async (eventData) => {
     const res = await api.post("/event", eventData);
+    return res.data;
+}
+
+export const fetchEvents = async () => {
+    const res = await api.get("/event");
+    return res.data;
+}
+
+export const fetchEventById = async (eventId) => {
+    const res = await api.get(`/event/${eventId}`);
+    return res.data;
+}
+
+export const joinEvent = async (eventId) => {
+    const res = await api.post(`/event/${eventId}/join`);
+    return res.data;
+}
+
+export const leaveEvent = async (eventId) => {
+    const res = await api.delete(`/event/${eventId}/leave`);
+    return res.data;
+}
+
+export const addReview = async (eventId, reviewData) => {
+    const res = await api.post(`/event/${eventId}/review`, reviewData);
+    return res.data;
+}
+
+export const deleteReview = async (reviewId) => {
+    const res = await api.delete(`/review/${reviewId}`);
     return res.data;
 }
