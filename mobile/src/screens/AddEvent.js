@@ -12,6 +12,7 @@ import { API_URL } from '../config';
 import { COLORS } from '../constants/theme';
 import { TRANSLATIONS } from '../constants/translations';
 import { globalStyles } from '../styles/globalStyles';
+import { addEvent, addPhoto, buildPhotoUrl, fetchGames, updateEvent } from '../services/api';
 
 export default function AddEvent() {
     const navigation = useNavigation();
@@ -41,38 +42,31 @@ export default function AddEvent() {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        fetchGames();
-        if (eventToEdit) {
-            setName(eventToEdit.name);
-            setLocation(eventToEdit.location);
-            setDescription(eventToEdit.description || '');
-            setCapacity(eventToEdit.max_capacity ? String(eventToEdit.max_capacity) : '');
-            setDate(new Date(eventToEdit.scheduled_date));
-            if (eventToEdit.event_game) {
-                setSelectedGames(eventToEdit.event_game.map(eg => eg.game.id));
+        const loadData = async () => {
+            const games = await fetchGames();
+            setAllGames(games);
+            if (eventToEdit) {
+                setName(eventToEdit.name);
+                setLocation(eventToEdit.location);
+                setDescription(eventToEdit.description || '');
+                setCapacity(eventToEdit.max_capacity ? String(eventToEdit.max_capacity) : '');
+                setDate(new Date(eventToEdit.scheduled_date));
+                if (eventToEdit.event_game) {
+                    setSelectedGames(eventToEdit.event_game.map(eg => eg.game.id));
+                }
+                if (eventToEdit.event_photo) {
+                    setPhotos(eventToEdit.event_photo.map(ep => ({
+                        id: ep.photo.id,
+                        uri: buildPhotoUrl(ep.photo.id)
+                    })));
+                }
+                // Mise à jour du titre de la page via la navigation
+                navigation.setOptions({ title: t.editEventTitle });
             }
-            if (eventToEdit.event_photo) {
-                setPhotos(eventToEdit.event_photo.map(ep => ({
-                    id: ep.photo.id,
-                    uri: `${API_URL.replace('/v1', '')}/uploads/${ep.photo.url}`
-                })));
-            }
-            // Mise à jour du titre de la page via la navigation
-            navigation.setOptions({ title: t.editEventTitle });
-        }
+        };
+        
+        loadData();
     }, [eventToEdit, t]);
-
-    const fetchGames = async () => {
-        try {
-            const response = await fetch(`${API_URL}/game`);
-            if (response.ok) {
-                const data = await response.json();
-                setAllGames(data);
-            }
-        } catch (error) {
-            console.error("Erreur chargement jeux", error);
-        }
-    };
 
     const handleCreate = async () => {
         if (!name || !location) {
@@ -96,18 +90,8 @@ export default function AddEvent() {
                         type: 'image/jpeg',
                     });
 
-                    const uploadRes = await fetch(`${API_URL}/photo`, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                        },
-                        body: formData
-                    });
-
-                    if (uploadRes.ok) {
-                        const data = await uploadRes.json();
-                        finalPhotoIds.push(data.photo.id);
-                    }
+                    const uploadedPhoto = await addPhoto(formData);
+                    finalPhotoIds.push(uploadedPhoto.photo.id);
                 }
             }
 
@@ -121,26 +105,15 @@ export default function AddEvent() {
                 photo_id: finalPhotoIds
             };
 
-            const url = eventToEdit ? `${API_URL}/event/${eventToEdit.id}` : `${API_URL}/event`;
-            const method = eventToEdit ? 'PATCH' : 'POST';
-
-            const response = await fetch(url, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(payload)
-            });
-
-            if (response.ok) {
-                Alert.alert(t.success, eventToEdit ? t.eventModified : t.eventCreated);
-                navigation.goBack();
-                // Idéalement, déclencher un rafraîchissement de la liste ici
+            if (eventToEdit) {
+                payload.id = eventToEdit.id; 
+                await updateEvent(payload);
             } else {
-                const err = await response.json();
-                Alert.alert(t.error, err.message || t.unableToCreateEvent);
+                await addEvent(payload);
             }
+
+            Alert.alert(t.success, eventToEdit ? t.eventModified : t.eventCreated);
+            navigation.goBack();
         } catch (error) {
             Alert.alert(t.error, t.networkError);
         } finally {

@@ -63,3 +63,27 @@ export const fetchGame = async (gameId) => {
     const res = await api.get(`/game/${gameId}`);
     return res.data;
 }
+
+export const addGameWithPhotos = async (gameData) => {
+    const res = await api.post("/game/with-photos", gameData, {
+        headers: { "Content-Type": "multipart/form-data" },
+    });
+    return res.data;
+}
+
+export const addPhoto = async (photoData) => {
+    const res = await api.post("/photo", photoData, {
+        headers: { "Content-Type": "multipart/form-data" },
+    });
+    return res.data;
+}
+
+export const updateEvent = async (eventData) => {
+    const res = await api.patch(`/event/${eventData.id}`, eventData);
+    return res.data;
+}
+
+export const addEvent = async (eventData) => {
+    const res = await api.post("/event", eventData);
+    return res.data;
+}
