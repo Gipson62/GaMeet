@@ -222,25 +222,6 @@ export default function GameList() {
         </TouchableOpacity>
       </View>
 
-      {(selectedTags.length > 0 || selectedPlatforms.length > 0) && (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.activeFilters}>
-          {[...selectedPlatforms, ...selectedTags].map(filter => (
-            <View key={filter} style={styles.chip}>
-              <Text style={styles.chipText}>{filter}</Text>
-              <TouchableOpacity onPress={() => {
-                if (selectedPlatforms.includes(filter)) togglePlatform(filter);
-                if (selectedTags.includes(filter)) toggleTag(filter);
-              }}>
-                <MaterialIcons name="close" size={14} color={COLORS.text} />
-              </TouchableOpacity>
-            </View>
-          ))}
-          <TouchableOpacity onPress={clearFilters} style={styles.clearBtn}>
-            <Text style={styles.clearText}>{t.clearAll}</Text>
-          </TouchableOpacity>
-        </ScrollView>
-      )}
-
       <FlatList
         data={filteredGames}
         renderItem={renderGameCard}
