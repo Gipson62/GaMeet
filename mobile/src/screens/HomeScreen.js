@@ -155,64 +155,61 @@ export default function HomeScreen() {
     return (
         <View style={styles.container}>
             <StatusBar barStyle="light-content" />
-            <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-                
-                {/* 1. Hero Section */}
-                <View style={styles.header}>
-                    <View>
-                        <Text style={styles.greeting}>{t.hello || 'Bonjour'} {user?.pseudo || t.player || 'Joueur'} !</Text>
-                        <Text style={styles.subtitle}>{t.welcomeMessage || 'Découvrez les événements à venir'}</Text>
-                    </View>
+            
+            {/* 1. Hero Section */}
+            <View style={styles.header}>
+                <View>
+                    <Text style={styles.greeting}>{t.hello || 'Bonjour'} {user?.pseudo || t.player || 'Joueur'} !</Text>
+                    <Text style={styles.subtitle}>{t.welcomeMessage || 'Découvrez les événements à venir'}</Text>
                 </View>
+            </View>
 
-                {/* 2. Évènements à venir */}
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>{t.upcomingEvents || 'Évènements à venir'}</Text>
-                    {loading ? (
-                        <ActivityIndicator color={COLORS.button} style={{ marginTop: 20 }} />
-                    ) : (
-                        <FlatList
-                            data={upcomingEvents}
-                            renderItem={renderUpcomingCard}
-                            keyExtractor={item => item.id.toString()}
-                            horizontal
-                            showsHorizontalScrollIndicator={false}
-                            contentContainerStyle={styles.horizontalList}
-                            ListEmptyComponent={
-                                <Text style={styles.emptyText}>{t.noUpcomingEvents || 'Aucun événement à venir.'}</Text>
-                            }
-                        />
-                    )}
+            {/* 2. Évènements à venir */}
+            <View style={styles.section}>
+                <Text style={styles.sectionTitle}>{t.upcomingEvents || 'Évènements à venir'}</Text>
+                {loading ? (
+                    <ActivityIndicator color={COLORS.button} style={{ marginTop: 20 }} />
+                ) : (
+                    <FlatList
+                        data={upcomingEvents}
+                        renderItem={renderUpcomingCard}
+                        keyExtractor={item => item.id.toString()}
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={styles.horizontalList}
+                        ListEmptyComponent={
+                            <Text style={styles.emptyText}>{t.noUpcomingEvents || 'Aucun événement à venir.'}</Text>
+                        }
+                    />
+                )}
+            </View>
+
+            {/* 3. Carte du prochain événement */}
+            <View style={styles.mapSection}>
+                <View style={styles.mapContainer}>
+                    <MapView
+                        style={styles.map}
+                        region={upcomingEvents[0]?._coords ? {
+                            latitude: upcomingEvents[0]._coords.latitude,
+                            longitude: upcomingEvents[0]._coords.longitude,
+                            latitudeDelta: 0.01,
+                            longitudeDelta: 0.01,
+                        } : DEFAULT_REGION}
+                        showsUserLocation={false}
+                        customMapStyle={mapStyle}
+                        scrollEnabled={false}
+                        zoomEnabled={false}
+                    >
+                        {upcomingEvents.length > 0 && upcomingEvents[0]._coords && (
+                            <Marker
+                                key={upcomingEvents[0].id}
+                                coordinate={upcomingEvents[0]._coords}
+                                pinColor={COLORS.button}
+                            />
+                        )}
+                    </MapView>
                 </View>
-
-                {/* 3. Carte du prochain événement */}
-                <View style={styles.mapSection}>
-                    <View style={styles.mapContainer}>
-                        <MapView
-                            style={styles.map}
-                            region={upcomingEvents[0]?._coords ? {
-                                latitude: upcomingEvents[0]._coords.latitude,
-                                longitude: upcomingEvents[0]._coords.longitude,
-                                latitudeDelta: 0.01,
-                                longitudeDelta: 0.01,
-                            } : DEFAULT_REGION}
-                            showsUserLocation={false}
-                            customMapStyle={mapStyle}
-                            scrollEnabled={false}
-                            zoomEnabled={false}
-                        >
-                            {upcomingEvents.length > 0 && upcomingEvents[0]._coords && (
-                                <Marker
-                                    key={upcomingEvents[0].id}
-                                    coordinate={upcomingEvents[0]._coords}
-                                    pinColor={COLORS.button}
-                                />
-                            )}
-                        </MapView>
-                    </View>
-                </View>
-
-            </ScrollView>
+            </View>
         </View>
     );
 }
@@ -221,9 +218,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: COLORS.background,
-    },
-    scrollContent: {
-        paddingBottom: 0,
     },
     header: {
         paddingTop: 60,
@@ -303,11 +297,12 @@ const styles = StyleSheet.create({
         fontSize: 12,
     },
     mapSection: {
+        flex: 1,
         marginTop: 24,
-        position: 'relative',
+        minHeight: 250,
     },
     mapContainer: {
-        height: 300,
+        flex: 1,
         backgroundColor: COLORS.darkerBackground,
         borderTopLeftRadius: 24,
         borderTopRightRadius: 24,
