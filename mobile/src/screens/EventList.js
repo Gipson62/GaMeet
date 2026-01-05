@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { View, Text, FlatList, TextInput, TouchableOpacity, Modal, Button, ScrollView, ActivityIndicator, Alert, Image } from 'react-native';
 import * as Location from 'expo-location';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
-import { API_URL } from '../config';
 import { COLORS } from '../constants/theme';
 import { TRANSLATIONS } from '../constants/translations';
 import { globalStyles } from '../styles/globalStyles';
+import { fetchEvents, buildPhotoUrl } from '../services/api';
 
 export default function EventList() {
   const navigation = useNavigation();
@@ -35,7 +35,7 @@ export default function EventList() {
 
   useFocusEffect(
     useCallback(() => {
-      fetchEvents();
+      loadEvents();
     }, [])
   );
 
@@ -43,11 +43,9 @@ export default function EventList() {
     applyFilters();
   }, [searchText, selectedGame, maxDistance, events, userLocation, showMyEvents]);
 
-  const fetchEvents = async () => {
+  const loadEvents = async () => {
     try {
-      console.log('Tentative de connexion vers :', `${API_URL}/event`);
-      const response = await fetch(`${API_URL}/event`);
-      const rawData = await response.json();
+      const rawData = await fetchEvents();
       
       // Garder uniquement les événements futurs
       // const futureEvents = data.filter(event => new Date(event.scheduled_date) > new Date());
@@ -221,9 +219,9 @@ export default function EventList() {
           contentContainerStyle={styles.listContent}
           renderItem={({ item }) => {
             const mainGame = item.event_game?.[0]?.game;
-            const bannerUrl = mainGame?.banner?.url 
-              ? `${API_URL.replace('/v1', '')}/uploads/${mainGame.banner.url}`
-              : (item.event_photo?.[0]?.photo?.url ? `${API_URL.replace('/v1', '')}/uploads/${item.event_photo[0].photo.url}` : null);
+            const bannerUrl = mainGame?.banner?.id 
+              ? buildPhotoUrl(mainGame.banner.id)
+              : (item.event_photo?.[0]?.photo?.id ? buildPhotoUrl(item.event_photo[0].photo.id) : null);
 
             return (
             <TouchableOpacity style={styles.eventCard} onPress={() => navigation.navigate('EventDetails', { id: item.id })}>

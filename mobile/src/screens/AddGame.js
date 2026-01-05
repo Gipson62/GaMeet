@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { 
     View, Text, TextInput, ScrollView, TouchableOpacity, 
     Alert, ActivityIndicator, Modal, Image
@@ -8,15 +8,14 @@ import * as ImagePicker from 'expo-image-picker';
 import { useSelector } from 'react-redux';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { API_URL } from '../config';
 import { COLORS } from '../constants/theme';
 import { TRANSLATIONS } from '../constants/translations';
 import { globalStyles } from '../styles/globalStyles';
+import { addGameWithPhotos } from '../services/api';
 
 export default function AddGame() {
     const navigation = useNavigation();
     const route = useRoute();
-    const token = useSelector(state => state.auth.token);
     const language = useSelector(state => state.auth.language);
     const t = TRANSLATIONS[language || 'fr'];
 
@@ -84,22 +83,9 @@ export default function AddGame() {
                 type: 'image/jpeg',
             });
 
-            const response = await fetch(`${API_URL}/game/with-photos`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: formData
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                Alert.alert(t.success, t.gameSubmittedSuccess);
-                navigation.goBack();
-            } else {
-                const err = await response.json();
-                Alert.alert(t.error, err.message || t.unableToCreateGame);
-            }
+            await addGameWithPhotos(formData);
+            Alert.alert(t.success, t.gameSubmittedSuccess);
+            navigation.goBack();
         } catch (error) {
             console.error("Error creating game:", error);
             Alert.alert(t.error, t.networkError);

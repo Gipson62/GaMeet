@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
     View,
     Text,
@@ -18,7 +18,7 @@ import { useDispatch, useSelector } from "react-redux";
 import * as ImagePicker from 'expo-image-picker';
 import { COLORS } from "../constants/theme";
 import { globalStyles } from '../styles/globalStyles';
-import { api, fetchMe } from "../services/api";
+import { api, buildPhotoUploadUrl, buildPhotoUrl, fetchMe } from "../services/api";
 import { BASE_URL } from "../config";
 import { TRANSLATIONS } from "../constants/translations";
 import { updateUser } from "../store/slices/authSlice";
@@ -43,7 +43,7 @@ export default function EditProfileScreen({ navigation }) {
 
     // URL de l'avatar actuel
     const currentAvatarUri = user?.photo?.url 
-        ? `${BASE_URL}/uploads/${user.photo.url}`
+        ? buildPhotoUploadUrl(user.photo.url)
         : null;
 
     const pickImage = async () => {

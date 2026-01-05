@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
     View,
     Text,
@@ -13,8 +13,7 @@ import {
     TouchableWithoutFeedback,
     Keyboard
 } from "react-native";
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faCalendar, faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import { COLORS } from "../constants/theme";
 import { registerUser } from "../services/api";
 import { globalStyles } from '../styles/globalStyles';
@@ -132,7 +131,7 @@ export default function SignUpScreen({ navigation }) {
                                     style={styles.inputField}
                                     editable={false}
                                 />
-                                <FontAwesomeIcon icon={faCalendar} size={20} color={COLORS.formLabel} style={styles.icon} />
+                                <MaterialIcons name="calendar-today" size={20} color={COLORS.formLabel} style={styles.icon} />
                             </View>
                         </TouchableOpacity>
 
@@ -176,7 +175,7 @@ export default function SignUpScreen({ navigation }) {
                                 secureTextEntry={!showPassword}
                             />
                             <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.iconButton}>
-                                <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} size={20} color={COLORS.formLabel} />
+                                <MaterialIcons name={showPassword ? "visibility-off" : "visibility"} size={20} color={COLORS.formLabel} />
                             </TouchableOpacity>
                         </View>
 
@@ -191,7 +190,7 @@ export default function SignUpScreen({ navigation }) {
                                 secureTextEntry={!showConfirm}
                             />
                             <TouchableOpacity onPress={() => setShowConfirm(!showConfirm)} style={styles.iconButton}>
-                                <FontAwesomeIcon icon={showConfirm ? faEyeSlash : faEye} size={20} color={COLORS.formLabel} />
+                                <MaterialIcons name={showConfirm ? "visibility-off" : "visibility"} size={20} color={COLORS.formLabel} />
                             </TouchableOpacity>
                         </View>
 
