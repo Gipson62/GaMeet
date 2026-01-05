@@ -12,7 +12,7 @@ export const COLORS = {
 };
 
 export const theme = {
-    padding: 30,
+    padding: 40,
     radius: 12,
     h1: 24,
     h2: 20,
