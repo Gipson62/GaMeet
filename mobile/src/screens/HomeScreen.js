@@ -100,10 +100,15 @@ export default function HomeScreen() {
                 .filter(e => new Date(e.scheduled_date) > now)
                 .sort((a, b) => new Date(a.scheduled_date) - new Date(b.scheduled_date));
 
-            // Filtrer les événements auxquels je participe
-            const participating = processedData.filter(e => 
-                user && e.participant && e.participant.some(p => p.User.id === user.id)
-            );
+            // Filtrer les événements auxquels je participe (futurs uniquement)
+            const participating = processedData
+                .filter(e => 
+                    user && 
+                    e.participant && 
+                    e.participant.some(p => p.User.id === user.id) &&
+                    new Date(e.scheduled_date) > now
+                )
+                .sort((a, b) => new Date(a.scheduled_date) - new Date(b.scheduled_date));
 
             setUpcomingEvents(upcoming);
             setParticipatingEvents(participating);
@@ -164,21 +169,21 @@ export default function HomeScreen() {
                 </View>
             </View>
 
-            {/* 2. Évènements à venir */}
+            {/* 2. Mes Évènements */}
             <View style={styles.section}>
-                <Text style={styles.sectionTitle}>{t.upcomingEvents || 'Évènements à venir'}</Text>
+                <Text style={styles.sectionTitle}>{t.myEvents || 'Mes Évènements'}</Text>
                 {loading ? (
                     <ActivityIndicator color={COLORS.button} style={{ marginTop: 20 }} />
                 ) : (
                     <FlatList
-                        data={upcomingEvents}
+                        data={participatingEvents}
                         renderItem={renderUpcomingCard}
                         keyExtractor={item => item.id.toString()}
                         horizontal
                         showsHorizontalScrollIndicator={false}
                         contentContainerStyle={styles.horizontalList}
                         ListEmptyComponent={
-                            <Text style={styles.emptyText}>{t.noUpcomingEvents || 'Aucun événement à venir.'}</Text>
+                            <Text style={styles.emptyText}>{t.noParticipatingEvents || 'Vous ne participez à aucun événement.'}</Text>
                         }
                     />
                 )}
@@ -187,27 +192,38 @@ export default function HomeScreen() {
             {/* 3. Carte du prochain événement */}
             <View style={styles.mapSection}>
                 <View style={styles.mapContainer}>
-                    <MapView
-                        style={styles.map}
-                        region={upcomingEvents[0]?._coords ? {
-                            latitude: upcomingEvents[0]._coords.latitude,
-                            longitude: upcomingEvents[0]._coords.longitude,
-                            latitudeDelta: 0.01,
-                            longitudeDelta: 0.01,
-                        } : DEFAULT_REGION}
-                        showsUserLocation={false}
-                        customMapStyle={mapStyle}
-                        scrollEnabled={false}
-                        zoomEnabled={false}
-                    >
-                        {upcomingEvents.length > 0 && upcomingEvents[0]._coords && (
+                    {participatingEvents.length > 0 && participatingEvents[0]._coords ? (
+                        <MapView
+                            style={styles.map}
+                            region={{
+                                latitude: participatingEvents[0]._coords.latitude,
+                                longitude: participatingEvents[0]._coords.longitude,
+                                latitudeDelta: 0.01,
+                                longitudeDelta: 0.01,
+                            }}
+                            showsUserLocation={false}
+                            customMapStyle={mapStyle}
+                            scrollEnabled={false}
+                            zoomEnabled={false}
+                        >
                             <Marker
-                                key={upcomingEvents[0].id}
-                                coordinate={upcomingEvents[0]._coords}
+                                key={participatingEvents[0].id}
+                                coordinate={participatingEvents[0]._coords}
                                 pinColor={COLORS.button}
                             />
-                        )}
-                    </MapView>
+                        </MapView>
+                    ) : participatingEvents.length > 0 ? (
+                        <View style={styles.mapPlaceholder}>
+                            <MaterialIcons name="language" size={40} color={COLORS.formLabel} />
+                            <Text style={styles.placeholderText}>{t.onlineEvent || 'Évènement en ligne'}</Text>
+                            <Text style={styles.placeholderLocation}>{participatingEvents[0].location}</Text>
+                        </View>
+                    ) : (
+                        <View style={styles.mapPlaceholder}>
+                            <MaterialIcons name="map" size={40} color={COLORS.formLabel} />
+                            <Text style={styles.placeholderText}>{t.noEventsToShow || 'Aucun événement à afficher'}</Text>
+                        </View>
+                    )}
                 </View>
             </View>
         </View>
@@ -311,6 +327,23 @@ const styles = StyleSheet.create({
     map: {
         width: '100%',
         height: '100%',
+    },
+    mapPlaceholder: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: COLORS.darkerBackground,
+    },
+    placeholderText: {
+        color: COLORS.formLabel,
+        marginTop: 10,
+        fontSize: 14,
+        fontWeight: '600',
+    },
+    placeholderLocation: {
+        color: COLORS.formLabel,
+        fontSize: 12,
+        marginTop: 4,
     },
     emptyText: {
         color: COLORS.formLabel,
