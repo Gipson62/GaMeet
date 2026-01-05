@@ -17,7 +17,9 @@ import * as Location from 'expo-location';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { COLORS } from "../constants/theme";
-import { API_URL } from '../config';
+import { TRANSLATIONS } from '../constants/translations';
+import { globalStyles } from '../styles/globalStyles';
+import { fetchEvents, buildPhotoUrl } from '../services/api';
 
 const { width } = Dimensions.get('window');
 
@@ -51,9 +53,11 @@ const DEFAULT_REGION = {
 export default function HomeScreen() {
     const navigation = useNavigation();
     const user = useSelector(state => state.auth.user);
+    const language = useSelector(state => state.auth.language);
+    const t = TRANSLATIONS[language || 'fr'];
     const [upcomingEvents, setUpcomingEvents] = useState([]);
     const [participatingEvents, setParticipatingEvents] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     useFocusEffect(
         useCallback(() => {
@@ -63,12 +67,12 @@ export default function HomeScreen() {
 
     const fetchData = async () => {
         try {
+            setLoading(true);
             // Permission requise pour le géocodage des adresses
             await Location.requestForegroundPermissionsAsync();
 
             // Récupérer les événements
-            const response = await fetch(`${API_URL}/event`);
-            const rawData = await response.json();
+            const rawData = await fetchEvents();
 
             // Traitement des données (Géocodage + Distance)
             const processedData = await Promise.all(rawData.map(async (event) => {
@@ -112,9 +116,9 @@ export default function HomeScreen() {
 
     const renderUpcomingCard = ({ item }) => {
         const mainGame = item.event_game?.[0]?.game;
-        const imageUrl = mainGame?.logo?.url 
-            ? `${API_URL.replace('/v1', '')}/uploads/${mainGame.logo.url}`
-            : (item.event_photo?.[0]?.photo?.url ? `${API_URL.replace('/v1', '')}/uploads/${item.event_photo[0].photo.url}` : null);
+        const imageUrl = mainGame?.logo?.id 
+            ? buildPhotoUrl(mainGame.logo.id)
+            : (item.event_photo?.[0]?.photo?.id ? buildPhotoUrl(item.event_photo[0].photo.id) : null);
         
         const date = new Date(item.scheduled_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
 
@@ -122,23 +126,27 @@ export default function HomeScreen() {
             <TouchableOpacity 
                 style={styles.card}
                 onPress={() => navigation.navigate('EventDetails', { id: item.id })}
-                activeOpacity={0.9}
+                activeOpacity={0.8}
             >
                 <View style={styles.cardImageContainer}>
                     {imageUrl ? (
-                        <Image source={{ uri: imageUrl }} style={styles.cardImage} />
+                        <Image source={{ uri: imageUrl }} style={styles.cardImage} resizeMode="cover" />
                     ) : (
                         <View style={[styles.cardImage, styles.placeholderImage]}>
-                            <MaterialIcons name="sports-esports" size={30} color="#fff" />
+                            <MaterialIcons name="event" size={32} color={COLORS.formLabel} />
                         </View>
                     )}
                 </View>
                 <View style={styles.cardContent}>
-                    <Text style={styles.cardTitle} numberOfLines={1}>{item.name}</Text>
+                    <Text style={styles.cardTitle} numberOfLines={2}>{item.name}</Text>
                     <View style={styles.cardInfoRow}>
+                        <MaterialIcons name="calendar-today" size={14} color={COLORS.formLabel} />
                         <Text style={styles.cardInfoText}>{date}</Text>
                     </View>
-                    <Text style={styles.cardLocation} numberOfLines={1}>{item.location}</Text>
+                    <View style={styles.cardInfoRow}>
+                        <MaterialIcons name="location-on" size={14} color={COLORS.formLabel} />
+                        <Text style={styles.cardLocation} numberOfLines={1}>{item.location}</Text>
+                    </View>
                 </View>
             </TouchableOpacity>
         );
@@ -152,13 +160,14 @@ export default function HomeScreen() {
                 {/* 1. Hero Section */}
                 <View style={styles.header}>
                     <View>
-                        <Text style={styles.greeting}>Bonjour {user?.pseudo || 'Joueur'} !</Text>
+                        <Text style={styles.greeting}>{t.hello || 'Bonjour'} {user?.pseudo || t.player || 'Joueur'} !</Text>
+                        <Text style={styles.subtitle}>{t.welcomeMessage || 'Découvrez les événements à venir'}</Text>
                     </View>
                 </View>
 
                 {/* 2. Évènements à venir */}
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Évènements à venir</Text>
+                    <Text style={styles.sectionTitle}>{t.upcomingEvents || 'Évènements à venir'}</Text>
                     {loading ? (
                         <ActivityIndicator color={COLORS.button} style={{ marginTop: 20 }} />
                     ) : (
@@ -170,15 +179,14 @@ export default function HomeScreen() {
                             showsHorizontalScrollIndicator={false}
                             contentContainerStyle={styles.horizontalList}
                             ListEmptyComponent={
-                                <Text style={styles.emptyText}>Aucun événement à venir.</Text>
+                                <Text style={styles.emptyText}>{t.noUpcomingEvents || 'Aucun événement à venir.'}</Text>
                             }
                         />
                     )}
                 </View>
 
-                {/* 3. Évènements auxquels on participe (Map Preview) */}
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Carte du prochain événement</Text>
+                {/* 3. Carte du prochain événement */}
+                <View style={styles.mapSection}>
                     <View style={styles.mapContainer}>
                         <MapView
                             style={styles.map}
@@ -215,31 +223,33 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.background,
     },
     scrollContent: {
-        paddingBottom: 100,
+        paddingBottom: 0,
     },
     header: {
         paddingTop: 60,
         paddingHorizontal: 20,
-        paddingBottom: 20,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
+        paddingBottom: 24,
     },
     greeting: {
         fontSize: 28,
         fontWeight: 'bold',
-        color: '#fff',
-        marginBottom: 8,
+        color: COLORS.text,
+        marginBottom: 4,
+    },
+    subtitle: {
+        fontSize: 14,
+        color: COLORS.formLabel,
+        marginTop: 4,
     },
     section: {
         marginTop: 24,
     },
     sectionTitle: {
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: 'bold',
-        color: '#fff',
+        color: COLORS.text,
         marginLeft: 20,
-        marginBottom: 16,
+        marginBottom: 12,
     },
     horizontalList: {
         paddingHorizontal: 20,
@@ -247,62 +257,61 @@ const styles = StyleSheet.create({
     },
     card: {
         flexDirection: 'row',
-        backgroundColor: '#0D1B2A', // Bleu nuit très sombre
-        borderRadius: 20,
+        backgroundColor: COLORS.card,
+        borderRadius: 12,
         padding: 12,
         width: width * 0.85,
-        alignItems: 'center',
         borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.05)',
+        borderColor: COLORS.border,
     },
     cardImageContainer: {
-        marginRight: 16,
+        marginRight: 12,
     },
     cardImage: {
-        width: 70,
-        height: 70,
-        borderRadius: 16,
+        width: 80,
+        height: 80,
+        borderRadius: 8,
+        backgroundColor: COLORS.darkerBackground,
     },
     placeholderImage: {
-        backgroundColor: COLORS.button,
+        backgroundColor: COLORS.darkerBackground,
         justifyContent: 'center',
         alignItems: 'center',
     },
     cardContent: {
         flex: 1,
+        justifyContent: 'space-between',
     },
     cardTitle: {
-        color: '#fff',
+        color: COLORS.text,
         fontSize: 16,
-        fontWeight: 'bold',
-        marginBottom: 4,
+        fontWeight: '600',
+        marginBottom: 8,
     },
     cardInfoRow: {
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 4,
+        gap: 4,
     },
     cardInfoText: {
-        color: '#94A3B8', // Bleu gris clair
-        fontSize: 13,
-    },
-    cardInfoSeparator: {
-        color: '#94A3B8',
-        marginHorizontal: 6,
+        color: COLORS.formLabel,
+        fontSize: 12,
     },
     cardLocation: {
-        color: '#fff',
-        fontSize: 14,
-        fontWeight: '500',
+        color: COLORS.text,
+        fontSize: 12,
+    },
+    mapSection: {
+        marginTop: 24,
+        position: 'relative',
     },
     mapContainer: {
-        marginHorizontal: 20,
-        height: 200,
-        borderRadius: 24,
+        height: 300,
+        backgroundColor: COLORS.darkerBackground,
+        borderTopLeftRadius: 24,
+        borderTopRightRadius: 24,
         overflow: 'hidden',
-        position: 'relative',
-        borderWidth: 1,
-        borderColor: COLORS.border,
     },
     map: {
         width: '100%',
