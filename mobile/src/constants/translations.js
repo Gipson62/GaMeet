@@ -100,6 +100,9 @@ export const TRANSLATIONS = {
     eventCreated: "Événement créé !",
     eventModified: "Événement modifié !",
     unableToCreateEvent: "Impossible de créer l'événement",
+    deleteEvent: "Supprimer l'événement",
+    deleteEventConfirm: "Êtes-vous sûr de vouloir supprimer cet événement ?",
+    eventDeleted: "Événement supprimé",
 
     // EventDetails
     unableToLoadEvent: "Impossible de charger l'événement",
@@ -244,6 +247,9 @@ export const TRANSLATIONS = {
     eventCreated: "Event created!",
     eventModified: "Event modified!",
     unableToCreateEvent: "Unable to create event",
+    deleteEvent: "Delete event",
+    deleteEventConfirm: "Are you sure you want to delete this event?",
+    eventDeleted: "Event deleted",
 
     // EventDetails
     unableToLoadEvent: "Unable to load event",

@@ -10,7 +10,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useSelector } from 'react-redux';
 import { TRANSLATIONS } from '../constants/translations';
 import { globalStyles } from '../styles/globalStyles';
-import { fetchEventById, joinEvent, leaveEvent, addReview, deleteReview, buildPhotoUrl, buildPhotoUploadUrl } from '../services/api';
+import { fetchEventById, joinEvent, leaveEvent, addReview, deleteReview, buildPhotoUrl, buildPhotoUploadUrl, api } from '../services/api';
 
 export default function EventDetails() {
   const navigation = useNavigation();
@@ -36,6 +36,30 @@ export default function EventDetails() {
   const isOrganizer = user && event && user.id === event.User?.id;
   const isEventPassed = event && new Date(event.scheduled_date) < new Date();
 
+  const handleDeleteEvent = useCallback(() => {
+    Alert.alert(
+        t.deleteEvent || "Supprimer l'événement",
+        t.deleteEventConfirm || "Êtes-vous sûr de vouloir supprimer cet événement ?",
+        [
+            { text: t.cancel, style: "cancel" },
+            {
+                text: t.delete,
+                style: "destructive",
+                onPress: async () => {
+                    try {
+                        await api.delete(`/event/${id}`);
+                        Alert.alert(t.success, t.eventDeleted || "Événement supprimé");
+                        navigation.goBack();
+                    } catch (error) {
+                        console.error(error);
+                        Alert.alert(t.error, t.networkError);
+                    }
+                }
+            }
+        ]
+    );
+  }, [id, t, navigation]);
+
   // Configuration du header pour qu'il se fonde dans le design sombre
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -44,12 +68,17 @@ export default function EventDetails() {
       headerTitle: '',
       headerShadowVisible: false,
       headerRight: () => isOrganizer ? (
-        <TouchableOpacity onPress={() => navigation.navigate('AddEvent', { eventToEdit: event })} style={{ marginRight: 10 }}>
-            <MaterialIcons name="edit" size={24} color="white" />
-        </TouchableOpacity>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 15 }}>
+            <TouchableOpacity onPress={() => navigation.navigate('AddEvent', { eventToEdit: event })}>
+                <MaterialIcons name="edit" size={24} color="white" />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleDeleteEvent}>
+                <MaterialIcons name="delete" size={24} color="#ef4444" />
+            </TouchableOpacity>
+        </View>
       ) : null,
     });
-  }, [navigation, isOrganizer, event]);
+  }, [navigation, isOrganizer, event, handleDeleteEvent]);
 
   useFocusEffect(
     useCallback(() => {
