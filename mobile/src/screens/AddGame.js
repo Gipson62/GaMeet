@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
-    View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, 
-    Alert, ActivityIndicator, Modal, FlatList, Platform, Image
+    View, Text, TextInput, ScrollView, TouchableOpacity, 
+    Alert, ActivityIndicator, Modal, Image
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
@@ -9,8 +9,9 @@ import { useSelector } from 'react-redux';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { API_URL } from '../config';
-import { COLORS, theme } from '../constants/theme';
+import { COLORS } from '../constants/theme';
 import { TRANSLATIONS } from '../constants/translations';
+import { globalStyles } from '../styles/globalStyles';
 
 export default function AddGame() {
     const navigation = useNavigation();
@@ -140,7 +141,7 @@ export default function AddGame() {
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scroll}>
 
-                <Text style={styles.label}>{t.gameName}</Text>
+                <Text style={styles.formLabel}>{t.gameName}</Text>
                 <TextInput 
                     style={styles.input} 
                     placeholder={t.gameNamePlaceholder} 
@@ -149,7 +150,7 @@ export default function AddGame() {
                     onChangeText={setName}
                 />
 
-                <Text style={styles.label}>{t.studioLabel}</Text>
+                <Text style={styles.formLabel}>{t.studioLabel}</Text>
                 <TextInput 
                     style={styles.input} 
                     placeholder={t.studioPlaceholder} 
@@ -158,7 +159,7 @@ export default function AddGame() {
                     onChangeText={setStudio}
                 />
 
-                <Text style={styles.label}>{t.publisherLabel}</Text>
+                <Text style={styles.formLabel}>{t.publisherLabel}</Text>
                 <TextInput 
                     style={styles.input} 
                     placeholder={t.publisherPlaceholder} 
@@ -167,14 +168,14 @@ export default function AddGame() {
                     onChangeText={setPublisher}
                 />
 
-                <Text style={styles.label}>{t.platformsLabel}</Text>
+                <Text style={styles.formLabel}>{t.platformsLabel}</Text>
                 <TouchableOpacity style={styles.input} onPress={() => setShowPlatformModal(true)}>
                     <Text style={{color: selectedPlatforms.length > 0 ? COLORS.text : COLORS.formLabel}}>
                         {selectedPlatforms.length > 0 ? selectedPlatforms.join(', ') : t.selectPlatforms}
                     </Text>
                 </TouchableOpacity>
 
-                <Text style={styles.label}>{t.releaseDateLabel}</Text>
+                <Text style={styles.formLabel}>{t.releaseDateLabel}</Text>
                 <TouchableOpacity style={styles.input} onPress={() => setShowDatePicker(true)}>
                     <Text style={{color: COLORS.text}}>{release_date.toLocaleDateString()}</Text>
                 </TouchableOpacity>
@@ -189,7 +190,7 @@ export default function AddGame() {
                     />
                 )}
 
-                <Text style={styles.label}>{t.descriptionLabel}</Text>
+                <Text style={styles.formLabel}>{t.descriptionLabel}</Text>
                 <TextInput 
                     style={[styles.input, styles.textArea]} 
                     placeholder={t.descriptionPlaceholder} 
@@ -200,7 +201,7 @@ export default function AddGame() {
                     numberOfLines={4}
                 />
 
-                <Text style={styles.label}>{t.bannerImage}</Text>
+                <Text style={styles.formLabel}>{t.bannerImage}</Text>
                 <TouchableOpacity style={styles.imagePickerBtn} onPress={() => pickImage('banner')}>
                     {banner ? (
                         <Image source={{ uri: banner }} style={styles.imagePreview} />
@@ -212,7 +213,7 @@ export default function AddGame() {
                     )}
                 </TouchableOpacity>
 
-                <Text style={styles.label}>{t.logoImage}</Text>
+                <Text style={styles.formLabel}>{t.logoImage}</Text>
                 <TouchableOpacity style={styles.imagePickerBtn} onPress={() => pickImage('logo')}>
                     {logo ? (
                         <Image source={{ uri: logo }} style={styles.imagePreview} />
@@ -224,7 +225,7 @@ export default function AddGame() {
                     )}
                 </TouchableOpacity>
 
-                <Text style={styles.label}>{t.gridImage}</Text>
+                <Text style={styles.formLabel}>{t.gridImage}</Text>
                 <TouchableOpacity style={styles.imagePickerBtn} onPress={() => pickImage('grid')}>
                     {grid ? (
                         <Image source={{ uri: grid }} style={styles.imagePreview} />
@@ -240,7 +241,7 @@ export default function AddGame() {
                     {loading ? (
                         <ActivityIndicator color="white" />
                     ) : (
-                        <Text style={styles.submitText}>{t.submitGame}</Text>
+                        <Text style={styles.buttonText}>{t.submitGame}</Text>
                     )}
                 </TouchableOpacity>
             </ScrollView>
@@ -276,100 +277,4 @@ export default function AddGame() {
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: COLORS.background,
-    },
-    scroll: {
-        padding: 16,
-    },
-    label: { color: COLORS.formLabel, marginBottom: 8, marginTop: 12, fontWeight: '600' },
-    input: {
-        backgroundColor: COLORS.card,
-        color: COLORS.text,
-        padding: 12,
-        borderRadius: 8,
-        borderWidth: 1,
-        borderColor: COLORS.border,
-        justifyContent: 'center',
-    },
-    textArea: { height: 100, textAlignVertical: 'top' },
-    imagePickerBtn: {
-        backgroundColor: COLORS.card,
-        borderRadius: 8,
-        borderWidth: 1,
-        borderColor: COLORS.border,
-        overflow: 'hidden',
-        height: 150,
-    },
-    imagePreview: {
-        width: '100%',
-        height: '100%',
-        resizeMode: 'cover',
-    },
-    imagePlaceholder: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    imagePlaceholderText: {
-        color: COLORS.formLabel,
-        marginTop: 8,
-    },
-    submitBtn: {
-        backgroundColor: COLORS.button,
-        padding: 16,
-        borderRadius: 12,
-        alignItems: 'center',
-        marginTop: 30,
-        marginBottom: 20
-    },
-    submitText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
-    modalOverlay: {
-        flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.7)',
-        justifyContent: 'center',
-        padding: 20
-    },
-    modalContent: {
-        backgroundColor: COLORS.darkerBackground,
-        borderRadius: 16,
-        padding: 20,
-        maxHeight: '80%'
-    },
-    modalTitle: {
-        color: COLORS.text,
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 15,
-        textAlign: 'center'
-    },
-    platformItem: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingVertical: 12,
-        borderBottomWidth: 1,
-        borderColor: COLORS.border
-    },
-    platformText: {
-        color: COLORS.text,
-        fontSize: 16
-    },
-    selectedPlatformText: {
-        color: COLORS.button,
-        fontWeight: 'bold'
-    },
-    closeBtn: {
-        backgroundColor: COLORS.button,
-        padding: 12,
-        borderRadius: 8,
-        alignItems: 'center',
-        marginTop: 15
-    },
-    closeText: {
-        color: 'white',
-        fontWeight: 'bold'
-    },
-});
+const styles = globalStyles;

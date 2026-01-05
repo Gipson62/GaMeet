@@ -106,7 +106,7 @@ const seedAllEvents = async (prisma, gameIds, userIds) => {
         data: {
             name: "VALORANT LAN Party",
             description: "Tactical FPS showdown! 5v5 VALORANT matches with LAN setup for zero-latency competitive gameplay. Cash prizes for winners.",
-            location: "Esports Arena Lyon",
+            location: "Iesn - Henallux",
             scheduled_date: new Date("2025-02-22T14:00:00"),
             max_capacity: 40,
             author: userIds[1], // BobGamer

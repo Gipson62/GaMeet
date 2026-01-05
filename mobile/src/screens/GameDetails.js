@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect, useCallback } from 'react';
 import { 
-  View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, 
-  ActivityIndicator, Alert, Dimensions
+  View, Text, Image, ScrollView, TouchableOpacity, 
+  ActivityIndicator, Alert
 } from 'react-native';
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -10,8 +10,7 @@ import { BASE_URL } from '../config';
 import { COLORS } from '../constants/theme';
 import { api, buildPhotoUrl, fetchGame } from '../services/api';
 import { TRANSLATIONS } from '../constants/translations';
-
-const { width } = Dimensions.get('window');
+import { globalStyles } from '../styles/globalStyles';
 
 export default function GameDetails() {
   const navigation = useNavigation();
@@ -95,7 +94,7 @@ export default function GameDetails() {
             {logoUrl && (
               <Image source={{ uri: logoUrl }} style={styles.logo} resizeMode="contain" />
             )}
-            <Text style={styles.gameTitle}>{game.name}</Text>
+            <Text style={gameTitle}>{game.name}</Text>
           </View>
         </View>
 
@@ -171,13 +170,13 @@ export default function GameDetails() {
                   style={styles.eventCard}
                   onPress={() => navigation.navigate('EventDetails', { id: event.id })}
                 >
-                  <View style={styles.eventInfo}>
-                    <Text style={styles.eventName}>{event.name}</Text>
-                    <Text style={styles.eventDate}>{eventDate}</Text>
+                  <View style={eventInfo}>
+                    <Text style={eventName}>{event.name}</Text>
+                    <Text style={eventDate}>{eventDate}</Text>
                     {event.location && (
                       <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
-                        <MaterialIcons name="place" size={14} color={COLORS.formLabel} />
-                        <Text style={styles.eventLocation}>{event.location}</Text>
+                        <MaterialIcons name="location-on" size={14} color={COLORS.formLabel} />
+                        <Text style={eventLocation}>{event.location}</Text>
                       </View>
                     )}
                   </View>
@@ -192,140 +191,31 @@ export default function GameDetails() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  center: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  headerContainer: {
-    width: '100%',
-    position: 'relative',
-    aspectRatio: 16 / 9,
-  },
-  banner: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
-  },
-  bannerPlaceholder: {
-    backgroundColor: COLORS.darkerBackground,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  overlay: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: 20,
-    paddingTop: 60,
-    backgroundColor: 'transparent',
-    backgroundImage: 'linear-gradient(to bottom, transparent, rgba(0,0,0,0.9))',
-  },
-  logo: {
-    width: 80,
-    height: 80,
-    marginBottom: 12,
-  },
-  gameTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: COLORS.text,
-    textShadowColor: 'rgba(0, 0, 0, 0.8)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
-  },
-  infoSection: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 20,
-    backgroundColor: COLORS.card,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-  },
-  gridImage: {
-    width: 90,
-    height: 120,
-    borderRadius: 8,
-    backgroundColor: COLORS.card,
-    marginLeft: 16,
-  },
-  label: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: COLORS.formLabel,
-    letterSpacing: 0.5,
-    marginBottom: 6,
-  },
-  value: {
-    fontSize: 16,
-    color: COLORS.text,
-    fontWeight: '600',
-  },
-  section: {
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-  },
-  description: {
-    fontSize: 15,
-    color: COLORS.text,
-    lineHeight: 22,
-    marginTop: 8,
-  },
-  tagsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    marginTop: 8,
-  },
-  tag: {
-    backgroundColor: COLORS.card,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  tagAccent: {
-    backgroundColor: COLORS.button,
-    borderColor: COLORS.button,
-  },
-  tagText: {
-    fontSize: 13,
-    color: COLORS.text,
-    fontWeight: '600',
-  },
-  eventCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: COLORS.card,
-    padding: 16,
-    borderRadius: 12,
-    marginTop: 12,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  eventInfo: {
-    flex: 1,
-  },
-  eventName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: COLORS.text,
-    marginBottom: 4,
-  },
-  eventDate: {
-    fontSize: 13,
-    color: COLORS.formLabel,
-  },
-  eventLocation: {
-    fontSize: 12,
-    color: COLORS.formLabel,
-    marginLeft: 4,
-  },
-});
+const styles = globalStyles;
+
+// Game-specific styles for title with shadow
+const gameTitle = {
+  fontSize: 28,
+  fontWeight: 'bold',
+  color: COLORS.text,
+  textShadowColor: 'rgba(0, 0, 0, 0.8)',
+  textShadowOffset: { width: 0, height: 2 },
+  textShadowRadius: 4,
+};
+
+const eventInfo = { flex: 1 };
+const eventName = {
+  fontSize: 16,
+  fontWeight: '600',
+  color: COLORS.text,
+  marginBottom: 4,
+};
+const eventDate = {
+  fontSize: 13,
+  color: COLORS.formLabel,
+};
+const eventLocation = {
+  fontSize: 12,
+  color: COLORS.formLabel,
+  marginLeft: 4,
+};

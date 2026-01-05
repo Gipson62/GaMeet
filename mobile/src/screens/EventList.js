@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, Modal, Button, ScrollView, ActivityIndicator, Alert, Image } from 'react-native';
+import { View, Text, FlatList, TextInput, TouchableOpacity, Modal, Button, ScrollView, ActivityIndicator, Alert, Image } from 'react-native';
 import * as Location from 'expo-location';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { API_URL } from '../config';
-import { COLORS, theme } from '../constants/theme';
+import { COLORS } from '../constants/theme';
 import { TRANSLATIONS } from '../constants/translations';
+import { globalStyles } from '../styles/globalStyles';
 
 export default function EventList() {
   const navigation = useNavigation();
@@ -197,7 +198,7 @@ export default function EventList() {
               : (item.event_photo?.[0]?.photo?.url ? `${API_URL.replace('/v1', '')}/uploads/${item.event_photo[0].photo.url}` : null);
 
             return (
-            <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('EventDetails', { id: item.id })}>
+            <TouchableOpacity style={styles.eventCard} onPress={() => navigation.navigate('EventDetails', { id: item.id })}>
               {bannerUrl ? (
                 <Image source={{ uri: bannerUrl }} style={styles.cardImage} resizeMode="cover" />
               ) : (
@@ -206,7 +207,7 @@ export default function EventList() {
                 </View>
               )}
               <View style={styles.cardContent}>
-                <Text style={styles.title}>{item.name}</Text>
+                <Text style={styles.eventTitle}>{item.name}</Text>
                 <Text style={{color: COLORS.formLabel}}>{new Date(item.scheduled_date).toLocaleDateString()}</Text>
                 <Text style={styles.games}>{item.event_game?.map(g => g.game.name).join(', ')}</Text>
                 <Text style={styles.loc}>{item.location}</Text>
@@ -242,40 +243,73 @@ export default function EventList() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: theme.padding,
+const styles = {
+  ...globalStyles,
+  scroll: {
+    padding: 16,
     paddingTop: 50,
-    backgroundColor: COLORS.background,
   },
-  searchBar: { backgroundColor: COLORS.card, padding: 10, borderRadius: theme.radius, marginBottom: 10, color: COLORS.text },
-  filters: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, gap: 10 },
-  btnFilter: { backgroundColor: COLORS.button, padding: 10, borderRadius: 20, flex: 1, alignItems: 'center', justifyContent: 'center' },
-  btnText: { color: COLORS.text, fontWeight: 'bold', fontSize: 12 },
-  card: { backgroundColor: COLORS.card, borderRadius: theme.radius, marginBottom: 10, overflow: 'hidden' },
-  cardImage: { width: '100%', height: 150 },
-  cardContent: { padding: 15 },
-  title: { fontSize: 18, fontWeight: 'bold', color: COLORS.text },
-  games: { color: COLORS.button, marginTop: 5, fontWeight: '600' },
-  loc: { fontStyle: 'italic', color: COLORS.formLabel, marginTop: 5 },
-  modalContent: { flex: 1, padding: 20, paddingTop: 50, backgroundColor: COLORS.background },
-  modalItem: { padding: 15, borderBottomWidth: 1, borderColor: COLORS.border || '#eee' },
-  modalText: { fontSize: 16, color: COLORS.text },
-  fab: {
-    position: 'absolute',
-    bottom: 20,
-    right: 20,
+  searchBar: {
+    backgroundColor: COLORS.card,
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 10,
+    color: COLORS.text
+  },
+  filters: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+    gap: 10
+  },
+  btnFilter: {
     backgroundColor: COLORS.button,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    justifyContent: 'center',
+    padding: 10,
+    borderRadius: 20,
+    flex: 1,
     alignItems: 'center',
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-  }
-});
+    justifyContent: 'center'
+  },
+  btnText: {
+    color: COLORS.text,
+    fontWeight: 'bold',
+    fontSize: 12
+  },
+  eventCard: {
+    backgroundColor: COLORS.card,
+    borderRadius: 12,
+    marginBottom: 10,
+    overflow: 'hidden'
+  },
+  cardImage: {
+    width: '100%',
+    height: 150
+  },
+  cardContent: {
+    padding: 15
+  },
+  eventTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: COLORS.text
+  },
+  games: {
+    color: COLORS.button,
+    marginTop: 5,
+    fontWeight: '600'
+  },
+  loc: {
+    fontStyle: 'italic',
+    color: COLORS.formLabel,
+    marginTop: 5
+  },
+  modalItem: {
+    padding: 15,
+    borderBottomWidth: 1,
+    borderColor: COLORS.border
+  },
+  modalText: {
+    fontSize: 16,
+    color: COLORS.text
+  },
+};

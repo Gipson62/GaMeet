@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
-    View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, 
+    View, Text, TextInput, ScrollView, TouchableOpacity, 
     Alert, ActivityIndicator, Modal, FlatList, Platform, Image
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -9,8 +9,9 @@ import { useSelector } from 'react-redux';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { API_URL } from '../config';
-import { COLORS, theme } from '../constants/theme';
+import { COLORS } from '../constants/theme';
 import { TRANSLATIONS } from '../constants/translations';
+import { globalStyles } from '../styles/globalStyles';
 
 export default function AddEvent() {
     const navigation = useNavigation();
@@ -202,25 +203,25 @@ export default function AddEvent() {
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scroll}>
 
-                <Text style={styles.label}>{t.eventNameLabel}</Text>
+                <Text style={styles.formLabel}>{t.eventNameLabel}</Text>
                 <TextInput 
-                    style={styles.input} 
+                    style={styles.textInput} 
                     placeholder={t.eventNamePlaceholder} 
                     placeholderTextColor={COLORS.formLabel}
                     value={name}
                     onChangeText={setName}
                 />
 
-                <Text style={styles.label}>{t.locationLabel}</Text>
+                <Text style={styles.formLabel}>{t.locationLabel}</Text>
                 <TextInput 
-                    style={styles.input} 
+                    style={styles.textInput} 
                     placeholder={t.locationPlaceholder} 
                     placeholderTextColor={COLORS.formLabel}
                     value={location}
                     onChangeText={setLocation}
                 />
 
-                <Text style={styles.label}>{t.dateTimeLabel}</Text>
+                <Text style={styles.formLabel}>{t.dateTimeLabel}</Text>
                 <View style={styles.dateRow}>
                     <TouchableOpacity style={styles.dateBtn} onPress={() => setShowDatePicker(true)}>
                         <Text style={styles.dateText}>{date.toLocaleDateString()}</Text>
@@ -250,16 +251,16 @@ export default function AddEvent() {
                     />
                 )}
 
-                <Text style={styles.label}>{t.gamesLabel}</Text>
-                <TouchableOpacity style={styles.input} onPress={() => setGameModalVisible(true)}>
+                <Text style={styles.formLabel}>{t.gamesLabel}</Text>
+                <TouchableOpacity style={styles.textInput} onPress={() => setGameModalVisible(true)}>
                     <Text style={{color: selectedGames.length ? COLORS.text : COLORS.formLabel}}>
                         {getSelectedGameNames()}
                     </Text>
                 </TouchableOpacity>
 
-                <Text style={styles.label}>{t.capacityLabel}</Text>
+                <Text style={styles.formLabel}>{t.capacityLabel}</Text>
                 <TextInput 
-                    style={styles.input} 
+                    style={styles.textInput} 
                     placeholder={t.capacityPlaceholder} 
                     placeholderTextColor={COLORS.formLabel}
                     value={capacity}
@@ -267,9 +268,9 @@ export default function AddEvent() {
                     keyboardType="numeric"
                 />
 
-                <Text style={styles.label}>{t.descriptionLabel || "Description"}</Text>
+                <Text style={styles.formLabel}>{t.descriptionLabel || "Description"}</Text>
                 <TextInput 
-                    style={[styles.input, styles.textArea]} 
+                    style={[styles.textInput, styles.textArea]} 
                     placeholder={t.eventDescriptionPlaceholder} 
                     placeholderTextColor={COLORS.formLabel}
                     value={description}
@@ -278,7 +279,7 @@ export default function AddEvent() {
                     numberOfLines={4}
                 />
 
-                <Text style={styles.label}>{t.photosLabel || t.photos || "Photos"}</Text>
+                <Text style={styles.formLabel}>{t.photosLabel || t.photos || "Photos"}</Text>
                 <View style={styles.photosContainer}>
                     {photos.map((p, index) => (
                         <View key={index} style={styles.photoWrapper}>
@@ -324,20 +325,10 @@ export default function AddEvent() {
     );
 }
 
-const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: COLORS.background },
+const styles = {
+    ...globalStyles,
     scroll: { padding: 20 },
     header: { fontSize: 24, fontWeight: 'bold', color: COLORS.text, marginBottom: 20, textAlign: 'center' },
-    label: { color: COLORS.formLabel, marginBottom: 8, marginTop: 12, fontWeight: '600' },
-    input: {
-        backgroundColor: COLORS.card,
-        color: COLORS.text,
-        padding: 12,
-        borderRadius: 8,
-        borderWidth: 1,
-        borderColor: COLORS.border
-    },
-    textArea: { height: 100, textAlignVertical: 'top' },
     dateRow: { flexDirection: 'row', gap: 10 },
     dateBtn: {
         flex: 1,
@@ -360,8 +351,6 @@ const styles = StyleSheet.create({
         marginBottom: 20
     },
     submitText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
-    modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'center', padding: 20 },
-    modalContent: { backgroundColor: COLORS.darkerBackground, borderRadius: 16, padding: 20, maxHeight: '80%' },
     modalTitle: { color: COLORS.text, fontSize: 18, fontWeight: 'bold', marginBottom: 15, textAlign: 'center' },
     gameItem: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 12, borderBottomWidth: 1, borderColor: COLORS.border },
     gameText: { color: COLORS.text, fontSize: 16 },
@@ -392,4 +381,4 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center'
     }
-});
+};

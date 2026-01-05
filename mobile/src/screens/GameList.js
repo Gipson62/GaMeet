@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   FlatList,
   TextInput,
   TouchableOpacity,
@@ -10,8 +9,7 @@ import {
   ActivityIndicator,
   Alert,
   ScrollView,
-  Modal,
-  Dimensions
+  Modal
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
@@ -19,9 +17,9 @@ import { COLORS } from '../constants/theme';
 import { buildPhotoUrl, fetchGames, fetchTags, fetchTagsByGame } from '../services/api';
 import { useSelector } from "react-redux";
 import { TRANSLATIONS } from '../constants/translations';
+import { globalStyles, DIMENSIONS } from '../styles/globalStyles';
 
-const { width } = Dimensions.get('window');
-const CARD_WIDTH = (width - 60) / 2;
+const { CARD_WIDTH } = DIMENSIONS;
 
 export default function GameList() {
   const navigation = useNavigation();
@@ -338,28 +336,14 @@ export default function GameList() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  center: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+const styles = {
+  ...globalStyles,
+  // GameList-specific overrides
   header: {
     paddingTop: 60,
     paddingHorizontal: 20,
     paddingBottom: 20,
     backgroundColor: COLORS.darkerBackground,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: COLORS.text,
-    marginBottom: 16,
   },
   searchBar: {
     flexDirection: 'row',
@@ -375,6 +359,11 @@ const styles = StyleSheet.create({
     color: COLORS.text,
     fontSize: 14,
   },
+  filterLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: COLORS.formLabel,
+  },
   filterBar: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -385,74 +374,6 @@ const styles = StyleSheet.create({
     borderBottomColor: COLORS.border,
     gap: 12,
   },
-  filterLabel: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: COLORS.formLabel,
-  },
-  filterBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: COLORS.card,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 6,
-    gap: 6,
-  },
-  filterBtnText: {
-    color: COLORS.button,
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  badge: {
-    backgroundColor: COLORS.button,
-    borderRadius: 10,
-    width: 18,
-    height: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  badgeText: {
-    color: COLORS.text,
-    fontSize: 10,
-    fontWeight: '700',
-  },
-  activeFilters: {
-    backgroundColor: COLORS.darkerBackground,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-  },
-  chip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: COLORS.button,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 16,
-    marginRight: 8,
-    gap: 6,
-  },
-  chipText: {
-    color: COLORS.text,
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  clearBtn: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-  },
-  clearText: {
-    color: COLORS.formLabel,
-    fontSize: 12,
-    textDecorationLine: 'underline',
-  },
-  grid: {
-    paddingHorizontal: 15,
-    paddingTop: 20,
-    paddingBottom: 20,
-  },
   card: {
     width: CARD_WIDTH,
     marginHorizontal: 5,
@@ -460,22 +381,6 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.card,
     borderRadius: 8,
     overflow: 'hidden',
-  },
-  imageContainer: {
-    width: '100%',
-    height: CARD_WIDTH * 1.4,
-    backgroundColor: COLORS.darkerBackground,
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-  },
-  placeholder: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  info: {
-    padding: 12,
   },
   name: {
     fontSize: 14,
@@ -487,85 +392,16 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: COLORS.formLabel,
   },
-  empty: {
-    flex: 1,
+  info: {
+    padding: 12,
+  },
+  placeholder: {
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: 60,
-  },
-  emptyText: {
-    marginTop: 16,
-    fontSize: 16,
-    color: COLORS.text,
   },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
     justifyContent: 'flex-end',
   },
-  modal: {
-    backgroundColor: COLORS.background,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    maxHeight: '70%',
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: COLORS.text,
-  },
-  modalContent: {
-    padding: 20,
-  },
-  option: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-  },
-  optionActive: {
-    backgroundColor: COLORS.card,
-  },
-  optionText: {
-    fontSize: 16,
-    color: COLORS.text,
-  },
-  doneBtn: {
-    margin: 20,
-    padding: 14,
-    borderRadius: 8,
-    backgroundColor: COLORS.button,
-    alignItems: 'center',
-  },
-  doneBtnText: {
-    color: COLORS.text,
-    fontSize: 16,
-    fontWeight: '700',
-  },
-    fab: {
-    position: 'absolute',
-    bottom: 20,
-    right: 20,
-    backgroundColor: COLORS.button,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-  }
-});
+};

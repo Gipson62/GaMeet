@@ -4,7 +4,6 @@ import {
     Text,
     TouchableOpacity,
     SafeAreaView,
-    StyleSheet,
     Image,
     ActivityIndicator,
     Alert,
@@ -12,11 +11,12 @@ import {
     Pressable
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { COLORS, theme } from "../constants/theme";
+import { COLORS } from "../constants/theme";
 import { fetchMe, deleteMyAccount } from "../services/api";
 import { logout, setLanguage, updateUser } from "../store/slices/authSlice";
 import { API_URL, BASE_URL } from "../config";
 import { TRANSLATIONS } from "../constants/translations";
+import { globalStyles } from '../styles/globalStyles';
 
 export default function Profile({ navigation }) {
     const [loading, setLoading] = useState(true);
@@ -194,26 +194,11 @@ function MenuRow({ label, onPress }) {
     );
 }
 
-const styles = StyleSheet.create({
+const styles = {
+    ...globalStyles,
     safe: {
         flex: 1,
         backgroundColor: COLORS.background,
-    },
-    center: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    container: {
-        flex: 1,
-        padding: theme.padding,
-    },
-    header: {
-        color: COLORS.formLabel,
-        fontSize: 18,
-        marginBottom: 16,
-        textAlign: "center",
-        fontWeight: "bold",
     },
     profile: {
         alignItems: "center",
@@ -244,7 +229,7 @@ const styles = StyleSheet.create({
     },
     name: {
         color: COLORS.text,
-        fontSize: theme.h2,
+        fontSize: 24,
         fontWeight: "700",
     },
     email: {
@@ -253,7 +238,7 @@ const styles = StyleSheet.create({
         marginTop: 4,
     },
     bio: {
-        color: COLORS.formText,
+        color: COLORS.text,
         fontSize: 12,
         textAlign: "center",
         marginTop: 16,
@@ -262,7 +247,7 @@ const styles = StyleSheet.create({
     },
     menu: {
         backgroundColor: COLORS.darkerBackground,
-        borderRadius: theme.radius,
+        borderRadius: 12,
         borderWidth: 1,
         borderColor: COLORS.border,
         overflow: "hidden",
@@ -278,7 +263,7 @@ const styles = StyleSheet.create({
     },
     rowText: {
         color: COLORS.text,
-        fontSize: theme.body,
+        fontSize: 16,
         fontWeight: "600",
     },
     chev: {
@@ -291,15 +276,8 @@ const styles = StyleSheet.create({
     },
     dangerText: {
         color: COLORS.warning,
-        fontSize: theme.body,
+        fontSize: 16,
         fontWeight: "700",
-    },
-    // Modal Styles
-    modalOverlay: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: 'rgba(0,0,0,0.5)',
     },
     modalView: {
         margin: 20,
@@ -318,13 +296,6 @@ const styles = StyleSheet.create({
         width: '80%',
         borderWidth: 1,
         borderColor: COLORS.border,
-    },
-    modalTitle: {
-        marginBottom: 20,
-        textAlign: "center",
-        fontWeight: "bold",
-        fontSize: 18,
-        color: COLORS.text,
     },
     langOption: {
         padding: 15,
@@ -353,5 +324,12 @@ const styles = StyleSheet.create({
         color: "white",
         fontWeight: "bold",
         textAlign: "center"
-    }
-});
+    },
+    header: {
+        color: COLORS.formLabel,
+        fontSize: 18,
+        marginBottom: 16,
+        textAlign: "center",
+        fontWeight: "bold",
+    },
+};

@@ -6,7 +6,6 @@ import {
     TouchableOpacity,
     SafeAreaView,
     ScrollView,
-    StyleSheet,
     ActivityIndicator,
     Alert,
     Image,
@@ -17,7 +16,8 @@ import {
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import * as ImagePicker from 'expo-image-picker';
-import { COLORS, theme } from "../constants/theme";
+import { COLORS } from "../constants/theme";
+import { globalStyles } from '../styles/globalStyles';
 import { api, fetchMe } from "../services/api";
 import { BASE_URL } from "../config";
 import { TRANSLATIONS } from "../constants/translations";
@@ -120,7 +120,7 @@ export default function EditProfileScreen({ navigation }) {
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
             >
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                    <ScrollView contentContainerStyle={styles.container}>
+                    <ScrollView contentContainerStyle={styles.scroll}>
                         <View style={styles.headerRow}>
                             <TouchableOpacity onPress={() => navigation.goBack()}>
                                 <Text style={styles.cancelText}>{t.cancel}</Text>
@@ -152,18 +152,18 @@ export default function EditProfileScreen({ navigation }) {
                         </View>
 
                         <View style={styles.form}>
-                            <Text style={styles.label}>Pseudo</Text>
+                            <Text style={styles.formLabel}>Pseudo</Text>
                             <TextInput
-                                style={styles.input}
+                                style={styles.textInput}
                                 value={pseudo}
                                 onChangeText={setPseudo}
                                 placeholder="Pseudo"
                                 placeholderTextColor={COLORS.formLabel}
                             />
 
-                            <Text style={styles.label}>Bio</Text>
+                            <Text style={styles.formLabel}>Bio</Text>
                             <TextInput
-                                style={[styles.input, styles.textArea]}
+                                style={[styles.textInput, styles.textArea]}
                                 value={bio}
                                 onChangeText={setBio}
                                 placeholder="Parlez-nous de vous..."
@@ -180,13 +180,11 @@ export default function EditProfileScreen({ navigation }) {
     );
 }
 
-const styles = StyleSheet.create({
+const styles = {
+    ...globalStyles,
     safe: {
         flex: 1,
         backgroundColor: COLORS.background,
-    },
-    container: {
-        padding: theme.padding,
     },
     headerRow: {
         flexDirection: 'row',
@@ -218,7 +216,7 @@ const styles = StyleSheet.create({
         borderRadius: 50,
         backgroundColor: COLORS.darkerBackground,
         marginBottom: 10,
-        overflow: 'visible', // Pour laisser dépasser le badge
+        overflow: 'visible',
         borderWidth: 1,
         borderColor: COLORS.border,
         justifyContent: 'center',
@@ -259,21 +257,7 @@ const styles = StyleSheet.create({
     form: {
         gap: 15,
     },
-    label: {
-        color: COLORS.formLabel,
-        fontSize: 12,
-        marginBottom: 5,
-    },
-    input: {
-        backgroundColor: COLORS.darkerBackground,
-        borderRadius: theme.radius,
-        padding: 15,
-        color: COLORS.text,
-        borderWidth: 1,
-        borderColor: COLORS.border,
-        fontSize: 16,
-    },
     textArea: {
         minHeight: 100,
     },
-});
+};

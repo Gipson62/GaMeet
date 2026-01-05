@@ -6,7 +6,6 @@ import {
     TouchableOpacity,
     SafeAreaView,
     ScrollView,
-    StyleSheet,
     ActivityIndicator,
     Alert,
     KeyboardAvoidingView,
@@ -17,8 +16,9 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
-import { COLORS, theme } from "../constants/theme";
+import { COLORS } from "../constants/theme";
 import { login, clearAuthError } from "../store/slices/authSlice";
+import { globalStyles } from '../styles/globalStyles';
 
 function isEmailValid(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).trim());
@@ -86,34 +86,34 @@ export default function LoginScreen({ navigation }) {
             >
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                     <ScrollView
-                        contentContainerStyle={styles.container}
+                        contentContainerStyle={styles.scroll}
                         keyboardShouldPersistTaps="handled"
                         showsVerticalScrollIndicator={false}
                     >
                         <Text style={styles.title}>Connexion</Text>
 
-                        <Text style={styles.label}>Email</Text>
+                        <Text style={styles.formLabel}>Email</Text>
                         <View style={styles.inputContainer}>
                             <TextInput
                                 value={email}
                                 onChangeText={(v) => setEmail(v ?? "")}
                                 placeholder="Entrez un email valide"
                                 placeholderTextColor={COLORS.formLabel}
-                                style={styles.input}
+                                style={styles.inputField}
                                 autoCapitalize="none"
                                 keyboardType="email-address"
                                 returnKeyType="next"
                             />
                         </View>
 
-                        <Text style={styles.label}>Mot de passe</Text>
+                        <Text style={styles.formLabel}>Mot de passe</Text>
                         <View style={styles.inputContainer}>
                             <TextInput
                                 value={password}
                                 onChangeText={(v) => setPassword(v ?? "")}
                                 placeholder="Entrez votre mot de passe"
                                 placeholderTextColor={COLORS.formLabel}
-                                style={styles.input}
+                                style={styles.inputField}
                                 secureTextEntry={!showPassword}
                                 returnKeyType="done"
                                 onSubmitEditing={onSubmit}
@@ -127,7 +127,7 @@ export default function LoginScreen({ navigation }) {
                         {displayError ? <Text style={styles.error}>{displayError}</Text> : null}
 
                         <TouchableOpacity
-                            style={[styles.button, isLoading && { opacity: 0.7 }]}
+                            style={[styles.primaryButton, isLoading && { opacity: 0.7 }]}
                             onPress={onSubmit}
                             disabled={isLoading}
                         >
@@ -152,44 +152,33 @@ export default function LoginScreen({ navigation }) {
     );
 }
 
-const styles = StyleSheet.create({
+const styles = {
+    ...globalStyles,
     safe: {
         flex: 1,
         backgroundColor: COLORS.background,
     },
-    container: {
+    scroll: {
         flexGrow: 1,
         justifyContent: "center",
-        padding: theme.padding,
+        padding: 16,
         paddingBottom: 40,
-    },
-    title: {
-        color: COLORS.text,
-        fontSize: theme.h2,
-        fontWeight: "700",
-        marginBottom: 24,
-        textAlign: "center",
-    },
-    label: {
-        color: COLORS.formLabel,
-        fontSize: 12,
-        marginTop: 16,
     },
     inputContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         marginTop: 8,
-        borderRadius: theme.radius,
+        borderRadius: 8,
         backgroundColor: COLORS.background,
         borderBottomWidth: 2,
         borderColor: COLORS.formLabel,
     },
-    input: {
+    inputField: {
         flex: 1,
         paddingVertical: 12,
         paddingHorizontal: 14,
-        color: COLORS.formText,
-        fontSize: theme.body,
+        color: COLORS.text,
+        fontSize: 16,
     },
     iconButton: {
         padding: 10,
@@ -200,18 +189,6 @@ const styles = StyleSheet.create({
         marginTop: 12,
         fontSize: 12,
     },
-    button: {
-        marginTop: 28,
-        backgroundColor: COLORS.button,
-        paddingVertical: 14,
-        borderRadius: theme.radius,
-        alignItems: "center",
-    },
-    buttonText: {
-        color: COLORS.text,
-        fontSize: theme.body,
-        fontWeight: "700",
-    },
     linkBtn: {
         marginTop: 16,
         alignItems: "center",
@@ -221,4 +198,4 @@ const styles = StyleSheet.create({
         fontSize: 12,
         textDecorationLine: "underline",
     },
-});
+};

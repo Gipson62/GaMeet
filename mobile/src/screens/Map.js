@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   View, 
-  StyleSheet, 
   ActivityIndicator, 
   Alert, 
   Dimensions, 
@@ -16,6 +15,7 @@ import { useNavigation } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { API_URL } from '../config';
 import { COLORS } from '../constants/theme';
+import { globalStyles } from '../styles/globalStyles';
 
 const { height } = Dimensions.get('window');
 
@@ -118,7 +118,7 @@ export default function Map() {
 
     return (
         <TouchableOpacity 
-            style={styles.card} 
+            style={styles.eventCard} 
             onPress={() => navigation.navigate('EventDetails', { id: item.id })}
             activeOpacity={0.8}
         >
@@ -213,20 +213,13 @@ const mapStyle = [
   { "featureType": "water", "elementType": "labels.text.stroke", "stylers": [{ "color": "#17263c" }] }
 ];
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  center: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+const styles = {
+  ...globalStyles,
   mapContainer: {
-    height: height * 0.5, // Moitié de l'écran
+    height: height * 0.5,
     width: '100%',
     borderBottomWidth: 2,
-    borderColor: '#00FFFF', // Bordure bleu néon
+    borderColor: '#00FFFF',
     shadowColor: '#00FFFF',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.8,
@@ -242,7 +235,7 @@ const styles = StyleSheet.create({
   panel: {
     flex: 1,
     backgroundColor: COLORS.background,
-    marginTop: -40, // Effet de recouvrement
+    marginTop: -40,
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
     zIndex: 2,
@@ -262,16 +255,6 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingBottom: 20,
-  },
-  card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(20, 30, 60, 0.6)', // Bleu nuit translucide
-    borderRadius: 16,
-    padding: 12,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   iconContainer: {
     marginRight: 15,
@@ -308,7 +291,7 @@ const styles = StyleSheet.create({
   },
   recenterBtn: {
     position: 'absolute',
-    bottom: 60, // Positionné au-dessus du panneau qui recouvre le bas de la carte (40px + marge)
+    bottom: 60,
     right: 20,
     backgroundColor: COLORS.darkerBackground,
     padding: 12,
@@ -318,4 +301,14 @@ const styles = StyleSheet.create({
     elevation: 5,
     zIndex: 10,
   },
-});
+  eventCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(20, 30, 60, 0.6)',
+    borderRadius: 16,
+    padding: 12,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+};

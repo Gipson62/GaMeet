@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect, useCallback } from 'react';
 import { 
-  View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, 
+  View, Text, Image, ScrollView, TouchableOpacity, 
   ActivityIndicator, Alert, Dimensions, Modal, TextInput
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
@@ -10,6 +10,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useSelector } from 'react-redux';
 import {API_URL, BASE_URL} from '../config';
 import { TRANSLATIONS } from '../constants/translations';
+import { COLORS } from '../constants/theme';
+import { globalStyles } from '../styles/globalStyles';
 
 const { width } = Dimensions.get('window');
 
@@ -304,10 +306,10 @@ export default function EventDetails() {
         {/* 2. Infos Section */}
         <View style={styles.infoSection}>
             <View style={{ flex: 1 }}>
-                <Text style={styles.label}>{t.eventDate ? t.eventDate.toUpperCase() : "DATE DE L'ÉVÈNEMENT"}</Text>
+                <Text style={styles.infoLabel}>{t.eventDate ? t.eventDate.toUpperCase() : "DATE DE L'ÉVÈNEMENT"}</Text>
                 <Text style={styles.value}>{formattedDate}</Text>
 
-                <Text style={[styles.label, { marginTop: 16 }]}>{t.organizer ? t.organizer.toUpperCase() : "ORGANISATEUR"}</Text>
+                <Text style={[styles.infoLabel, { marginTop: 16 }]}>{t.organizer ? t.organizer.toUpperCase() : "ORGANISATEUR"}</Text>
                 <View style={styles.organizerRow}>
                     {organizerAvatarUrl ? (
                         <Image source={{ uri: organizerAvatarUrl }} style={styles.organizerAvatar} />
@@ -328,7 +330,7 @@ export default function EventDetails() {
 
         {/* 3. Description */}
         <View style={styles.section}>
-            <Text style={styles.label}>{t.description ? t.description.toUpperCase() : "DESCRIPTION"}</Text>
+            <Text style={styles.infoLabel}>{t.description ? t.description.toUpperCase() : "DESCRIPTION"}</Text>
             <Text style={styles.description}>
                 {event.description || t.noDescription}
             </Text>
@@ -337,7 +339,7 @@ export default function EventDetails() {
         {/* Photos de l'événement */}
         {event.event_photo && event.event_photo.length > 0 && (
             <View style={styles.section}>
-                <Text style={styles.label}>{t.photos ? t.photos.toUpperCase() : "PHOTOS"}</Text>
+                <Text style={styles.infoLabel}>{t.photos ? t.photos.toUpperCase() : "PHOTOS"}</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 8 }}>
                     {event.event_photo.map((ep, index) => (
                         <Image 
@@ -353,7 +355,7 @@ export default function EventDetails() {
         {/* 3.5 Reviews Section */}
         <View style={styles.section}>
             <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12}}>
-                <Text style={styles.label}>{t.reviews ? t.reviews.toUpperCase() : "AVIS"} ({reviews.length})</Text>
+                <Text style={styles.infoLabel}>{t.reviews ? t.reviews.toUpperCase() : "AVIS"} ({reviews.length})</Text>
                 {!isOrganizer && (
                     <TouchableOpacity onPress={handleOpenReview}>
                         <Text style={{color: '#3b82f6', fontSize: 12, fontWeight: 'bold'}}>{t.writeReview ? t.writeReview.toUpperCase() : "ÉCRIRE UN AVIS"}</Text>
@@ -488,21 +490,14 @@ export default function EventDetails() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#0b1622', // bg-[#0b1622]
-  },
-  center: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+const styles = {
+  ...globalStyles,
   headerContainer: {
     padding: 16,
   },
   imageContainer: {
     height: 250,
-    borderRadius: 24, // rounded-3xl
+    borderRadius: 24,
     overflow: 'hidden',
     position: 'relative',
     backgroundColor: '#1a2c3d',
@@ -517,12 +512,12 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     padding: 24,
-    backgroundColor: 'rgba(0,0,0,0.5)', // Gradient simulation
+    backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'flex-end',
   },
   eventTitle: {
     color: 'white',
-    fontSize: 28, // text-3xl
+    fontSize: 28,
     fontWeight: 'bold',
   },
   gameContainer: {
@@ -537,7 +532,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   gameTitle: {
-    color: '#d1d5db', // text-gray-300
+    color: '#d1d5db',
     fontSize: 16,
   },
   infoSection: {
@@ -547,16 +542,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 16,
   },
-  label: {
-    color: '#9ca3af', // text-gray-400
-    fontSize: 12, // text-sm
+  infoLabel: {
+    color: '#9ca3af',
+    fontSize: 12,
     fontWeight: '600',
     textTransform: 'uppercase',
     marginBottom: 4,
   },
   value: {
     color: 'white',
-    fontSize: 18, // text-lg
+    fontSize: 18,
   },
   organizerRow: {
     flexDirection: 'row',
@@ -584,9 +579,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   countBox: {
-    backgroundColor: '#1a2c3d', // bg-[#1a2c3d]
+    backgroundColor: '#1a2c3d',
     padding: 16,
-    borderRadius: 12, // rounded-xl
+    borderRadius: 12,
     minWidth: 64,
     height: 64,
     justifyContent: 'center',
@@ -594,7 +589,7 @@ const styles = StyleSheet.create({
   },
   countText: {
     color: 'white',
-    fontSize: 24, // text-2xl
+    fontSize: 24,
     fontWeight: 'bold',
   },
   capacityText: {
@@ -606,9 +601,9 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   description: {
-    color: '#d1d5db', // text-gray-300
-    fontSize: 14, // text-sm
-    lineHeight: 24, // leading-relaxed
+    color: '#d1d5db',
+    fontSize: 14,
+    lineHeight: 24,
     marginTop: 8,
   },
   eventPhoto: {
@@ -623,15 +618,15 @@ const styles = StyleSheet.create({
   },
   mapContainer: {
     height: 300,
-    backgroundColor: '#1e293b', // bg-slate-800
-    borderTopLeftRadius: 24, // rounded-t-3xl
+    backgroundColor: '#1e293b',
+    borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     overflow: 'hidden',
   },
   map: {
     width: '100%',
     height: '100%',
-    opacity: 0.7, // opacity-50 in design, adjusted for visibility
+    opacity: 0.7,
   },
   mapPlaceholder: {
     flex: 1,
@@ -640,14 +635,14 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     position: 'absolute',
-    bottom: 20, // bottom-4
-    left: 24, // px-6
+    bottom: 20,
+    left: 24,
     right: 24,
   },
   joinButton: {
-    backgroundColor: '#3b82f6', // bg-[#3b82f6]
+    backgroundColor: '#3b82f6',
     paddingVertical: 16,
-    borderRadius: 16, // rounded-2xl
+    borderRadius: 16,
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
@@ -656,12 +651,12 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   leaveButton: {
-    backgroundColor: '#ef4444', // Rouge pour quitter
+    backgroundColor: '#ef4444',
   },
   joinButtonText: {
     color: 'white',
     fontSize: 16,
-    fontWeight: 'bold', // font-semibold
+    fontWeight: 'bold',
   },
   reviewCard: {
     backgroundColor: '#1a2c3d',
@@ -694,24 +689,6 @@ const styles = StyleSheet.create({
     color: '#d1d5db',
     fontSize: 14,
     lineHeight: 20,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    justifyContent: 'center',
-    padding: 20,
-  },
-  modalContent: {
-    backgroundColor: '#1a2c3d',
-    borderRadius: 16,
-    padding: 20,
-  },
-  modalTitle: {
-    color: 'white',
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
   },
   starsContainer: {
     flexDirection: 'row',
@@ -748,4 +725,4 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
-});
+};

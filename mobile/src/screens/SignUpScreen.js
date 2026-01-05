@@ -6,7 +6,6 @@ import {
     TouchableOpacity,
     SafeAreaView,
     ScrollView,
-    StyleSheet,
     ActivityIndicator,
     Alert,
     KeyboardAvoidingView,
@@ -16,8 +15,9 @@ import {
 } from "react-native";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faCalendar, faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
-import { COLORS, theme } from "../constants/theme";
+import { COLORS } from "../constants/theme";
 import { registerUser } from "../services/api";
+import { globalStyles } from '../styles/globalStyles';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 function isEmailValid(email) {
@@ -101,25 +101,25 @@ export default function SignUpScreen({ navigation }) {
             >
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                     <ScrollView
-                        contentContainerStyle={styles.container}
+                        contentContainerStyle={styles.scroll}
                         keyboardShouldPersistTaps="handled"
                         showsVerticalScrollIndicator={false}
                     >
                         <Text style={styles.title}>Création de compte</Text>
                         
-                        <Text style={styles.label}>Nom d’utilisateur</Text>
+                        <Text style={styles.formLabel}>Nom d'utilisateur</Text>
                         <View style={styles.inputContainer}>
                             <TextInput
                                 value={pseudo}
                                 onChangeText={setPseudo}
                                 placeholder="Entrez un nom d'utilisateur"
                                 placeholderTextColor={COLORS.formLabel}
-                                style={styles.input}
+                                style={styles.inputField}
                                 autoCapitalize="none"
                             />
                         </View>
 
-                        <Text style={styles.label}>Date de naissance</Text>
+                        <Text style={styles.formLabel}>Date de naissance</Text>
                         <TouchableOpacity
                             onPress={() => setShowDatePicker(true)}
                             activeOpacity={0.8}
@@ -129,7 +129,7 @@ export default function SignUpScreen({ navigation }) {
                                     value={birthDateText}
                                     placeholder="Sélectionner une date"
                                     placeholderTextColor={COLORS.formLabel}
-                                    style={styles.input}
+                                    style={styles.inputField}
                                     editable={false}
                                 />
                                 <FontAwesomeIcon icon={faCalendar} size={20} color={COLORS.formLabel} style={styles.icon} />
@@ -152,27 +152,27 @@ export default function SignUpScreen({ navigation }) {
                             />
                         )}
 
-                        <Text style={styles.label}>Email</Text>
+                        <Text style={styles.formLabel}>Email</Text>
                         <View style={styles.inputContainer}>
                             <TextInput
                                 value={email}
                                 onChangeText={setEmail}
                                 placeholder="Entrez un email valide"
                                 placeholderTextColor={COLORS.formLabel}
-                                style={styles.input}
+                                style={styles.inputField}
                                 autoCapitalize="none"
                                 keyboardType="email-address"
                             />
                         </View>
 
-                        <Text style={styles.label}>Mot de passe</Text>
+                        <Text style={styles.formLabel}>Mot de passe</Text>
                         <View style={styles.inputContainer}>
                             <TextInput
                                 value={password}
                                 onChangeText={setPassword}
                                 placeholder="Entrez un mot de passe"
                                 placeholderTextColor={COLORS.formLabel}
-                                style={styles.input}
+                                style={styles.inputField}
                                 secureTextEntry={!showPassword}
                             />
                             <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.iconButton}>
@@ -180,14 +180,14 @@ export default function SignUpScreen({ navigation }) {
                             </TouchableOpacity>
                         </View>
 
-                        <Text style={styles.label}>Confirmer mot de passe</Text>
+                        <Text style={styles.formLabel}>Confirmer mot de passe</Text>
                         <View style={styles.inputContainer}>
                             <TextInput
                                 value={confirm}
                                 onChangeText={setConfirm}
                                 placeholder="Confirmez le mot de passe"
                                 placeholderTextColor={COLORS.formLabel}
-                                style={styles.input}
+                                style={styles.inputField}
                                 secureTextEntry={!showConfirm}
                             />
                             <TouchableOpacity onPress={() => setShowConfirm(!showConfirm)} style={styles.iconButton}>
@@ -199,7 +199,7 @@ export default function SignUpScreen({ navigation }) {
                         {submitted && error ? <Text style={styles.error}>{error}</Text> : null}
 
                         <TouchableOpacity
-                            style={[styles.button, (loading) && { opacity: 0.7 }]}
+                            style={[styles.primaryButton, (loading) && { opacity: 0.7 }]}
                             onPress={onSubmit}
                             disabled={loading}
                         >
@@ -221,44 +221,33 @@ export default function SignUpScreen({ navigation }) {
     );
 }
 
-const styles = StyleSheet.create({
+const styles = {
+    ...globalStyles,
     safe: {
         flex: 1,
         backgroundColor: COLORS.background,
     },
-    container: {
+    scroll: {
         flexGrow: 1,
         justifyContent: "center",
-        padding: theme.padding,
-        paddingBottom:40,
-    },
-    title: {
-        color: COLORS.text,
-        fontSize: theme.h2,
-        fontWeight: "700",
-        marginBottom: 24,
-        textAlign: "center",
-    },
-    label: {
-        color: COLORS.formLabel,
-        fontSize: 12,
-        marginTop: 20,
+        padding: 16,
+        paddingBottom: 40,
     },
     inputContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         marginTop: 8,
-        borderRadius: theme.radius,
+        borderRadius: 8,
         backgroundColor: COLORS.background,
         borderBottomWidth: 2,
         borderColor: COLORS.formLabel,
     },
-    input: {
+    inputField: {
         flex: 1,
         paddingVertical: 12,
         paddingHorizontal: 14,
-        color: COLORS.formText,
-        fontSize: theme.body,
+        color: COLORS.text,
+        fontSize: 16,
     },
     icon: {
         marginRight: 14,
@@ -272,18 +261,6 @@ const styles = StyleSheet.create({
         marginTop: 12,
         fontSize: 12,
     },
-    button: {
-        marginTop: 32,
-        backgroundColor: COLORS.button,
-        paddingVertical: 14,
-        borderRadius: theme.radius,
-        alignItems: "center",
-    },
-    buttonText: {
-        color: COLORS.text,
-        fontSize: theme.body,
-        fontWeight: "700",
-    },
     linkBtn: {
         marginTop: 16,
         alignItems: "center",
@@ -293,4 +270,4 @@ const styles = StyleSheet.create({
         fontSize: 12,
         textDecorationLine: "underline",
     },
-});
+};
