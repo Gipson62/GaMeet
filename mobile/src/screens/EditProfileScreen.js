@@ -18,8 +18,7 @@ import { useDispatch, useSelector } from "react-redux";
 import * as ImagePicker from 'expo-image-picker';
 import { COLORS } from "../constants/theme";
 import { globalStyles } from '../styles/globalStyles';
-import { api, buildPhotoUploadUrl, buildPhotoUrl, fetchMe } from "../services/api";
-import { BASE_URL } from "../config";
+import { api, buildPhotoUploadUrl, fetchMe } from "../services/api";
 import { TRANSLATIONS } from "../constants/translations";
 import { updateUser } from "../store/slices/authSlice";
 

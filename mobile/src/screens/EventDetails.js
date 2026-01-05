@@ -12,8 +12,6 @@ import { TRANSLATIONS } from '../constants/translations';
 import { globalStyles } from '../styles/globalStyles';
 import { fetchEventById, joinEvent, leaveEvent, addReview, deleteReview, buildPhotoUrl, buildPhotoUploadUrl } from '../services/api';
 
-const { width } = Dimensions.get('window');
-
 export default function EventDetails() {
   const navigation = useNavigation();
   const route = useRoute();

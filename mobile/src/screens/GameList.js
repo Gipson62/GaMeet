@@ -28,7 +28,7 @@ export default function GameList() {
   
   const [games, setGames] = useState([]);
   const [filteredGames, setFilteredGames] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   
   const [searchText, setSearchText] = useState('');
   const [selectedTags, setSelectedTags] = useState([]);
@@ -166,14 +166,6 @@ export default function GameList() {
     );
   };
 
-  if (loading) {
-    return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color={COLORS.button} />
-      </View>
-    );
-  }
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -229,10 +221,17 @@ export default function GameList() {
         numColumns={2}
         contentContainerStyle={styles.grid}
         ListEmptyComponent={
-          <View style={styles.empty}>
-            <MaterialIcons name="videogame-asset-off" size={48} color={COLORS.formLabel} />
-            <Text style={styles.emptyText}>{t.noGamesFound}</Text>
-          </View>
+          loading ? (
+            <View style={styles.empty}>
+              <ActivityIndicator size="large" color={COLORS.button} />
+              <Text style={styles.emptyText}>{t.loading || "Chargement..."}</Text>
+            </View>
+          ) : (
+            <View style={styles.empty}>
+              <MaterialIcons name="videogame-asset-off" size={48} color={COLORS.formLabel} />
+              <Text style={styles.emptyText}>{t.noGamesFound}</Text>
+            </View>
+          )
         }
       />
 

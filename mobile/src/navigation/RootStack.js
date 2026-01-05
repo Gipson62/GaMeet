@@ -1,10 +1,9 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { View, ActivityIndicator } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useSelector, useDispatch } from "react-redux";
 import AuthStack from "./stacks/AuthStack";
 import MainTabs from "./stacks/MainTabs";
-import EditProfileScreen from "../screens/EditProfileScreen";
 import { loadUserSession } from "../store/slices/authSlice";
 import { COLORS } from "../constants/theme";
 import EventDetails from "../screens/EventDetails";
