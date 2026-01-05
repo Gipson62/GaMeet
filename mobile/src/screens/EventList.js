@@ -263,7 +263,7 @@ export default function EventList() {
             </View>
             <ScrollView style={{ maxHeight: '60%' }}>
               <TouchableOpacity
-                style={[globalStyles.option, !selectedGame && globalStyles.optionActive]}
+                style={[globalStyles.option, !selectedGame && globalStyles.optionActive, { paddingHorizontal: 20 }]}
                 onPress={() => { setSelectedGame(null); setModalVisible(false); }}
               >
                 <Text style={globalStyles.optionText}>{t.showAll || "Tout afficher"}</Text>
@@ -274,7 +274,7 @@ export default function EventList() {
               {availableGames.map(game => (
                 <TouchableOpacity
                   key={game}
-                  style={[globalStyles.option, selectedGame === game && globalStyles.optionActive]}
+                  style={[globalStyles.option, selectedGame === game && globalStyles.optionActive, { paddingHorizontal: 20 }]}
                   onPress={() => { setSelectedGame(game); setModalVisible(false); }}
                 >
                   <Text style={globalStyles.optionText}>{game}</Text>

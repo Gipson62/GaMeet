@@ -106,8 +106,15 @@ export default function Map() {
 
   const recenterMap = async () => {
     try {
-      const userLocation = await Location.getCurrentPositionAsync({});
-      if (mapRef.current) {
+      // 1. Essayer d'abord la dernière position connue (beaucoup plus rapide)
+      let userLocation = await Location.getLastKnownPositionAsync({});
+      
+      // 2. Si pas de dernière position, on demande la position actuelle
+      if (!userLocation) {
+        userLocation = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+      }
+
+      if (userLocation && mapRef.current) {
         mapRef.current.animateToRegion({
           latitude: userLocation.coords.latitude,
           longitude: userLocation.coords.longitude,
@@ -117,6 +124,10 @@ export default function Map() {
       }
     } catch (error) {
       console.log("Erreur localisation", error);
+      // 3. Fallback sur la position initiale si tout échoue
+      if (location && mapRef.current) {
+        mapRef.current.animateToRegion(location, 1000);
+      }
     }
   };
 
@@ -190,7 +201,9 @@ export default function Map() {
           showsCompass={false}
           zoomControlEnabled={false}
           customMapStyle={mapStyle}
-          mapPadding={{ top: 0, right: 70, bottom: 30, left: 0 }}
+          // right: 0 pour bien centrer horizontalement
+          // bottom: 100 pour remonter le logo Google au-dessus du bouton FAB
+          mapPadding={{ top: 0, right: 0, bottom: 100, left: 0 }}
         >
           {events.map(event => (
             <Marker
