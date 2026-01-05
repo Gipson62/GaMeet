@@ -25,7 +25,6 @@ export const TRANSLATIONS = {
     selectLanguage: "Choisir la langue",
     
     // GameList
-    library: "Tous les jeux",
     searchGames: "Rechercher des jeux...",
     sortBy: "TRIER PAR:",
     platforms: "Plateformes",
@@ -170,7 +169,6 @@ export const TRANSLATIONS = {
     selectLanguage: "Select Language",
     
     // GameList
-    library: "All games",
     searchGames: "Search games...",
     sortBy: "SORT BY:",
     platforms: "Platforms",

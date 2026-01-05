@@ -162,24 +162,51 @@ export default function EventList() {
 
   return (
     <View style={styles.container}>
-      <TextInput
-        style={styles.searchBar}
-        placeholder={t.searchPlaceholder || "Rechercher..."}
-        value={searchText}
-        onChangeText={setSearchText}
-        placeholderTextColor={COLORS.formLabel}
-      />
+      <View style={styles.header}>
+        <View style={styles.searchBar}>
+          <MaterialIcons name="search" size={20} color={COLORS.formLabel} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder={t.searchPlaceholder || "Rechercher..."}
+            value={searchText}
+            onChangeText={setSearchText}
+            placeholderTextColor={COLORS.formLabel}
+          />
+          {searchText.length > 0 && (
+            <TouchableOpacity onPress={() => setSearchText('')}>
+              <MaterialIcons name="close" size={20} color={COLORS.formLabel} />
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
 
-      <View style={styles.filters}>
-        <TouchableOpacity style={styles.btnFilter} onPress={() => setModalVisible(true)}>
-          <Text style={styles.btnText}>{selectedGame || t.game || "Jeu"}</Text>
+      <View style={styles.filterBar}>
+        <Text style={styles.filterLabel}>{t.filters || "Filtres"}</Text>
+        
+        <TouchableOpacity style={globalStyles.filterBtn} onPress={() => setModalVisible(true)}>
+          <Text style={globalStyles.filterBtnText}>{selectedGame ? selectedGame : (t.game || "Jeu")}</Text>
+          {selectedGame && (
+            <View style={globalStyles.badge}>
+              <Text style={globalStyles.badgeText}>1</Text>
+            </View>
+          )}
         </TouchableOpacity>
-        <TouchableOpacity style={styles.btnFilter} onPress={() => setMaxDistance(prev => prev === 50 ? 5000 : 50)}>
-          <Text style={styles.btnText}>{maxDistance < 1000 ? `< ${maxDistance} km` : (t.distanceAll || "Distance: Tout")}</Text>
+        
+        <TouchableOpacity style={globalStyles.filterBtn} onPress={() => setMaxDistance(prev => prev === 50 ? 5000 : 50)}>
+          <Text style={globalStyles.filterBtnText}>{maxDistance < 1000 ? `< ${maxDistance} km` : (t.distanceAll || "Tout")}</Text>
         </TouchableOpacity>
+        
         {user && (
-          <TouchableOpacity style={[styles.btnFilter, showMyEvents && { backgroundColor: '#10b981' }]} onPress={() => setShowMyEvents(!showMyEvents)}>
-            <Text style={styles.btnText}>{t.myEvents || "Mes events"}</Text>
+          <TouchableOpacity 
+            style={globalStyles.filterBtn}
+            onPress={() => setShowMyEvents(!showMyEvents)}
+          >
+            <Text style={[globalStyles.filterBtnText, showMyEvents && { color: COLORS.text }]}>{t.myEvents || "Mes events"}</Text>
+            {showMyEvents && (
+              <View style={globalStyles.badge}>
+                <Text style={globalStyles.badgeText}>✓</Text>
+              </View>
+            )}
           </TouchableOpacity>
         )}
       </View>
@@ -218,19 +245,48 @@ export default function EventList() {
         )
       )}
 
-      <Modal visible={modalVisible} animationType="slide">
-        <View style={styles.modalContent}>
-          <Button title={t.showAll || "Tout afficher"} color={COLORS.button} onPress={() => { setSelectedGame(null); setModalVisible(false); }} />
-          <FlatList 
-            data={availableGames}
-            keyExtractor={item => item}
-            renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => { setSelectedGame(item); setModalVisible(false); }} style={styles.modalItem}>
-                <Text style={styles.modalText}>{item}</Text>
+      {/* Game Filter Modal */}
+      <Modal
+        visible={modalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={globalStyles.modalOverlayBottom}>
+          <View style={globalStyles.modal}>
+            <View style={globalStyles.modalHeader}>
+              <Text style={globalStyles.modalTitle}>{t.game || "Jeu"}</Text>
+              <TouchableOpacity onPress={() => setModalVisible(false)}>
+                <MaterialIcons name="close" size={24} color={COLORS.text} />
               </TouchableOpacity>
-            )}
-          />
-          <Button title={t.close || "Fermer"} color={COLORS.error || "red"} onPress={() => setModalVisible(false)} />
+            </View>
+            <ScrollView style={{ maxHeight: '60%' }}>
+              <TouchableOpacity
+                style={[globalStyles.option, !selectedGame && globalStyles.optionActive]}
+                onPress={() => { setSelectedGame(null); setModalVisible(false); }}
+              >
+                <Text style={globalStyles.optionText}>{t.showAll || "Tout afficher"}</Text>
+                {!selectedGame && (
+                  <MaterialIcons name="check" size={20} color={COLORS.button} />
+                )}
+              </TouchableOpacity>
+              {availableGames.map(game => (
+                <TouchableOpacity
+                  key={game}
+                  style={[globalStyles.option, selectedGame === game && globalStyles.optionActive]}
+                  onPress={() => { setSelectedGame(game); setModalVisible(false); }}
+                >
+                  <Text style={globalStyles.optionText}>{game}</Text>
+                  {selectedGame === game && (
+                    <MaterialIcons name="check" size={20} color={COLORS.button} />
+                  )}
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+            <TouchableOpacity style={globalStyles.doneBtn} onPress={() => setModalVisible(false)}>
+              <Text style={globalStyles.doneBtnText}>{t.done || "Terminé"}</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </Modal>
 
@@ -245,35 +301,30 @@ export default function EventList() {
 
 const styles = {
   ...globalStyles,
-  scroll: {
-    padding: 16,
-    paddingTop: 50,
+  header: {
+    paddingTop: 60,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    backgroundColor: COLORS.darkerBackground,
   },
   searchBar: {
-    backgroundColor: COLORS.card,
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 10,
-    color: COLORS.text
-  },
-  filters: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 10,
-    gap: 10
-  },
-  btnFilter: {
-    backgroundColor: COLORS.button,
-    padding: 10,
-    borderRadius: 20,
-    flex: 1,
     alignItems: 'center',
-    justifyContent: 'center'
+    backgroundColor: COLORS.card,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    height: 44,
+    gap: 8,
   },
-  btnText: {
+  searchInput: {
+    flex: 1,
     color: COLORS.text,
-    fontWeight: 'bold',
-    fontSize: 12
+    fontSize: 14,
+  },
+  filterLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: COLORS.formLabel,
   },
   eventCard: {
     backgroundColor: COLORS.card,

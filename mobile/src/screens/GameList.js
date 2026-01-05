@@ -177,7 +177,6 @@ export default function GameList() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>{t.library}</Text>
         <View style={styles.searchBar}>
           <MaterialIcons name="search" size={20} color={COLORS.formLabel} />
           <TextInput
