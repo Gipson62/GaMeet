@@ -105,9 +105,9 @@ export default function SignUpScreen({ navigation }) {
                         keyboardShouldPersistTaps="handled"
                         showsVerticalScrollIndicator={false}
                     >
-                        <Text style={styles.title}>Création de compte</Text>
+                        <Text style={globalStyles.title}>Création de compte</Text>
                         
-                        <Text style={styles.formLabel}>Nom d'utilisateur</Text>
+                        <Text style={globalStyles.formLabel}>Nom d'utilisateur</Text>
                         <View style={styles.inputContainer}>
                             <TextInput
                                 value={pseudo}
@@ -119,7 +119,7 @@ export default function SignUpScreen({ navigation }) {
                             />
                         </View>
 
-                        <Text style={styles.formLabel}>Date de naissance</Text>
+                        <Text style={globalStyles.formLabel}>Date de naissance</Text>
                         <TouchableOpacity
                             onPress={() => setShowDatePicker(true)}
                             activeOpacity={0.8}
@@ -152,7 +152,7 @@ export default function SignUpScreen({ navigation }) {
                             />
                         )}
 
-                        <Text style={styles.formLabel}>Email</Text>
+                        <Text style={globalStyles.formLabel}>Email</Text>
                         <View style={styles.inputContainer}>
                             <TextInput
                                 value={email}
@@ -165,7 +165,7 @@ export default function SignUpScreen({ navigation }) {
                             />
                         </View>
 
-                        <Text style={styles.formLabel}>Mot de passe</Text>
+                        <Text style={globalStyles.formLabel}>Mot de passe</Text>
                         <View style={styles.inputContainer}>
                             <TextInput
                                 value={password}
@@ -180,7 +180,7 @@ export default function SignUpScreen({ navigation }) {
                             </TouchableOpacity>
                         </View>
 
-                        <Text style={styles.formLabel}>Confirmer mot de passe</Text>
+                        <Text style={globalStyles.formLabel}>Confirmer mot de passe</Text>
                         <View style={styles.inputContainer}>
                             <TextInput
                                 value={confirm}
@@ -199,11 +199,11 @@ export default function SignUpScreen({ navigation }) {
                         {submitted && error ? <Text style={styles.error}>{error}</Text> : null}
 
                         <TouchableOpacity
-                            style={[styles.primaryButton, (loading) && { opacity: 0.7 }]}
+                            style={[globalStyles.submitBtn, (loading) && { opacity: 0.7 }]}
                             onPress={onSubmit}
                             disabled={loading}
                         >
-                            {loading ? <ActivityIndicator /> : <Text style={styles.buttonText}>Créer le compte</Text>}
+                            {loading ? <ActivityIndicator /> : <Text style={globalStyles.buttonText}>Créer le compte</Text>}
                         </TouchableOpacity>
 
                         <TouchableOpacity
@@ -222,7 +222,6 @@ export default function SignUpScreen({ navigation }) {
 }
 
 const styles = {
-    ...globalStyles,
     safe: {
         flex: 1,
         backgroundColor: COLORS.background,
