@@ -218,6 +218,7 @@ export default function EventList() {
         <FlatList
           data={filteredEvents}
           keyExtractor={item => item.id.toString()}
+          contentContainerStyle={styles.listContent}
           renderItem={({ item }) => {
             const mainGame = item.event_game?.[0]?.game;
             const bannerUrl = mainGame?.banner?.url 
@@ -304,7 +305,7 @@ const styles = {
   header: {
     paddingTop: 60,
     paddingHorizontal: 20,
-    paddingBottom: 20,
+    paddingBottom: 10,
     backgroundColor: COLORS.darkerBackground,
   },
   searchBar: {
@@ -325,6 +326,19 @@ const styles = {
     fontSize: 11,
     fontWeight: '600',
     color: COLORS.formLabel,
+  },
+  filterBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    backgroundColor: COLORS.darkerBackground,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+    gap: 10,
+  },
+  listContent: {
+    padding: 20,
   },
   eventCard: {
     backgroundColor: COLORS.card,

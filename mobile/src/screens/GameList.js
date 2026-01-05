@@ -322,7 +322,7 @@ const styles = {
   header: {
     paddingTop: 60,
     paddingHorizontal: 20,
-    paddingBottom: 20,
+    paddingBottom: 10,
     backgroundColor: COLORS.darkerBackground,
   },
   searchBar: {
@@ -352,7 +352,7 @@ const styles = {
     backgroundColor: COLORS.darkerBackground,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
-    gap: 12,
+    gap: 10,
   },
   card: {
     width: CARD_WIDTH,
