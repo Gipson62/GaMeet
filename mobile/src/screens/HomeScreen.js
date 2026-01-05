@@ -43,13 +43,6 @@ const mapStyle = [
   { "featureType": "water", "elementType": "labels.text.stroke", "stylers": [{ "color": "#17263c" }] }
 ];
 
-const DEFAULT_REGION = {
-    latitude: 50.8503,
-    longitude: 4.3517,
-    latitudeDelta: 0.1,
-    longitudeDelta: 0.1,
-};
-
 export default function HomeScreen() {
     const navigation = useNavigation();
     const user = useSelector(state => state.auth.user);
@@ -164,14 +157,14 @@ export default function HomeScreen() {
             {/* 1. Hero Section */}
             <View style={styles.header}>
                 <View>
-                    <Text style={styles.greeting}>{t.hello || 'Bonjour'} {user?.pseudo || t.player || 'Joueur'} !</Text>
-                    <Text style={styles.subtitle}>{t.welcomeMessage || 'Découvrez les événements à venir'}</Text>
+                    <Text style={styles.greeting}>{t.hello} {user?.pseudo} !</Text>
+                    <Text style={styles.subtitle}>{t.welcomeMessage}</Text>
                 </View>
             </View>
 
             {/* 2. Mes Évènements */}
             <View style={styles.section}>
-                <Text style={styles.sectionTitle}>{t.myEvents || 'Mes Évènements'}</Text>
+                <Text style={styles.sectionTitle}>{t.myEvents}</Text>
                 {loading ? (
                     <ActivityIndicator color={COLORS.button} style={{ marginTop: 20 }} />
                 ) : (
@@ -183,7 +176,7 @@ export default function HomeScreen() {
                         showsHorizontalScrollIndicator={false}
                         contentContainerStyle={styles.horizontalList}
                         ListEmptyComponent={
-                            <Text style={styles.emptyText}>{t.noParticipatingEvents || 'Vous ne participez à aucun événement.'}</Text>
+                            <Text style={styles.emptyText}>{t.noParticipatingEvents}</Text>
                         }
                     />
                 )}
@@ -215,13 +208,13 @@ export default function HomeScreen() {
                     ) : participatingEvents.length > 0 ? (
                         <View style={styles.mapPlaceholder}>
                             <MaterialIcons name="language" size={40} color={COLORS.formLabel} />
-                            <Text style={styles.placeholderText}>{t.onlineEvent || 'Évènement en ligne'}</Text>
+                            <Text style={styles.placeholderText}>{t.onlineEvent}</Text>
                             <Text style={styles.placeholderLocation}>{participatingEvents[0].location}</Text>
                         </View>
                     ) : (
                         <View style={styles.mapPlaceholder}>
                             <MaterialIcons name="map" size={40} color={COLORS.formLabel} />
-                            <Text style={styles.placeholderText}>{t.noEventsToShow || 'Aucun événement à afficher'}</Text>
+                            <Text style={styles.placeholderText}>{t.noEventsToShow}</Text>
                         </View>
                     )}
                 </View>
@@ -231,6 +224,7 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
+    ...globalStyles,
     container: {
         flex: 1,
         backgroundColor: COLORS.background,

@@ -146,6 +146,15 @@ export const TRANSLATIONS = {
     rateEvent: "Noter l'événement",
     yourComment: "Votre commentaire...",
     send: "Envoyer",
+
+    //HomeScreen
+    hello: "Bonjour, ",
+    welcomeMessage: "Découvrez des événements près de chez vous",
+    findGames: "Trouvez vos jeux préférés",
+    myEvents: "Mes événements",
+    noParticipatingEvents: "Vous ne participez à aucun événement",
+    onlineEvent: "Événement en ligne",
+    noEventsToShow: "Aucun événement à afficher",
   },
   en: {
     // Navbar
@@ -294,5 +303,14 @@ export const TRANSLATIONS = {
     rateEvent: "Rate event",
     yourComment: "Your comment...",
     send: "Send",
+    
+    //HomeScreen
+    hello: "Hello, ",
+    welcomeMessage: "Discover events near you",
+    findGames: "Find your favorite games",
+    myEvents: "My events",
+    noParticipatingEvents: "You are not participating in any events",
+    onlineEvent: "Online event",
+    noEventsToShow: "No events to show",
   },
 };
