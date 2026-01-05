@@ -2,7 +2,9 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useSelector } from 'react-redux';
 import { COLORS } from '../../constants/theme';
+import { TRANSLATIONS } from '../../constants/translations';
 
 // Import des écrans
 import Home from '../../screens/HomeScreen';
@@ -47,6 +49,9 @@ function ProfileStackScreen() {
 }
 
 export default function MainTabs() {
+  const language = useSelector((state) => state.auth.language || 'fr');
+  const t = TRANSLATIONS[language];
+
   return (
     <Tab.Navigator
       initialRouteName="Accueil"
@@ -80,6 +85,7 @@ export default function MainTabs() {
         name="Accueil" 
         component={Home} 
         options={{
+          tabBarLabel: t.home,
           headerShown: true,
           title: 'GaMeet',
           headerStyle: { backgroundColor: COLORS.background },
@@ -87,10 +93,34 @@ export default function MainTabs() {
           headerShadowVisible: false,
         }}
       />
-      <Tab.Screen name="Jeux" component={GameStackScreen} />
-      <Tab.Screen name="Event" component={EventStackScreen} />
-      <Tab.Screen name="Carte" component={Map} />
-      <Tab.Screen name="Profile" component={ProfileStackScreen} />
+      <Tab.Screen 
+        name="Jeux" 
+        component={GameStackScreen} 
+        options={{
+          tabBarLabel: t.games,
+        }}
+      />
+      <Tab.Screen 
+        name="Event" 
+        component={EventStackScreen} 
+        options={{
+          tabBarLabel: t.events,
+        }}
+      />
+      <Tab.Screen 
+        name="Carte" 
+        component={Map} 
+        options={{
+          tabBarLabel: t.map,
+        }}
+      />
+      <Tab.Screen 
+        name="Profile" 
+        component={ProfileStackScreen} 
+        options={{
+          tabBarLabel: t.profile,
+        }}
+      />
     </Tab.Navigator>
   );
 }

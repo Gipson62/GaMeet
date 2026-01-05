@@ -1,5 +1,12 @@
 export const TRANSLATIONS = {
   fr: {
+    // Navbar
+    home: "Accueil",
+    games: "Jeux",
+    events: "Événements",
+    map: "Carte",
+    profile: "Profil",
+
     // Profile
     header: "Mon Profil",
     editProfile: "Éditer le profil",
@@ -138,6 +145,13 @@ export const TRANSLATIONS = {
     send: "Envoyer",
   },
   en: {
+    // Navbar
+    home: "Home",
+    games: "Games",
+    events: "Events",
+    map: "Map",
+    profile: "Profile",
+
     // Profile
     header: "My Profile",
     editProfile: "Edit Profile",
