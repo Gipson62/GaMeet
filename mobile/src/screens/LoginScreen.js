@@ -14,8 +14,7 @@ import {
     Keyboard,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import { COLORS } from "../constants/theme";
 import { login, clearAuthError } from "../store/slices/authSlice";
 import { globalStyles } from '../styles/globalStyles';
@@ -119,7 +118,7 @@ export default function LoginScreen({ navigation }) {
                                 onSubmitEditing={onSubmit}
                             />
                             <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.iconButton}>
-                                <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} size={20} color={COLORS.formLabel} />
+                                <MaterialIcons name={showPassword ? "visibility-off" : "visibility"} size={20} color={COLORS.formLabel} />
                             </TouchableOpacity>
                         </View>
 

@@ -14,7 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { COLORS } from "../constants/theme";
 import { fetchMe, deleteMyAccount } from "../services/api";
 import { logout, setLanguage, updateUser } from "../store/slices/authSlice";
-import { API_URL, BASE_URL } from "../config";
+import { BASE_URL } from "../config";
 import { TRANSLATIONS } from "../constants/translations";
 import { globalStyles } from '../styles/globalStyles';
 
