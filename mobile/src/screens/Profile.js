@@ -105,7 +105,6 @@ export default function Profile({ navigation }) {
     const bio = me?.bio ?? t.bioPlaceholder;
 
     // Construction de l'URL de l'avatar
-    // On affiche l'image si elle existe (même si c'est l'image par défaut)
     const avatarUri = me?.photo?.url 
         ? buildPhotoUploadUrl(me.photo.url)
         : null;
@@ -145,7 +144,6 @@ export default function Profile({ navigation }) {
                     </TouchableOpacity>
                 </View>
 
-                {/* Modal de choix de langue */}
                 <Modal
                     animationType="slide"
                     transparent={true}
@@ -160,14 +158,14 @@ export default function Profile({ navigation }) {
                                 style={[styles.langOption, language === 'fr' && styles.selectedLang]} 
                                 onPress={() => changeLanguage('fr')}
                             >
-                                <Text style={styles.langText}>Français 🇫🇷</Text>
+                                <Text style={styles.langText}>Français</Text>
                             </TouchableOpacity>
 
                             <TouchableOpacity 
                                 style={[styles.langOption, language === 'en' && styles.selectedLang]} 
                                 onPress={() => changeLanguage('en')}
                             >
-                                <Text style={styles.langText}>English 🇬🇧</Text>
+                                <Text style={styles.langText}>English</Text>
                             </TouchableOpacity>
 
                             <Pressable

@@ -27,12 +27,12 @@ export default function SignUpScreen({ navigation }) {
     const [pseudo, setPseudo] = useState("");
     const [birthDateText, setBirthDateText] = useState("");
     const [showDatePicker, setShowDatePicker] = useState(false);
-    const [birthDateObj, setBirthDateObj] = useState(null); // Date JS
+    const [birthDateObj, setBirthDateObj] = useState(null);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirm, setConfirm] = useState("");
     const [loading, setLoading] = useState(false);
-    const [submitted, setSubmitted] = useState(false); // Nouvel état pour savoir si on a cliqué
+    const [submitted, setSubmitted] = useState(false);
     
     // États pour la visibilité des mots de passe
     const [showPassword, setShowPassword] = useState(false);
@@ -65,7 +65,7 @@ export default function SignUpScreen({ navigation }) {
     }
 
     const onSubmit = async () => {
-        setSubmitted(true); // On marque le formulaire comme soumis
+        setSubmitted(true);
         
         if (error) return;
 

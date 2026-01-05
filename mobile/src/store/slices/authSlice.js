@@ -85,7 +85,7 @@ const authSlice = createSlice({
     clearAuthError: (state) => {
       state.error = null;
     },
-    // Nouvelle action pour mettre à jour l'utilisateur dans le store
+    // mettre à jour l'utilisateur dans le store
     updateUser: (state, action) => {
       state.user = action.payload;
       // On met aussi à jour le stockage persistant

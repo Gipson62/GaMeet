@@ -95,7 +95,6 @@ export default function EditProfileScreen({ navigation }) {
                 },
             });
 
-            // Récupérer les données fraîches
             const updatedUser = await fetchMe(); 
             // Mettre à jour le store Redux
             dispatch(updateUser(updatedUser));

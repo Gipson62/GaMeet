@@ -71,9 +71,7 @@ export default function LoginScreen({ navigation }) {
         }
     };
 
-    // Logique d'affichage de l'erreur :
-    // 1. Si validation locale échoue ET qu'on a soumis -> Erreur locale
-    // 2. Sinon, si erreur API existe -> Erreur API
+    // Si validation locale échoue ET qu'on a soumis : Erreur locale, sinon, si erreur API existe : Erreur API
     const displayError = (submitted && validationError) ? validationError : authError;
 
     return (
