@@ -48,9 +48,6 @@ export default function EventList() {
     try {
       const rawData = await fetchEvents();
       
-      // Garder uniquement les événements futurs
-      // const futureEvents = data.filter(event => new Date(event.scheduled_date) > new Date());
-      // Conversion des adresses en coordonnées (Géocodage)
       const data = await Promise.all(rawData.map(async (event) => {
         let coords = null;
         if (event.location) {
@@ -109,7 +106,7 @@ export default function EventList() {
     let location = await Location.getCurrentPositionAsync({});
     setUserLocation(location.coords);
   };
-
+// cette fonction est générée par ia 
   const getDistanceFromLatLonInKm = (lat1, lon1, lat2, lon2) => {
     var R = 6371; 
     var dLat = (lat2 - lat1) * (Math.PI / 180);
