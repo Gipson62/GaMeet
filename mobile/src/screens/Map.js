@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   View, 
+  StyleSheet, 
   ActivityIndicator, 
   Alert, 
   Dimensions, 
@@ -15,7 +16,6 @@ import { useNavigation } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { API_URL } from '../config';
 import { COLORS } from '../constants/theme';
-import { globalStyles } from '../styles/globalStyles';
 
 const { height } = Dimensions.get('window');
 
@@ -104,9 +104,30 @@ export default function Map() {
     }
   };
 
-  const recenterMap = () => {
-    if (location && mapRef.current) {
-      mapRef.current.animateToRegion(location, 1000);
+  const recenterMap = async () => {
+    try {
+      const userLocation = await Location.getCurrentPositionAsync({});
+      if (mapRef.current) {
+        mapRef.current.animateToRegion({
+          latitude: userLocation.coords.latitude,
+          longitude: userLocation.coords.longitude,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        }, 1000);
+      }
+    } catch (error) {
+      console.log("Erreur localisation", error);
+    }
+  };
+
+  const handleLocateEvent = (coords) => {
+    if (coords && mapRef.current) {
+      mapRef.current.animateToRegion({
+        latitude: coords.latitude,
+        longitude: coords.longitude,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      }, 1000);
     }
   };
 
@@ -118,7 +139,7 @@ export default function Map() {
 
     return (
         <TouchableOpacity 
-            style={styles.eventCard} 
+            style={styles.card} 
             onPress={() => navigation.navigate('EventDetails', { id: item.id })}
             activeOpacity={0.8}
         >
@@ -135,7 +156,15 @@ export default function Map() {
                 <Text style={styles.cardTitle} numberOfLines={1}>{item.name}</Text>
                 <Text style={styles.cardSubtitle} numberOfLines={1}>{mainGame?.name || "Événement Gaming"}</Text>
             </View>
+            <View style={styles.rightAction}>
             <Text style={styles.cardDistance}>{item.distance ? `${item.distance.toFixed(1)} km` : ''}</Text>
+                <TouchableOpacity 
+                    style={styles.locateBtn}
+                    onPress={() => handleLocateEvent(item._coords)}
+                >
+                    <MaterialIcons name="place" size={24} color={COLORS.button} />
+                </TouchableOpacity>
+            </View>
         </TouchableOpacity>
     );
   };
@@ -159,7 +188,9 @@ export default function Map() {
           showsUserLocation={true}
           showsMyLocationButton={false}
           showsCompass={false}
+          zoomControlEnabled={false}
           customMapStyle={mapStyle}
+          mapPadding={{ top: 0, right: 70, bottom: 30, left: 0 }}
         >
           {events.map(event => (
             <Marker
@@ -213,13 +244,20 @@ const mapStyle = [
   { "featureType": "water", "elementType": "labels.text.stroke", "stylers": [{ "color": "#17263c" }] }
 ];
 
-const styles = {
-  ...globalStyles,
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+  },
+  center: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   mapContainer: {
-    height: height * 0.5,
+    height: height * 0.6,
     width: '100%',
     borderBottomWidth: 2,
-    borderColor: '#00FFFF',
+    borderColor: '#00FFFF', // Bordure bleu néon
     shadowColor: '#00FFFF',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.8,
@@ -235,10 +273,11 @@ const styles = {
   panel: {
     flex: 1,
     backgroundColor: COLORS.background,
-    marginTop: -40,
+    marginTop: -40, // Effet de recouvrement
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
     zIndex: 2,
+    elevation: 20,
     paddingHorizontal: 20,
     paddingTop: 10,
   },
@@ -255,6 +294,16 @@ const styles = {
   },
   listContent: {
     paddingBottom: 20,
+  },
+  card: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(20, 30, 60, 0.6)', // Bleu nuit translucide
+    borderRadius: 16,
+    padding: 12,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   iconContainer: {
     marginRight: 15,
@@ -287,11 +336,18 @@ const styles = {
     color: '#fff',
     fontSize: 14,
     fontWeight: '600',
+    marginBottom: 4,
+  },
+  rightAction: {
+    alignItems: 'center',
     marginLeft: 10,
+  },
+  locateBtn: {
+    padding: 4,
   },
   recenterBtn: {
     position: 'absolute',
-    bottom: 60,
+    bottom: 47, // Positionné au-dessus du panneau qui recouvre le bas de la carte (40px + marge)
     right: 20,
     backgroundColor: COLORS.darkerBackground,
     padding: 12,
@@ -301,14 +357,4 @@ const styles = {
     elevation: 5,
     zIndex: 10,
   },
-  eventCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(20, 30, 60, 0.6)',
-    borderRadius: 16,
-    padding: 12,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-};
+});
